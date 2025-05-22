@@ -24,64 +24,40 @@ class LeaveService {
   Future<List<LeaveType>> getLeaveTypes() async {
     try {
       if (_connectivityService.isOnline) {
-        // محاولة جلب أنواع الإجازات من الخادم
+        // محاولة جلب أنواع الإجازات مع الرصيد من الخادم
         List<LeaveType> types = [];
 
         try {
-          // جلب من التخصيصات مباشرة
-          types = await _getLeaveTypesFromServer();
+          // استخدام الدالة المحدثة
+          types = await _odooService.getLeaveTypesFromSystem();
 
-          // إذا كانت فارغة، جرب من الرصيد المفصل
-          if (types.isEmpty && _odooService.employeeId != null) {
-            final balanceData = await _odooService.getLeaveBalanceDetailed(_odooService.employeeId!);
-
-            final colors = ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#00BCD4'];
-            int colorIndex = 0;
-
-            balanceData.forEach((typeId, balance) {
-              types.add(LeaveType(
-                id: int.parse(typeId),
-                name: balance['name'] ?? 'غير محدد',
-                maxDays: (balance['max_days'] ?? 0).toInt(),
-                color: colors[colorIndex % colors.length],
-                requiresApproval: true,
-                timeType: 'leave',
-                allocationType: 'fixed',
-              ));
-              colorIndex++;
-            });
+          // حفظ في الكاش
+          if (types.isNotEmpty) {
+            await _cacheLeaveTypes(types);
           }
+
+          return types;
         } catch (e) {
           print('فشل جلب أنواع الإجازات من الخادم: $e');
 
-          // إذا فشلت كل المحاولات، استخدم القيم الافتراضية
-          types = _getDefaultLeaveTypes();
-        }
+          // في حالة الفشل، محاولة جلب من الكاش
+          types = await _getLeaveTypesFromCache();
 
-        // حفظ في الكاش
-        if (types.isNotEmpty) {
-          await _cacheLeaveTypes(types);
-        }
+          if (types.isEmpty) {
+            // إذا لم يكن هناك كاش، استخدم القيم الافتراضية
+            types = _getDefaultLeaveTypes();
+          }
 
-        return types;
+          return types;
+        }
       } else {
+        // في حالة عدم الاتصال، جلب من الكاش
         return await _getLeaveTypesFromCache();
       }
     } catch (e) {
       print('خطأ في جلب أنواع الإجازات: $e');
       // محاولة الحصول على البيانات من الكاش
       return await _getLeaveTypesFromCache();
-    }
-  }
-
-  // جلب أنواع الإجازات من الخادم
-  Future<List<LeaveType>> _getLeaveTypesFromServer() async {
-    try {
-      // استخدام الطريقة الجديدة التي تجلب من التخصيصات
-      return await _odooService.getLeaveTypesFromSystem();
-    } catch (e) {
-      print('خطأ في _getLeaveTypesFromServer: $e');
-      throw e;
     }
   }
 
@@ -155,6 +131,46 @@ class LeaveService {
         requiresApproval: true,
       ),
     ];
+  }
+
+  // إضافة دالة للحصول على الرصيد المتاح لنوع إجازة معين
+  Future<Map<String, dynamic>> getLeaveTypeBalance(int employeeId, int leaveTypeId) async {
+    try {
+      if (_connectivityService.isOnline) {
+        final balanceData = await _odooService.getLeaveBalanceDetailed(employeeId);
+
+        if (balanceData.containsKey(leaveTypeId.toString())) {
+          return balanceData[leaveTypeId.toString()];
+        }
+      }
+
+      // حساب من البيانات المحلية
+      final requests = await getOfflineLeaveRequests(employeeId);
+      final approvedRequests = requests.where((r) =>
+      r.isApproved && r.leaveTypeId == leaveTypeId
+      ).toList();
+
+      final usedDays = approvedRequests.fold<double>(
+          0, (sum, r) => sum + r.numberOfDays
+      );
+
+      // افتراض 30 يوم كحد أقصى افتراضي
+      const defaultMaxDays = 30.0;
+
+      return {
+        'max_days': defaultMaxDays,
+        'used_days': usedDays,
+        'remaining_days': defaultMaxDays - usedDays,
+      };
+
+    } catch (e) {
+      print('خطأ في جلب رصيد نوع الإجازة: $e');
+      return {
+        'max_days': 0,
+        'used_days': 0,
+        'remaining_days': 0,
+      };
+    }
   }
 
   // إنشاء طلب إجازة جديد
@@ -674,7 +690,7 @@ class LeaveService {
     }
   }
 
-  // التحقق من توفر الإجازة
+  // تحديث التحقق من توفر الإجازة
   Future<Map<String, dynamic>> checkLeaveAvailability({
     required int employeeId,
     required int leaveTypeId,
@@ -690,6 +706,20 @@ class LeaveService {
         };
       }
 
+      // جلب الرصيد المتاح لنوع الإجازة
+      final balance = await getLeaveTypeBalance(employeeId, leaveTypeId);
+      final remainingDays = balance['remaining_days'] ?? 0;
+      final requestedDays = _calculateDays(startDate, endDate);
+
+      // التحقق من الرصيد
+      if (remainingDays < requestedDays) {
+        return {
+          'available': false,
+          'message': 'الرصيد المتاح ($remainingDays يوم) أقل من المطلوب ($requestedDays أيام)',
+          'remaining_days': remainingDays,
+        };
+      }
+
       // فحص التداخل مع طلبات موجودة
       final existingRequests = await getEmployeeLeaveRequests(employeeId);
       final newRequest = LeaveRequest(
@@ -699,7 +729,7 @@ class LeaveService {
         leaveTypeName: '',
         dateFrom: startDate,
         dateTo: endDate,
-        numberOfDays: _calculateDays(startDate, endDate),
+        numberOfDays: requestedDays,
         reason: '',
         state: 'draft',
         stateText: '',
@@ -717,21 +747,10 @@ class LeaveService {
         }
       }
 
-      // فحص الرصيد المتاح
-      final stats = await getLeaveStats(employeeId);
-      final requestedDays = _calculateDays(startDate, endDate);
-
-      if (stats.totalDaysRemaining < requestedDays) {
-        return {
-          'available': false,
-          'message': 'الرصيد المتاح (${stats.totalDaysRemaining.toStringAsFixed(1)} يوم) أقل من المطلوب ($requestedDays أيام)',
-        };
-      }
-
       return {
         'available': true,
         'message': 'الإجازة متاحة',
-        'remaining_days': stats.totalDaysRemaining,
+        'remaining_days': remainingDays,
       };
     } catch (e) {
       print('خطأ في التحقق من توفر الإجازة: $e');
@@ -1199,7 +1218,7 @@ class LeaveService {
     try {
       if (_connectivityService.isOnline) {
         // إعادة تحميل أنواع الإجازات
-        final types = await _getLeaveTypesFromServer();
+        final types = await _odooService.getLeaveTypesFromSystem();
         await _cacheLeaveTypes(types);
 
         // إعادة تحميل طلبات الإجازة
