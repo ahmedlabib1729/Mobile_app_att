@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_mobile,hr.employee.mobile,hr.model_hr_employee,base.group_user,1,0,0,0
+access_hr_attendance_mobile,hr.attendance.mobile,hr_attendance.model_hr_attendance,base.group_user,1,1,1,0
+access_hr_leave_mobile,hr.leave.mobile,hr_holidays.model_hr_leave,base.group_user,1,1,1,0
+access_hr_leave_type_mobile,hr.leave.type.mobile,hr_holidays.model_hr_leave_type,base.group_user,1,0,0,0
+access_hr_mobile_app_settings,hr.mobile.app.settings,model_hr_mobile_app_settings,hr.group_hr_manager,1,1,1,0
+
