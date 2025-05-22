@@ -1,4 +1,4 @@
-// lib/services/odoo_service.dart - إصدار كامل ومُصحح مع دعم الصور
+// lib/services/odoo_service.dart - إصدار كامل ومُصحح مع دعم الصور والإجازات
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -878,10 +878,10 @@ class OdooService {
     }
   }
 
-  // جلب أنواع الإجازات من خلال طلبات الإجازة المعتمدة
+  // جلب أنواع الإجازات من النظام مع الرصيد المتاح
   Future<List<LeaveType>> getLeaveTypesFromSystem() async {
     try {
-      print('جلب أنواع الإجازات من النظام...');
+      print('جلب أنواع الإجازات مع الرصيد المتاح...');
 
       // التأكد من وجود جلسة نشطة
       if (sessionId == null) {
@@ -891,10 +891,48 @@ class OdooService {
         }
       }
 
-      // محاولة جلب التخصيصات (allocations) للموظف
-      final url = '${baseUrl}web/dataset/call_kw';
-      final response = await http.post(
-        Uri.parse(url),
+      // التأكد من وجود employeeId
+      if (employeeId == null) {
+        throw Exception('لا يوجد معرف موظف');
+      }
+
+      // أولاً: جلب جميع أنواع الإجازات المتاحة في النظام
+      final typesUrl = '${baseUrl}web/dataset/call_kw';
+      final typesResponse = await http.post(
+        Uri.parse(typesUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'session_id=$sessionId',
+        },
+        body: jsonEncode({
+          'jsonrpc': '2.0',
+          'method': 'call',
+          'params': {
+            'model': 'hr.leave.type',
+            'method': 'search_read',
+            'args': [
+              [], // جلب جميع الأنواع
+              ['id', 'name', 'color', 'leave_validation_type', 'time_type', 'requires_allocation']
+            ],
+            'kwargs': {
+              'context': {},
+            },
+          },
+          'id': DateTime.now().millisecondsSinceEpoch
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      final typesResult = jsonDecode(typesResponse.body);
+      print('أنواع الإجازات: ${typesResult.toString().substring(0, 200)}...');
+
+      if (!typesResult.containsKey('result') || typesResult['result'] is! List) {
+        throw Exception('فشل في جلب أنواع الإجازات');
+      }
+
+      // ثانياً: جلب تخصيصات الموظف
+      final allocUrl = '${baseUrl}web/dataset/call_kw';
+      final allocResponse = await http.post(
+        Uri.parse(allocUrl),
         headers: {
           'Content-Type': 'application/json',
           'Cookie': 'session_id=$sessionId',
@@ -907,65 +945,133 @@ class OdooService {
             'method': 'search_read',
             'args': [
               [
-                ['employee_id', '=', employeeId ?? 1],
+                ['employee_id', '=', employeeId],
                 ['state', '=', 'validate']
               ],
               ['holiday_status_id', 'number_of_days', 'notes']
             ],
             'kwargs': {
-              'context': {'lang': 'ar_SA'},
+              'context': {},
             },
           },
           'id': DateTime.now().millisecondsSinceEpoch
         }),
       ).timeout(const Duration(seconds: 15));
 
-      final result = jsonDecode(response.body);
-      print('استجابة التخصيصات: ${result.toString().substring(0, 200)}...');
+      final allocResult = jsonDecode(allocResponse.body);
+      print('تخصيصات الموظف: ${allocResult.toString().substring(0, 200)}...');
 
-      if (result.containsKey('result') && result['result'] is List) {
-        Map<int, LeaveType> typesMap = {};
-        final colors = ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#00BCD4'];
-        int colorIndex = 0;
+      // ثالثاً: جلب الإجازات المستخدمة
+      final usedUrl = '${baseUrl}web/dataset/call_kw';
+      final usedResponse = await http.post(
+        Uri.parse(usedUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'session_id=$sessionId',
+        },
+        body: jsonEncode({
+          'jsonrpc': '2.0',
+          'method': 'call',
+          'params': {
+            'model': 'hr.leave',
+            'method': 'search_read',
+            'args': [
+              [
+                ['employee_id', '=', employeeId],
+                ['state', 'in', ['validate', 'validate1']] // الإجازات المعتمدة فقط
+              ],
+              ['holiday_status_id', 'number_of_days']
+            ],
+            'kwargs': {},
+          },
+          'id': DateTime.now().millisecondsSinceEpoch
+        }),
+      ).timeout(const Duration(seconds: 15));
 
-        for (var allocation in result['result']) {
-          if (allocation['holiday_status_id'] != false &&
-              allocation['holiday_status_id'] is List &&
-              allocation['holiday_status_id'].length >= 2) {
+      final usedResult = jsonDecode(usedResponse.body);
+      print('الإجازات المستخدمة: ${usedResult.toString().substring(0, 200)}...');
 
-            final typeId = allocation['holiday_status_id'][0];
-            final typeName = allocation['holiday_status_id'][1];
-            final maxDays = (allocation['number_of_days'] ?? 30).toInt();
+      // معالجة البيانات
+      Map<int, LeaveType> finalTypes = {};
+      Map<int, double> allocatedDays = {};
+      Map<int, double> usedDays = {};
 
-            if (!typesMap.containsKey(typeId)) {
-              typesMap[typeId] = LeaveType(
-                id: typeId,
-                name: typeName,
-                maxDays: maxDays,
-                color: colors[colorIndex % colors.length],
-                requiresApproval: true,
-                timeType: 'leave',
-                allocationType: 'fixed',
-              );
-              colorIndex++;
-            }
+      // معالجة أنواع الإجازات
+      if (typesResult['result'] is List) {
+        for (var type in typesResult['result']) {
+          if (type['id'] != null) {
+            finalTypes[type['id']] = LeaveType(
+              id: type['id'],
+              name: type['name'] ?? 'غير محدد',
+              maxDays: 0, // سيتم تحديثه من التخصيصات
+              color: type['color'] ?? '#2196F3',
+              requiresApproval: type['leave_validation_type'] ?? true,
+              timeType: type['time_type'] ?? 'leave',
+              allocationType: type['requires_allocation'] ?? 'no',
+            );
           }
         }
-
-        List<LeaveType> types = typesMap.values.toList();
-
-        // إذا لم نجد أي تخصيصات، نحاول من طلبات الإجازة
-        if (types.isEmpty) {
-          print('لا توجد تخصيصات، جلب من طلبات الإجازة...');
-          final requests = await getLeaveRequests(employeeId ?? 1);
-          types = await getLeaveTypesFromRequests(requests);
-        }
-
-        return types;
       }
 
-      // إذا فشلت، استخدم القيم الافتراضية
-      return _getDefaultLeaveTypes();
+      // معالجة التخصيصات
+      if (allocResult.containsKey('result') && allocResult['result'] is List) {
+        for (var alloc in allocResult['result']) {
+          if (alloc['holiday_status_id'] != false &&
+              alloc['holiday_status_id'] is List &&
+              alloc['holiday_status_id'].length >= 2) {
+            final typeId = alloc['holiday_status_id'][0];
+            final allocated = (alloc['number_of_days'] ?? 0).toDouble();
+            allocatedDays[typeId] = allocated;
+          }
+        }
+      }
+
+      // معالجة الإجازات المستخدمة
+      if (usedResult.containsKey('result') && usedResult['result'] is List) {
+        for (var leave in usedResult['result']) {
+          if (leave['holiday_status_id'] != false &&
+              leave['holiday_status_id'] is List &&
+              leave['holiday_status_id'].length >= 2) {
+            final typeId = leave['holiday_status_id'][0];
+            final days = (leave['number_of_days'] ?? 0).toDouble();
+            usedDays[typeId] = (usedDays[typeId] ?? 0) + days;
+          }
+        }
+      }
+
+      // دمج البيانات وإنشاء قائمة أنواع الإجازات النهائية
+      List<LeaveType> resultTypes = [];
+
+      // فقط أنواع الإجازات التي لها تخصيصات
+      allocatedDays.forEach((typeId, allocated) {
+        LeaveType? baseType = finalTypes[typeId];
+        final used = usedDays[typeId] ?? 0;
+        final remaining = allocated - used;
+
+        if (baseType != null && remaining > 0) {
+          // إضافة معلومات الرصيد إلى الاسم
+          resultTypes.add(LeaveType(
+            id: baseType.id,
+            name: '${baseType.name} (متاح: ${remaining.toStringAsFixed(1)} يوم)',
+            maxDays: remaining.toInt(),
+            color: baseType.color,
+            requiresApproval: baseType.requiresApproval,
+            timeType: baseType.timeType,
+            allocationType: baseType.allocationType,
+            description: 'مخصص: ${allocated.toStringAsFixed(1)} - مستخدم: ${used.toStringAsFixed(1)}',
+          ));
+        }
+      });
+
+      // إذا لم نجد أي أنواع، نرجع القيم الافتراضية
+      if (resultTypes.isEmpty) {
+        print('لا توجد أنواع إجازات متاحة، استخدام القيم الافتراضية');
+        return _getDefaultLeaveTypes();
+      }
+
+      print('تم جلب ${resultTypes.length} نوع إجازة بنجاح');
+      return resultTypes;
+
     } catch (e) {
       print('خطأ في getLeaveTypesFromSystem: $e');
       return _getDefaultLeaveTypes();
@@ -975,33 +1081,7 @@ class OdooService {
   // قائمة أنواع الإجازات الافتراضية
   List<LeaveType> _getDefaultLeaveTypes() {
     return [
-      LeaveType(
-        id: 1,
-        name: 'إجازة سنوية',
-        maxDays: 30,
-        color: '#4CAF50',
-        requiresApproval: true,
-        timeType: 'leave',
-        allocationType: 'no',
-      ),
-      LeaveType(
-        id: 2,
-        name: 'إجازة مرضية',
-        maxDays: 15,
-        color: '#F44336',
-        requiresApproval: true,
-        timeType: 'leave',
-        allocationType: 'no',
-      ),
-      LeaveType(
-        id: 3,
-        name: 'إجازة طارئة',
-        maxDays: 5,
-        color: '#FF9800',
-        requiresApproval: true,
-        timeType: 'leave',
-        allocationType: 'no',
-      ),
+
     ];
   }
 
@@ -1542,6 +1622,8 @@ class OdooService {
       return {};
     }
   }
+
+  // جلب رصيد الإجازات
   Future<Map<String, dynamic>> getLeaveBalance(int employeeId) async {
     try {
       print('جلب رصيد الإجازات للموظف: $employeeId');
@@ -1644,6 +1726,8 @@ class OdooService {
       return {};
     }
   }
+
+  // جلب أنواع الإجازات من الطلبات
   Future<List<LeaveType>> getLeaveTypesFromRequests(List<LeaveRequest> requests) async {
     try {
       Map<int, LeaveType> typesMap = {};
@@ -1678,6 +1762,8 @@ class OdooService {
       return _getDefaultLeaveTypes();
     }
   }
+
+  // دوال مساعدة لتحويل حالات الإجازة
   String _getStateText(String state) {
     switch (state) {
       case 'draft': return 'مسودة';
