@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="so_customer_statement_form" model="ir.ui.view">
+        <field name="name">sale.order.statement.wizard</field>
+        <field name="model">sale.order.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div>
+                    <!-- INVISIBLE FIELDS -->
+                    <field name="partner_ids" invisible="1"></field>
+                    <group>
+                        <field name="report_period"/>
+                        <field name="filter_by"/>  <!-- حقل جديد -->
+                        <field name="date_from" invisible="report_period != 'custom'" required="report_period == 'custom'"/>
+                        <field name="date_to" invisible="report_period != 'custom'" required="report_period == 'custom'"/>
+                        <field name="other_invoices" widget="boolean_toggle"/>
+                        <field name="unreconciled_payments" widget="boolean_toggle"/>
+                    </group>
+                </div>
+                <footer>
+                    <button string="Generate Report"
+                            data-hotkey="q"
+                            name="action_download_so_statement_report"
+                            type="object"
+                            class="print btn-primary">
+                    </button>
+                    <button string="Cancel"
+                            data-hotkey="x"
+                            special="cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

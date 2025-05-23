@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.actions.server" id="action_open_customer_statement_sale_orders_wizard">
+        <field name="name">Sales Statements</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="groups_id" eval="[(4, ref('customer_statement_sale_orders.group_sale_statement_report'))]"/>
+        <field name="binding_model_id" ref="base.model_res_partner" />
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    action = records.action_generate_so_invoice_report()
+        </field>
+    </record>
+
+</odoo>

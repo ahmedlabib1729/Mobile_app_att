@@ -1,0 +1,298 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* customer_statement_sale_orders
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-24 07:58+0000\n"
+"PO-Revision-Date: 2024-10-24 07:58+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Account Number"
+msgstr "رقم الحساب"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields.selection,name:customer_statement_sale_orders.selection__sale_order_statement_wizard__report_period__all
+msgid "All Time"
+msgstr "كل الوقت"
+
+#. module: customer_statement_sale_orders
+#: model:res.groups,name:customer_statement_sale_orders.group_sale_statement_report
+msgid "Allow to print sale orders statements"
+msgstr "السماح بطباعة كشوفات أوامر البيع  "
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Amount"
+msgstr "المبلغ"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Amount Due"
+msgstr "المبلغ المستحق"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Amount Paid"
+msgstr "المبلغ المدفوع"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Balance Due"
+msgstr "الرصيد المستحق"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Balance not Due"
+msgstr "الرصيد غير المستحق"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Bank Accounts"
+msgstr "الحسابات البنكية"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Bank Name"
+msgstr "اسم البنك"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.so_customer_statement_form
+msgid "Cancel"
+msgstr "إلغاء "
+
+#. module: customer_statement_sale_orders
+#: model:ir.model,name:customer_statement_sale_orders.model_res_partner
+msgid "Contact"
+msgstr "جهة الاتصال"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields.selection,name:customer_statement_sale_orders.selection__sale_order_statement_wizard__report_period__custom
+msgid "Custom"
+msgstr "مُخصص"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Customer:"
+msgstr "العميل:"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__date_from
+msgid "From Date"
+msgstr "من تاريخ"
+
+#. module: customer_statement_sale_orders
+#. odoo-python
+#: code:addons/customer_statement_sale_orders/wizard/sale_customer_statement_wizard.py:0
+#, python-format
+msgid "From date must be before to date"
+msgstr "يجب أن يون تاريخ البداية قبل تاريخ النهاية"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.so_customer_statement_form
+msgid "Generate Report"
+msgstr "إنشاء التقرير"
+
+#. module: customer_statement_sale_orders
+#. odoo-python
+#: code:addons/customer_statement_sale_orders/models/res_partner.py:0
+#, python-format
+msgid "Generate SO Statement Report"
+msgstr "إنشاء تقرير كشف المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Invoice -"
+msgstr "فاتورة -"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Invoiced"
+msgstr "مفوتر"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields.selection,name:customer_statement_sale_orders.selection__sale_order_statement_wizard__report_period__last_six_months
+msgid "Last Six Months"
+msgstr "آخر ستة أشهر"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields.selection,name:customer_statement_sale_orders.selection__sale_order_statement_wizard__report_period__last_year
+msgid "Last Year"
+msgstr "العام الماضي"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Number"
+msgstr "الرقم"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__other_invoices
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Other Invoices"
+msgstr "فواتير أخرى"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Paid"
+msgstr "مدفوع"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__partner_ids
+msgid "Partner"
+msgstr "الشريك"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Payment -"
+msgstr "دفعة -"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Remaining"
+msgstr "المتبقي"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__report_period
+msgid "Report Period"
+msgstr "فترة التقرير"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model,name:customer_statement_sale_orders.model_report_customer_statement_sale_orders_action_statement
+msgid "SO Customer Statement"
+msgstr "كشف المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model:ir.actions.report,name:customer_statement_sale_orders.action_so_customer_statement
+msgid "SO Customer Statements"
+msgstr "كشوفات المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model,name:customer_statement_sale_orders.model_sale_order_statement_wizard
+msgid "SO customer statement wizard"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Sale Amounts"
+msgstr "مبالغ المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Sale Orders"
+msgstr "المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model:ir.actions.server,name:customer_statement_sale_orders.action_open_customer_statement_sale_orders_wizard
+msgid "Sales Customer Statement"
+msgstr "كشف المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Sales Customer Statements"
+msgstr "كشوفات المبيعات"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model,name:customer_statement_sale_orders.model_sale_order
+msgid "Sales Order"
+msgstr "أمر البيع"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Tax Value"
+msgstr "قيمة الضريبة"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields.selection,name:customer_statement_sale_orders.selection__sale_order_statement_wizard__report_period__this_fin_year
+msgid "This Financial Year"
+msgstr "السنة المالية الجارية"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__date_to
+msgid "To Date"
+msgstr "إلى تاريخ"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Total"
+msgstr "الإجمالي"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Total Amount"
+msgstr "المبلغ الإجمالي"
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Total Balance"
+msgstr "الرصيد الإجمالي"
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_res_partner__unreconciled_line_ids
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_res_users__unreconciled_line_ids
+msgid "Unreconciled Line"
+msgstr ""
+
+#. module: customer_statement_sale_orders
+#: model:ir.model.fields,field_description:customer_statement_sale_orders.field_sale_order_statement_wizard__unreconciled_payments
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Unreconciled Payments"
+msgstr "الدفعات غير المسواة "
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "Untaxed Amount"
+msgstr "المبلغ دون الضريبة "
+
+#. module: customer_statement_sale_orders
+#: model_terms:ir.ui.view,arch_db:customer_statement_sale_orders.jt_report_saleorder_statement_document
+msgid "to"
+msgstr "إلى"

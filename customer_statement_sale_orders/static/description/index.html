@@ -1,0 +1,166 @@
+
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+</head>
+<body>
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+
+        <section class="oe_container">
+            <div class="col-md-12">
+                <h2 class="oe_slogan" style="font-size: 35px;color:#d39200;text-align:center;"><b>Customer Statement Based On Sale Orders</b></h2>
+                <div class="oe_container" style="text-align:center;">
+                    <table style="margin-left: auto;margin-right: auto;width: 50%;font-size: 26px;">
+                        <tr>
+                          <td style="border-right: 1px solid #d39200;color: #232323;"><b>Community</b></td>
+                          <td style="border-right: 1px solid #d39200;color: #232323;"><b>Enterprise</b></td>
+                          <td style="color: #232323;"><b>Odoo.sh</b></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <p class="mb-2 mb-lg-0" style="font-size: 22px;">This module helps to generate and print a PDF report for sales statements of customers.
+                </p>
+            </div>
+        </section>
+
+        <section class="oe_container oe_dark">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <h5 class="oe_slogan" style="color:#d39200;font-size: 28px;text-decoration: underline;">Features</h5>
+                    
+                    <ol style="font-size: 18px;">
+                        <li>Generate reports between any date range.</li>
+                        <li>Generate reports for this year, last 6 months or last year.</li>
+                        <li>Select multi customers to print sales statements for them.</li>
+                        <li>Containing all customer sales with invoices details and payments.</li>
+                        <li>Filter to print out other invoices(not related to any sale order) or unreconciled payment(not related to any invoice).</li>
+                        <li>The report can be generated in English or Arabic.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+        <hr style="width: 100%;height: 2px;background: #d39200;">
+
+        <section class="oe_container">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <h5 class="oe_slogan" style="color:#d39200;font-size: 28px;text-decoration: underline;">Requirements</h5>
+                    <ul style="font-size: 18px;">
+                        <li>Enable "Allow to print sale order statement" in user access rights.</li>
+                    </ul>
+                    <div class="oe_demo oe_picture oe_screenshot">
+                        <img src="users.png">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr style="width: 100%;height: 2px;background: #d39200;">
+        <section class="oe_container oe_dark" style="margin-top:150px">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <ol style="font-size: 18px;">
+                        <li>Go to customers → choose customer and click on 'Action' → 'Sales Statement'.</li>
+                    </ol>
+                    <div class="oe_demo oe_picture oe_screenshot">
+                        <img src="customer.png">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="oe_container">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <ol style="font-size: 18px;" start="2">
+                        <li>Select report period:
+                            <ul>
+                                <li>All time: prints all sales data on any date</li>
+                                <li>This financial year</li>
+                                <li>Last 6 months</li>
+                                <li>Last year</li>
+                                <li>Custom: select from, to date.</li>
+                            </ul>
+                        </li>
+                        <li>Click on 'Generate Report'</li>
+                    </ol>
+                    <div class="oe_demo oe_picture oe_screenshot">
+                        <img src="report_date.png">
+                    </div>
+                    <div class="oe_demo oe_picture oe_screenshot">
+                        <img src="generate.png">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="oe_container">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <h5 class="oe_slogan" style="color:#d39200;font-size: 28px;text-decoration: underline;">Report Details</h5>
+                    <ol style="font-size: 18px;">
+                        <li>Bank Accounts: company bank accounts</li>
+                        <li>Sale Amounts
+                            <ul>
+                                <li>Total amount: total amount of sales</li>
+                                <li>Amount paid: total amount paid out of sales</li>
+                                <li>Balance due: invoiced amount not paid</li>
+                                <li>Balance not due: not yet invoiced</li>
+                                <li>Total Balance: outstanding sales amount(Total amount - Paid)</li>
+                            </ul>
+                        </li>
+                        <li>Sale orders
+                            <ul>
+                                <li>Sale order</li>
+                                <li>Any invoice related to this sale order</li>
+                                <li>Any payment related to this sale order</li>
+                            </ul>
+                        </li>
+                        <li>Other invoices: any invoice belonging to the customer and not related to a sale order</li>
+                        <li>Unreconciled Payments: any payment belonging to the customer and not related to a invoice</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+        
+        <section class="oe_container oe_dark">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <h5 class="oe_slogan" style="color:#d39200;font-size: 28px;text-align:center;">PDF-English</h5>
+                    <div class="oe_demo oe_screenshot">
+                        <img src="statement.jpg">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="oe_container oe_dark">
+            <div class="oe_row oe_spaced">
+                <div class="oe_span12">
+                    <h5 class="oe_slogan" style="color:#d39200;font-size: 28px;text-align:center;">PDF-Arabic</h5>
+                    <div class="oe_demo oe_screenshot">
+                        <img src="statement_ar.jpg">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr style="width: 100%;height: 2px;background: #d39200;margin: 0px 0px;margin-top:200px">
+        <section class="oe_container oe_dark">
+            <div class="oe_row">
+                <div class="oe_slogan">
+                    <div style="color:#232323;text-align:center">
+                        <h3 style="color:#232323;font-size: 20px">For more features or help, Please Contact us:</h3><br>
+                        <img src="logo.png" style="height: 90px;width: 90px;"/>
+                        <h3 style="color:#232323;font-size: 18px">Email: <a href="justtryforinfo@gmail.com">justtryforinfo@gmail.com</a> <br></h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

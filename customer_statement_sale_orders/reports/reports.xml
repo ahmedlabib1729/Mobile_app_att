@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_so_customer_statement" model="ir.actions.report">
+        <field name="name">SO Customer Statements</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">customer_statement_sale_orders.action_statement</field>
+        <field name="report_file">customer_statement_sale_orders.action_statement</field>
+        <field name="binding_model_id"/>
+        <field name="binding_type">report</field>
+     </record>
+
+</odoo>

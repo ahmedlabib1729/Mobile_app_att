@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="action_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="customer_statement_sale_orders.jt_report_saleorder_statement_document" t-lang="doc.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="jt_report_saleorder_statement_document">
+        <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-set="doc" t-value="doc.with_context(lang=doc.lang)"/>
+                    <t t-set="currency" t-value="company.currency_id"/>
+                    <t t-set="vat_label" t-value="company.with_context(lang=doc.lang).country_id.vat_label or ''"/>
+                    <div class="page">
+                        <t t-set="sale_amounts" t-value="request.env['sale.order'].calc_so_statement_amounts(doc_value, company.currency_id)"/>
+                        <div class="oe_structure container">
+                            <div class="row">
+                                <div class="col-8">
+                                    <h2>Sales Customer Statements</h2>
+                                </div>
+                                <div class="col-4">
+                                    <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <style>
+                                    .sale{background-color: #e0d5cc;}
+                                    .entry{color:black;border-left:none;border-right:none;}
+                                    .total{color:white;border-left:none;border-right:none;background-color: black;}
+                                    .th-normal{font-weight: normal;}
+                                    .no-border{border-left:none;border-right:none;}
+                                    .table-caption{font-size: 15px;font-weight: bold;color:black;}
+                                </style>
+                   
+                                <div class="col-6" style="font-size: 15px;padding-top:30px;">
+                                    <p>
+                                        Customer: <span t-field="doc.name"/>
+                                        <tr/>
+                                        <t t-if="doc.vat">
+                                            <t t-esc="vat_label"/>: <span t-field="doc.vat"/>
+                                        </t>
+                                    </p>
+                                    <div t-if="dates">
+                                        <strong t-esc="dates[0].strftime('%d/%m/%Y')"/> to <strong t-esc="dates[1].strftime('%d/%m/%Y')"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <table t-if="company.partner_id.bank_ids" class="table table-sm caption-top" style="font-size: 12px;">
+                                        <caption class="table-caption">Bank Accounts</caption>
+                                        <thead>
+                                            <th class="text-center th-normal">Bank Name</th>
+                                            <th class="text-center th-normal">Account Number</th>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="company.partner_id.bank_ids" t-as="bank">
+                                                <tr style="padding-top: 12px; padding-bottom: 12px;">
+                                                    <td class="text-center"><t t-esc="bank.bank_id.name"/></td>
+                                                    <td class="text-center"><t t-esc="bank.acc_number"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container" style="margin-top:32px; font-size:12px;">
+                            <div class="row">
+                                <div class="col-9">
+                                    <table t-if="doc_value" class="table table-sm caption-top">
+                                        
+                                        <caption class="table-caption">Sale Amounts</caption>
+                                            <thead>
+                                                <th class="text-center th-normal">Total Amount</th>
+                                                <th class="text-center th-normal">Amount Paid</th>
+                                                <th class="text-center th-normal">Balance Due</th>
+                                                <th class="text-center th-normal">Balance not Due</th>
+                                                <th class="text-center th-normal">Total Balance</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr style="padding-top: 12px; padding-bottom: 12px;">
+                                                    <td class="text-center"><span t-esc="sale_amounts['sales_total_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center"><span t-esc="sale_amounts['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center"><span t-esc="sale_amounts['remaining']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center"><span t-esc="sale_amounts['sales_total_amount'] - sale_amounts['total_invoiced_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center"><span t-esc="sale_amounts['sales_total_amount'] - sale_amounts['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container" style="margin-top:32px; font-size:12px;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <table t-if="doc_value" class="table caption-top">
+                                        <caption class="table-caption">Sale Orders</caption>
+                                        <thead>
+                                            <th class="text-center th-normal">Date</th>
+                                            <th class="text-center th-normal">Number</th>
+                                            <th class="text-center th-normal">Untaxed Amount</th>
+                                            <th class="text-center th-normal">Tax Value</th>
+                                            <th class="text-center th-normal">Total</th>
+                                            <th class="text-center th-normal">Invoiced</th>
+                                            <th class="text-center th-normal">Paid</th>
+                                            <th class="text-center th-normal">Remaining</th>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="doc_value" t-as="sale">
+                                                <tr t-if="sale.currency_id == company.currency_id" style="padding-top: 12px; padding-bottom: 12px; font-weight: bold;">
+                                                    <t t-set="sale_amount" t-value="sale.calc_so_statement_amounts(sale, company.currency_id)"/>
+                                                    <td class="text-center sale"><span t-field="sale.date_order" t-options='{"widget": "date"}'/></td>
+                                                    <td class="text-center sale"><span t-field="sale.name"/></td>
+                                                    <td class="text-center sale"><span t-field="sale.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><span t-field="sale.amount_tax" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><span t-field="sale.amount_total" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><t t-esc="sale_amount['total_invoiced_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><t t-esc="sale_amount['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><t t-esc="sale.amount_total - sale_amount['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                </tr>
+                                                <tr t-else="" style="padding-top: 12px; padding-bottom: 12px; font-weight: bold;">
+                                                    <t t-set="sale_amount" t-value="sale.calc_so_statement_amounts(sale, company.currency_id)"/>
+                                                    <td class="text-center sale"><span t-field="sale.date_order" t-options='{"widget": "date"}'/></td>
+                                                    <td class="text-center sale"><span t-field="sale.name"/></td>
+                                                    <td class="text-center sale"><span t-esc="sale.convert_currency(sale.amount_untaxed)" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><span t-esc="sale.convert_currency(sale.amount_tax)" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><span t-esc="sale.convert_currency(sale.amount_total)" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><t t-esc="sale_amount['total_invoiced_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><t t-esc="sale_amount['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    <td class="text-center sale"><t t-esc="sale.convert_currency(sale.amount_total) - sale_amount['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                </tr>
+                                                <!-- تعديل جزء عرض الفواتير داخل أوامر البيع -->
+                                               <t t-foreach="sale.invoice_ids.filtered(lambda l: l.state not in ('cancel', 'draft'))" t-as="entry">
+                                                    <!-- أضف هذا الشرط للتحقق من تاريخ الفاتورة إذا كانت التصفية بواسطة الفاتورة -->
+                                                    <t t-if="filter_by != 'invoice' or not filtered_invoices[doc.id] or entry.id in filtered_invoices[doc.id]">
+                                                        <tr>
+                                                            <td class="text-center entry"><span t-field="entry.date" t-options='{"widget": "date"}'/></td>
+                                                            <td class="entry" colspan="4">Invoice - <span t-field="entry.name"/></td>
+                                                            <td class="entry text-center"><span t-field="entry.amount_total_signed" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                            <td class="entry" colspan="2"/>
+                                                        </tr>
+                                                        <t t-foreach="sale.get_entry_payments(entry)" t-as="payment">
+                                                            <tr>
+                                                                <td class="text-center entry"><span t-esc="payment['date']" t-options='{"widget": "date"}'/></td>
+                                                                <td class="entry" colspan="5">Payment - <span t-esc="payment['ref'].split()[0]"/></td>
+                                                                <td class="entry text-center">
+                                                                    <span t-if="entry.move_type=='out_refund'" t-esc="- sale.convert_currency(payment['amount'])" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                                                    <span t-else="" t-esc="sale.convert_currency(payment['amount'])" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                                                </td>
+                                                                <td class="entry"/>
+                                                            </tr>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                            <!-- Display total amounts -->
+                                            <tr style="padding-top: 12px; padding-bottom: 12px;">
+                                                <td class="total" colspan="4"></td>
+                                                <td class="text-center total"><span t-esc="sale_amounts['sales_total_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                <td class="text-center total"><span t-esc="sale_amounts['invoice_paid_amount'] + sale_amounts['remaining']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                <td class="text-center total"><span t-esc="sale_amounts['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                <td class="text-center total"><span t-esc="sale_amounts['sales_total_amount'] - sale_amounts['invoice_paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <t t-if="dates">
+                            <t t-if="data['unreconciled_payments']" t-set="unreconciled_payments" t-value="doc.get_unreconciled_payments(dates)"/>
+                            <t t-if="data['other_invoices']" t-set="invoices_not_sale" t-value="doc.get_invoices_not_sale(dates)"/>
+                        </t>
+                        <t t-else="">
+                            <t t-if="data['unreconciled_payments']" t-set="unreconciled_payments" t-value="doc.get_unreconciled_payments()"/>
+                            <t t-if="data['other_invoices']" t-set="invoices_not_sale" t-value="doc.get_invoices_not_sale()"/>
+                        </t>
+                        
+                        <t t-if="data['other_invoices']">
+                            <div class="container" style="margin-top:32px; font-size:12px;">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table t-if="invoices_not_sale" class="table caption-top">
+                                            <caption class="table-caption">Other Invoices</caption>
+                                            <thead>
+                                                <th class="text-center th-normal">Date</th>
+                                                <th class="text-center th-normal">Number</th>
+                                                <th class="text-center th-normal">Amount Due</th>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="invoices_not_sale" t-as="invoice">
+                                                    <tr style="padding-top: 12px; padding-bottom: 12px;">
+                                                        <td class="text-center"><span t-esc="invoice.date" t-options='{"widget": "date"}'/></td>
+                                                        <td class="text-center"><span t-esc="invoice.name"/></td>
+                                                        <td class="text-center"><span t-esc="invoice.amount_residual_signed" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    </tr> 
+                                                </t>
+                                                <tr>
+                                                    <td colspan="2" class="total"/>
+                                                    <td class="text-center total">
+                                                        <span t-esc="sum(invoices_not_sale.mapped('amount_residual_signed'))" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <t t-if="data['unreconciled_payments']">
+                            <div class="container" style="margin-top:32px; font-size:12px;">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table t-if="unreconciled_payments" class="table caption-top">
+                                            <caption class="table-caption">Unreconciled Payments</caption>
+                                            <thead>
+                                                <th class="text-center th-normal">Date</th>
+                                                <th class="text-center th-normal">Number</th>
+                                                <th class="text-center th-normal">Amount</th>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="unreconciled_payments" t-as="unreconciled_payment">
+                                                    <tr style="padding-top: 12px; padding-bottom: 12px;">
+                                                        <td class="text-center"><span t-esc="unreconciled_payment.date" t-options='{"widget": "date"}'/></td>
+                                                        <td class="text-center"><span t-esc="unreconciled_payment.move_name"/></td>
+                                                        <td class="text-center"><span t-esc="- unreconciled_payment.amount_residual" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                    </tr> 
+                                                </t>
+                                                <tr>
+                                                    <td colspan="2" class="total"/>
+                                                    <td class="text-center total">
+                                                        <span t-esc="- sum(unreconciled_payments.mapped('amount_residual'))" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        
+                    </div>
+                </t>
+        </t>
+     </template>
+
+</odoo>
