@@ -1,0 +1,47 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_citizen_commission_config_tree" model="ir.ui.view">
+        <field name="name">citizen.commission.config.tree</field>
+        <field name="model">citizen.commission.config</field>
+        <field name="arch" type="xml">
+            <tree string="Citizen Commission Configuration">
+                <field name="required_quantity"/>
+                <field name="commission_per_unit"/>
+                <field name="user_id"/>
+                <field name="create_date"/>
+                <field name="write_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_citizen_commission_config_form" model="ir.ui.view">
+        <field name="name">citizen.commission.config.form</field>
+        <field name="model">citizen.commission.config</field>
+        <field name="arch" type="xml">
+            <form string="Citizen Commission Configuration">
+                <sheet>
+                    <group>
+                        <field name="required_quantity"/>
+                        <field name="commission_per_unit"/>
+                        <field name="user_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_citizen_commission_config" model="ir.actions.act_window">
+        <field name="name">Citizen Commission Configuration</field>
+        <field name="res_model">citizen.commission.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">current</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_citizen_commission_config" name="Citizen Commission Configuration"
+              parent="menu_employee_commission_root"
+              action="action_citizen_commission_config"/>
+</odoo>

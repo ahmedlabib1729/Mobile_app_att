@@ -1,0 +1,71 @@
+<odoo>
+    <record id="view_employee_form_commission" model="ir.ui.view">
+        <field name="name">hr.employee.form.commission</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Commissions" name="commissions">
+                    <group>
+                        <field name="is_citizen" readonly="1"/>
+                        <field name="target_amount" readonly="1" attrs="{'invisible': [('is_citizen', '=', True)]}"/>
+                    </group>
+                    <group string="Citizen Commission Lines" attrs="{'invisible': [('is_citizen', '=', False)]}" col="1" colspan="4">
+                        <field name="citizen_commission_ids" nolabel="1" readonly="1" height="300" options="{'reload_on_button': true}">
+                            <tree editable="bottom" decoration-info="commission_amount > 0">
+                                <field name="invoice_id"/>
+                                <field name="invoice_date"/>
+                                <field name="commission_amount" sum="Total"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group string="Non-Citizen Commission Lines" attrs="{'invisible': [('is_citizen', '=', True)]}" col="1" colspan="4">
+                        <field name="non_citizen_commission_ids" nolabel="1" readonly="1" height="300" options="{'reload_on_button': true}">
+                            <tree editable="bottom" decoration-info="commission_amount > 0">
+                                <field name="invoice_id"/>
+                                <field name="invoice_date"/>
+                                <field name="commission_amount" sum="Total"/>
+                                <field name="additional_commission" sum="Total"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- Vista de acción para comisiones de ciudadanos -->
+    <record id="action_citizen_commission_view" model="ir.actions.act_window">
+        <field name="name">Citizen Commissions</field>
+        <field name="res_model">invoice.commission.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('employee_id', '=', active_id)]</field>
+        <field name="context">{'group_by': 'invoice_date:month'}</field>
+    </record>
+
+    <!-- Vista de acción para comisiones de no ciudadanos -->
+    <record id="action_non_citizen_commission_view" model="ir.actions.act_window">
+        <field name="name">Non-Citizen Commissions</field>
+        <field name="res_model">non.citizen.commission.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('employee_id', '=', active_id)]</field>
+        <field name="context">{'group_by': 'invoice_date:month'}</field>
+    </record>
+
+    <!-- Agregar botones en la página de comisiones para ver por mes -->
+    <record id="view_employee_commission_buttons" model="ir.ui.view">
+        <field name="name">hr.employee.commission.buttons</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="view_employee_form_commission"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='commissions']/group[1]" position="after">
+                <div attrs="{'invisible': [('is_citizen', '=', False)]}">
+                    <button name="%(action_citizen_commission_view)d" type="action" string="Comm per Month" class="oe_highlight"/>
+                </div>
+                <div attrs="{'invisible': [('is_citizen', '=', True)]}">
+                    <button name="%(action_non_citizen_commission_view)d" type="action" string="Comm per Month" class="oe_highlight"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
