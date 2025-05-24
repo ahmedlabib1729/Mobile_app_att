@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- نسخة آمنة مبسطة - إضافة الحقول فقط بدون تعديل على الـ UI -->
+
+    <!-- إضافة الحقول الجديدة للـ hr.leave form بشكل مخفي -->
+    <record id="hr_leave_mobile_fields_only" model="ir.ui.view">
+        <field name="name">hr.leave.mobile.fields.only</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+        <field name="arch" type="xml">
+            <!-- إضافة الحقول بشكل مخفي لضمان عملها في الـ API -->
+            <field name="name" position="after">
+                <field name="mobile_created" invisible="1"/>
+                <field name="mobile_request_date" invisible="1"/>
+                <field name="mobile_location" invisible="1"/>
+                <field name="rejection_reason" invisible="1"/>
+                <field name="approval_notes" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- إضافة الحقول الجديدة للـ hr.leave.type form -->
+    <record id="hr_leave_type_mobile_fields_only" model="ir.ui.view">
+        <field name="name">hr.leave.type.mobile.fields.only</field>
+        <field name="model">hr.leave.type</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_type_view_form"/>
+        <field name="arch" type="xml">
+            <!-- إضافة الحقول بشكل مخفي -->
+            <field name="name" position="after">
+                <field name="mobile_visible" invisible="1"/>
+                <field name="mobile_icon" invisible="1"/>
+                <field name="max_days_mobile" invisible="1"/>
+                <field name="mobile_description" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- إضافة فلتر للبحث -->
+    <record id="hr_leave_search_mobile_filter" model="ir.ui.view">
+        <field name="name">hr.leave.search.mobile.filter</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_search"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <filter string="طلبات التطبيق المحمول" name="mobile_requests"
+                        domain="[('mobile_created', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- إجراء لعرض طلبات الإجازة من التطبيق المحمول -->
+    <record id="action_hr_leave_mobile_requests" model="ir.actions.act_window">
+        <field name="name">طلبات الإجازة من التطبيق المحمول</field>
+        <field name="res_model">hr.leave</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('mobile_created', '=', True)]</field>
+        <field name="context">{
+            'default_mobile_created': True,
+            'search_default_mobile_requests': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                لا توجد طلبات إجازة من التطبيق المحمول
+            </p>
+            <p>
+                ستظهر هنا طلبات الإجازة التي تم إنشاؤها من التطبيق المحمول.
+            </p>
+        </field>
+    </record>
+
+    <!-- إضافة عنصر قائمة -->
+    <menuitem id="menu_hr_leave_mobile_requests"
+              name="طلبات الإجازة المحمولة"
+              parent="hr_holidays.menu_hr_holidays_root"
+              action="action_hr_leave_mobile_requests"
+              sequence="20"
+              groups="hr_holidays.group_hr_holidays_user"/>
+
+</odoo>

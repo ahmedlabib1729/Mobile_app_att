@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- نموذج عرض القائمة (Tree View) -->
+    <record id="hr_announcement_view_tree" model="ir.ui.view">
+        <field name="name">hr.announcement.tree</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <list string="الإعلانات" sample="1">
+                <field name="is_pinned" widget="boolean_toggle" optional="show"/>
+                <field name="name" class="fw-bold"/>
+                <field name="announcement_type" widget="badge"/>
+                <field name="priority" widget="priority" optional="show"/>
+                <field name="author_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="start_date" widget="date" optional="show"/>
+                <field name="end_date" widget="date" optional="hide"/>
+                <field name="read_count" optional="show"/>
+                <field name="read_percentage" widget="percentage" optional="show"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- نموذج عرض النموذج (Form View) -->
+    <record id="hr_announcement_view_form" model="ir.ui.view">
+        <field name="name">hr.announcement.form</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <form string="إعلان">
+                <header>
+                    <button name="action_publish" string="نشر" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_draft" string="تحويل لمسودة" type="object"
+                            invisible="state not in ['published', 'scheduled']"
+                            groups="hr.group_hr_manager"/>
+                    <button name="action_archive" string="أرشفة" type="object"
+                            invisible="state == 'archived'" confirm="هل أنت متأكد من أرشفة هذا الإعلان؟"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,published,expired,archived"/>
+                </header>
+                <sheet>
+                    <!-- شريط الإحصائيات -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="get_announcement_preview" icon="fa-eye">
+                            <field name="read_count" string="القراءات" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="get_announcement_preview" icon="fa-users">
+                            <field name="target_employee_count" string="المستهدفون" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="get_announcement_preview" icon="fa-percentage">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="read_percentage" widget="percentage"/></span>
+                                <span class="o_stat_text">نسبة القراءة</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- العنوان والأولوية -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="عنوان الإعلان..." class="o_input"/>
+                        </h1>
+                        <field name="priority" widget="priority" class="mt-2"/>
+                    </div>
+
+                    <group>
+                        <group string="معلومات أساسية">
+                            <field name="announcement_type" widget="radio"/>
+                            <field name="is_pinned" widget="boolean_toggle"/>
+                            <field name="show_in_mobile" widget="boolean_toggle"/>
+                            <field name="author_id" readonly="1"/>
+                        </group>
+                        <group string="التوقيت">
+                            <field name="start_date" widget="datetime"/>
+                            <field name="end_date" widget="datetime"/>
+                            <field name="is_expired" invisible="1"/>
+                            <div invisible="not is_expired" class="alert alert-warning" role="alert">
+                                <i class="fa fa-exclamation-triangle"/> هذا الإعلان منتهي الصلاحية
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- الاستهداف -->
+                    <group string="الاستهداف" name="targeting">
+                        <field name="department_ids" widget="many2many_tags"
+                               invisible="announcement_type not in ['department']"
+                               required="announcement_type == 'department'"
+                               placeholder="اختر الأقسام..."/>
+                        <field name="job_ids" widget="many2many_tags"
+                               invisible="announcement_type != 'job'"
+                               required="announcement_type == 'job'"
+                               placeholder="اختر الوظائف..."/>
+                        <field name="employee_ids" widget="many2many_tags"
+                               invisible="announcement_type != 'personal'"
+                               required="announcement_type == 'personal'"
+                               placeholder="اختر الموظفين..."/>
+                    </group>
+
+                    <!-- المحتوى -->
+                    <notebook>
+                        <page string="المحتوى" name="content">
+                            <field name="summary" placeholder="ملخص قصير للإعلان (اختياري)..."/>
+                            <separator string="محتوى الإعلان"/>
+                            <field name="content" widget="html"
+                                   placeholder="اكتب محتوى الإعلان هنا..."
+                                   options="{'collaborative': true, 'resizable': true}"/>
+                        </page>
+                        <page string="المرفقات" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                        <page string="الموظفون الذين قرأوا" name="readers" invisible="read_count == 0">
+                            <field name="read_employee_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="department_id"/>
+                                    <field name="job_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- Chatter -->
+               <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- نموذج البحث (Search View) -->
+    <record id="hr_announcement_view_search" model="ir.ui.view">
+        <field name="name">hr.announcement.search</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <search string="البحث في الإعلانات">
+                <field name="name" string="الإعلان" filter_domain="['|', ('name', 'ilike', self), ('content', 'ilike', self)]"/>
+                <field name="author_id"/>
+                <field name="department_ids"/>
+                <field name="employee_ids"/>
+
+                <filter string="مثبت" name="pinned" domain="[('is_pinned', '=', True)]"/>
+                <separator/>
+                <filter string="منشور" name="published" domain="[('state', '=', 'published')]"/>
+                <filter string="مجدول" name="scheduled" domain="[('state', '=', 'scheduled')]"/>
+                <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter string="عاجل" name="urgent" domain="[('priority', '=', 'urgent')]"/>
+                <filter string="مرتفع الأولوية" name="high_priority" domain="[('priority', '=', 'high')]"/>
+                <separator/>
+                <filter string="إعلاناتي" name="my_announcements" domain="[('author_id', '=', uid)]"/>
+                <filter string="غير مقروء" name="unread" domain="[('read_employee_ids', 'not in', [uid])]"/>
+
+                <group expand="0" string="تجميع حسب">
+                    <filter string="النوع" name="group_type" context="{'group_by': 'announcement_type'}"/>
+                    <filter string="الأولوية" name="group_priority" context="{'group_by': 'priority'}"/>
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="الناشر" name="group_author" context="{'group_by': 'author_id'}"/>
+                    <filter string="تاريخ البداية" name="group_start_date" context="{'group_by': 'start_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- نموذج عرض Kanban -->
+    <record id="hr_announcement_view_kanban" model="ir.ui.view">
+        <field name="name">hr.announcement.kanban</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="name"/>
+                <field name="summary"/>
+                <field name="state"/>
+                <field name="priority"/>
+                <field name="announcement_type"/>
+                <field name="author_id"/>
+                <field name="start_date"/>
+                <field name="read_percentage"/>
+                <field name="is_pinned"/>
+                <progressbar field="state" colors='{"published": "success", "draft": "secondary", "expired": "warning"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top mb-2">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="is_pinned" invisible="1"/>
+                                                <span t-if="record.is_pinned.raw_value" class="fa fa-thumb-tack text-danger me-1"/>
+                                                <field name="name"/>
+                                            </strong>
+                                        </div>
+                                        <field name="priority" widget="priority"/>
+                                    </div>
+                                    <div class="text-muted">
+                                        <field name="summary" t-if="record.summary.raw_value"/>
+                                        <t t-if="!record.summary.raw_value">
+                                            <i>لا يوجد ملخص</i>
+                                        </t>
+                                    </div>
+                                    <div class="o_kanban_record_bottom mt-3">
+                                        <div class="oe_kanban_bottom_left">
+                                            <field name="announcement_type" widget="badge"/>
+                                            <field name="state" widget="badge" class="ms-2"/>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right">
+                                            <field name="author_id" widget="many2one_avatar_user"/>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2" t-if="record.read_percentage.raw_value">
+                                        <span class="text-muted small">نسبة القراءة: </span>
+                                        <field name="read_percentage" widget="percentage"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- الإجراء الرئيسي -->
+    <record id="hr_announcement_action" model="ir.actions.act_window">
+        <field name="name">الإعلانات</field>
+        <field name="res_model">hr.announcement</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'search_default_published': 1, 'search_default_pinned': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء إعلان جديد
+            </p>
+            <p>
+                يمكنك إنشاء إعلانات للموظفين وتحديد الفئة المستهدفة
+                والتحكم في توقيت عرض الإعلان ومتابعة من قرأه
+            </p>
+        </field>
+    </record>
+
+    <!-- قوائم فرعية -->
+    <record id="hr_announcement_action_draft" model="ir.actions.act_window">
+        <field name="name">مسودات الإعلانات</field>
+        <field name="res_model">hr.announcement</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'draft')]</field>
+    </record>
+
+    <record id="hr_announcement_action_my" model="ir.actions.act_window">
+        <field name="name">إعلاناتي</field>
+        <field name="res_model">hr.announcement</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('author_id', '=', uid)]</field>
+    </record>
+
+    <!-- عناصر القائمة -->
+    <menuitem id="menu_hr_announcement_root"
+              name="الإعلانات"
+              parent="hr.menu_hr_root"
+              sequence="25"
+              groups="base.group_user"/>
+
+    <menuitem id="menu_hr_announcement_all"
+              name="جميع الإعلانات"
+              parent="menu_hr_announcement_root"
+              action="hr_announcement_action"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_announcement_draft"
+              name="المسودات"
+              parent="menu_hr_announcement_root"
+              action="hr_announcement_action_draft"
+              sequence="20"
+              groups="hr.group_hr_user"/>
+
+    <menuitem id="menu_hr_announcement_my"
+              name="إعلاناتي"
+              parent="menu_hr_announcement_root"
+              action="hr_announcement_action_my"
+              sequence="30"/>
+</odoo>
