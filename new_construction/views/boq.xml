@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="boq_view_tree" model="ir.ui.view">
+            <field name="name">boq_view_tree</field>
+            <field name="model">res.boq</field>
+            <field name="arch" type="xml">
+                <tree string="_tree">
+                    <field name="name" optional="show"/>
+                    <field name="project_number" optional="show"/>
+                    <field name="project_id" optional="show"/>
+                    <field name="partner_id" optional="show"/>
+                    <field name="consultant" optional="show"/>
+                    <field name="analytic_account" optional="show"/>
+                    <field name="date_from" optional="hide"/>
+                    <field name="date_to" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="boq_view_form" model="ir.ui.view">
+            <field name="name">boq_view_form</field>
+            <field name="model">res.boq</field>
+            <field name="arch" type="xml">
+                <form string="boq_form">
+                    <header>
+                        <button name="refersh" type="object" string="REFERSH"/>
+                        <button name="create_purchase_request" type="object" string="Create Purchase req"/>
+                    </header>
+                    <sheet>
+                         <div name="button_box" class="oe_button_box">
+                        <button class="oe_stat_button" name="view_purchase_request" type="object" icon="fa-tasks">
+                            <field string="Purchase Request" name="count_purchase" widget="statinfo"/>
+                        </button>
+                    </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="project_number"/>
+                                <field name="project_id"/>
+                                <field name="partner_id"/>
+                            </group>
+                            <group>
+                                <field name="consultant"/>
+                                <field name="analytic_account"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+
+
+                        </group>
+                        <notebook>
+                            <page string="Lines">
+                                <field name="lines" readonly="True">
+                                    <tree editable="top">
+                                        <field name="product_id" optional="show"/>
+                                        <field name="description" optional="show"/>
+                                        <field name="uom_id" optional="show"/>
+                                        <field name="qty_pr" optional="show"/>
+                                        <field name="qty_wbs" optional="show"/>
+                                        <field name="qty_po" optional="show"/>
+                                        <field name="qty_receipt" optional="show"/>
+                                        <field name="qty_deliverd" optional="show"/>
+                                        <field name="remaining_1" optional="show"/>
+                                        <field name="remaining_2" optional="show"/>
+                                        <field name="qty_out" optional="show"/>
+                                        <field name="qty_onhand" optional="show"/>
+                                        <field name="price_avg" optional="show"/>
+                                        <field name="price_break" optional="show"/>
+                                        <field name="price_last_po" optional="show"/>
+                                        <field name="qty_current" optional="show"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="product_id"/>
+                                                <field name="description"/>
+                                                <field name="uom_id"/>
+                                                <field name="qty_pr"/>
+                                                <field name="qty_wbs"/>
+                                                <field name="qty_po"/>
+                                                <field name="qty_receipt"/>
+                                                <field name="qty_deliverd"/>
+                                            </group>
+                                            <group>
+
+
+                                                <field name="remaining_1"/>
+                                                <field name="remaining_2"/>
+                                                <field name="qty_out"/>
+                                                <field name="qty_onhand"/>
+                                                <field name="price_avg"/>
+                                                <field name="price_break"/>
+                                                <field name="price_last_po"/>
+                                                <field name="qty_current"/>
+
+                                            </group>
+                                        </group>
+
+                                    </form>
+
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" options="{'post_refresh':True}"
+                               help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                               groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+
+                </form>
+            </field>
+        </record>
+
+
+        <record id="_view_tree" model="ir.ui.view">
+            <field name="name">boq_item_view_tree</field>
+            <field name="model">res.boq.lines</field>
+            <field name="arch" type="xml">
+                <tree >
+                                        <field name="product_id" optional="show"/>
+                                        <field name="description" optional="show"/>
+                                        <field name="uom_id" optional="show"/>
+                                        <field name="qty_pr" optional="show"/>
+                                        <field name="qty_wbs" optional="show"/>
+                                        <field name="qty_po" optional="show"/>
+                                        <field name="qty_receipt" optional="show"/>
+                                        <field name="qty_deliverd" optional="show"/>
+                                        <field name="remaining_1" optional="show"/>
+                                        <field name="remaining_2" optional="show"/>
+                                        <field name="qty_out" optional="show"/>
+                                        <field name="qty_onhand" optional="show"/>
+                                        <field name="price_avg" optional="show"/>
+                                        <field name="price_break" optional="show"/>
+                                        <field name="price_last_po" optional="show"/>
+                                        <field name="qty_current" optional="show"/>
+                                    </tree>
+
+            </field>
+        </record>
+        <record id="_view_form" model="ir.ui.view">
+            <field name="name">boq_item_view_form</field>
+            <field name="model">res.boq.lines</field>
+            <field name="arch" type="xml">
+               <form>
+                                        <group>
+                                            <group>
+                                                <field name="product_id"/>
+                                                <field name="description"/>
+                                                <field name="uom_id"/>
+                                                <field name="qty_pr"/>
+                                                <field name="qty_wbs"/>
+                                                <field name="qty_po"/>
+                                                <field name="qty_receipt"/>
+                                                <field name="qty_deliverd"/>
+                                            </group>
+                                            <group>
+
+
+                                                <field name="remaining_1"/>
+                                                <field name="remaining_2"/>
+                                                <field name="qty_out"/>
+                                                <field name="qty_onhand"/>
+                                                <field name="price_avg"/>
+                                                <field name="price_break"/>
+                                                <field name="price_last_po"/>
+                                                <field name="qty_current"/>
+
+                                            </group>
+                                        </group>
+
+                                    </form>
+            </field>
+        </record>
+    </data>
+</odoo>

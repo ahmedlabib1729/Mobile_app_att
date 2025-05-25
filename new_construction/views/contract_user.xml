@@ -1,0 +1,57 @@
+<odoo>
+    <record id="view_contract_user_tree" model="ir.ui.view">
+        <field name="name">view_contract_user_tree</field>
+        <field name="model">construction.contract.user</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" optional="show"/>
+                <field name="account_id" optional="show"/>
+                <field name="counterpart_account_id" optional="show"/>
+                <field name="type" readonly="1" optional="show"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_contract_user_form" model="ir.ui.view">
+        <field name="name">view_contract_user_form</field>
+        <field name="model">construction.contract.user</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="account_id" string="partner Account" required="1"/>
+                            <!--                           <div class="row">-->
+                            <!--&lt;!&ndash;                        <label style="padding: 10px 20px 0px 15px;font-weight: bold;" for="account_id" string="Revenue Account"&ndash;&gt;-->
+                            <!--&lt;!&ndash;                               attrs="{'invisible':[('type', '!=', 'owner')]}" class="oe_inline"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;                        <label style="padding: 10px 20px 0px 15px;font-weight: bold;" for="account_id" string="Cost Account"&ndash;&gt;-->
+                            <!--&lt;!&ndash;                               attrs="{'invisible':[('type', '=', 'owner')]}" class="oe_inline"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;                        <field name="account_id" nolabel="True" class="oe_inline" style="margin-right: 20px;max-width:150px" />&ndash;&gt;-->
+                            <!--                    </div>-->
+                        </group>
+                        <group>
+                            <field name="counterpart_account_id" string="Revenue Account"
+                                   attrs="{'invisible':[('type', '!=', 'owner')]}" required="1"/>
+                            <field name="counterpart_account_id" string="Cost Account"
+                                   attrs="{'invisible':[('type', '=', 'owner')]}" required="1"/>
+                            <field name="type" readonly="1"/>
+
+
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'post_refresh':True}"
+                           help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                           groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+
+            </form>
+        </field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menu_report_construction" name="Reports" parent="contract_root" sequence="80"/>
+        <menuitem id="menu_partner_ledger" name="Partner Ledger" parent="menu_report_construction"
+                  action="account.action_account_moves_ledger_partner"
+                  sequence="1"/>
+
+    </data>
+</odoo>

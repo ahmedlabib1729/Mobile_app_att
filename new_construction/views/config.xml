@@ -1,0 +1,60 @@
+<odoo>
+    <record id="ks_res_config_settings_moddele_account" model="ir.ui.view">
+            <field name="name">ks.res.config.settings.view.form.inherit.account.middle</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="50"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='has_accounting_entries']" position="after">
+
+                    <h2 attrs="{'invisible': [('has_chart_of_accounts','==',False)]}">Invoice Contract</h2>
+                    <div class="row mt16 o_settings_container" >
+
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Owner Journal</span>
+                                <div class="text-muted">
+                                        Set default Owner Journal
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16" >
+                                        <label for="ks_middle_journal_owner"
+                                               class="col-md-3 o_light_label"/>
+                                        <field name="ks_middle_journal_owner"/>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane" ></div>
+                                <span class="o_form_label">Supconstructor</span>
+                                <div class="text-muted">
+                                        Set default Supconstructor
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16" >
+                                        <label for="ks_middle_account_sup"
+                                               class="col-md-3 o_light_label"/>
+                                        <field name="ks_middle_account_sup" string=" Journal Supconstructor"/>
+                                    </div>
+                                    <div class="row mt16" >
+                                        <label for="tender_related"
+                                               class="col-md-3 o_light_label"/>
+                                        <field name="tender_related"  />
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                </xpath>
+            </field>
+        </record>
+</odoo>

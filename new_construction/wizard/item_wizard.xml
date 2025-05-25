@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="_view_form" model="ir.ui.view">
+        <field name="name">_view_form</field>
+        <field name="model">template.items</field>
+        <field name="arch" type="xml">
+            <form string="_form">
+                <sheet>
+                    <group>
+                        <field name="items_ids"/>
+                        <field name="template_id"  />
+
+                    </group>
+                </sheet>
+                 <footer>
+                    <button string="Save" name="action_save" type="object" class="btn-primary"/>
+                    <button special="cancel" string="Close" type="object" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+        <!--      <record id="view_project_form" model="ir.ui.view">-->
+        <!--        <field name="name">constaction_project_form</field>-->
+        <!--        <field name="model">project.project</field>-->
+        <!--        <field name="inherit_id" ref="project.edit_project"/>-->
+        <!--        &lt;!&ndash;        <field name="priority">1000</field>&ndash;&gt;-->
+        <!--        <field name="arch" type="xml">-->
+        <!--          <xpath expr="//h1" position="after">-->
+        <!--                <group>-->
+        <!--                    <group>-->
+        <!--                        <field name="name"/>-->
+        <!--                        <field name="project_number"/>-->
+        <!--                    </group>-->
+        <!--                </group>-->
+        <!--          </xpath>-->
+        <!--              <xpath expr="//notebook" position="before">-->
+        <!--                  <group>-->
+        <!--                       <button name="update_ratio_currancy" type="object" string="Update Currancy"/>-->
+
+        <!--                      <field name="created_date"/>-->
+        <!--                            <field name="consultant"/>-->
+        <!--                            <field name="manager_id"/>-->
+        <!--                            <field name="company_id" invisible="1"/>-->
+        <!--                            <field name="date_from"/>-->
+        <!--                            <field name="date_to"/>-->
+        <!--                            <field name="dif"/>-->
+        <!--                            <field name="analytic_account"/>-->
+        <!--                  </group>-->
+
+        <!--              </xpath>-->
+        <!--        </field>-->
+
+        <!--      </record>-->
+
+        <record id="contract_line_stage_view_form" model="ir.ui.view">
+            <field name="name">_view_form</field>
+            <field name="model">construction.contract.line</field>
+            <field name="arch" type="xml">
+                <form string="_form">
+                    <sheet>
+                        <group>
+                            <field name="state" invisible="1"/>
+                            <field name="stage_line_ids" attrs="{'readonly':[('state','!=','draft')]}">
+                                <tree editable="bottom">
+                                <field name="stage_id" required="1"/>
+                                <field name="prec" required="1"/>
+<!--                                <field name="contract_line_id" required="1"/>-->
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                     <footer>
+                    <button string="Save" name="action_save" type="object" class="btn-primary"/>
+                    <button special="cancel" string="Close" type="object" class="btn-primary"/>
+                </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

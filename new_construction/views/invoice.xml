@@ -1,0 +1,650 @@
+<odoo>
+
+    <record id="view_move_construction_tree_sub" model="ir.ui.view">
+        <field name="name">view_move_construction_tree</field>
+        <field name="model">account.invoice</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"  optional="show"/>
+                <field name="contract_id" required="1" optional="show"/>
+                <field name="project_id" required="1" optional="show"/>
+                <field name="tag_ids"  optional="show"/>
+                <field name="partner_id" optional="show"/>
+                <field name="sub_contactor" optional="show"/>
+
+                <field name="date" optional="show"/>
+                <field name="type_move" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="amount_price_total" optional="show"/>
+                <field name="payment_amount" optional="show"/>
+                <field name="remaining_value" optional="show"/>
+                <field name="payment_state" optional="show"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_move_construction_tree" model="ir.ui.view">
+        <field name="name">view_move_construction_tree</field>
+        <field name="model">account.invoice</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" optional="show"/>
+                <field name="contract_id" required="1" optional="show"/>
+                <field name="project_id" required="1" optional="show"/>
+                <field name="tag_ids"  optional="show"/>
+                <field name="partner_id" optional="show"/>
+
+                <field name="date" optional="show"/>
+                <field name="type_move" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="amount_price_total" optional="show"/>
+                <field name="payment_amount" optional="show"/>
+                <field name="remaining_value" optional="show"/>
+                <field name="payment_state" optional="show"/>
+                <field name="eng_template_id" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_move_construction_invoice_form" model="ir.ui.view">
+        <field name="name">view_move_construction</field>
+        <field name="model">account.invoice</field>
+        <!--        <field name="inherit_id" ref="account.view_move_form"/>-->
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="payment_state" invisible="1"/>
+
+
+
+                    <button name="action_post" string="Post" type="object" states="draft"/>
+                    <field name="is_last" invisible="1"/>
+                    <button name="reset_invoice" string="Reset Draft" type="object"
+                            states="cancel"/>
+                    <button name="action_payment" string="Register Payment" type="object"
+                            attrs="{'invisible':['|',('state','!=','posted'),('payment_state','=','paid')]}"/>
+                      <button name="action_cancel" string="Cancel" id='o_payment_form_pay' type="object"
+                           states="posted"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+
+
+                        <button name="action_view_engineer_templates"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-cogs">
+                            <field name="engineer_template_count" widget="statinfo" string="Engineer Template"/>
+                        </button>
+
+                        <field name="payment_amount" invisible="1"/>
+                        <button name="view_payment" type="object" icon="fa-file-text-o"
+                                attrs="{'invisible':['|',('payment_amount','=','paid'),('payment_count','=',0)]}">
+                            <field string="Payments" force_save="1" name="payment_count" widget="statinfo"/>
+                        </button>
+                        <button name="view_journal" type="object" icon="fa-file-text-o" string="Journal"
+                                attrs="{'invisible':[('state','=','draft')]}">
+                        </button>
+
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+<div name="ribbon_paid" class="oe_ribbon"
+     style="background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);"
+     attrs="{'invisible': [('payment_state', '!=', 'paid')]}">
+    <span>Paid</span>
+</div>
+
+<!-- Ribbon Partially Paid -->
+<div name="ribbon_in_payment" class="oe_ribbon"
+     style="background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: black;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);"
+     attrs="{'invisible': [('payment_state', '!=', 'in_payment')]}">
+    <span>Partially Paid</span>
+</div>
+
+<!-- Ribbon Not Paid -->
+<div name="ribbon_not_paid" class="oe_ribbon"
+     style="background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);"
+     attrs="{'invisible': [('payment_state', '!=', 'not_paid')]}">
+    <span>Not Paid</span>
+</div>
+                    </div>
+
+                    <!--                                 <field string="Quotations" name="quotation_count" widget="statinfo"/>-->
+                    <h2>
+                        <field name="name"/>
+
+                    </h2>
+
+                    <group>
+                        <group>
+                            <field name="type" invisible="1"/>
+                            <field name="contract_id" invisible="1"/>
+                            <field name="contract_id" required="1" domain="[('state','=','confirm'),('type','=',type)]"
+                                   attrs="{'readonly':[('state','=','posted')]}"/>
+                            <field name="project_id" required="1"/>
+                            <field name="partner_id"/>
+                            <field name="tag_ids" widget="many2many_tags" force_save="1"/>
+                             <field name = 'tag_id_custom' invisible="1"/>
+                        </group>
+                        <group>
+
+                            <field name="date" attrs="{'readonly':[('state','=','posted')]}"/>
+
+                            <field name="due_date" attrs="{'readonly':[('state','=','posted')]}"/>
+
+                            <field name="type_move" attrs="{'readonly':[('state','=','posted')]}"/>
+                            <field name="number_manual" attrs="{'readonly':[('state','=','posted')]}"/>
+                            <field name="analytic_account" attrs="{'readonly':[('state','=','posted')]}"/>
+                        </group>
+                    </group>
+<!--                    <button string="select Tender" name="select_tender_ids" type="object" class="btn-primary"/>-->
+                    <field name="type" invisible="1"/>
+                    <notebook>
+                        <page string="Lines" attrs="{'invisible':[('type','!=','owner')]}">
+                            <field name="invoice_line"
+                                   attrs="{'readonly':[('state','=','posted')]}">
+                                <tree editable="bottom" >
+<!--                                    <field name="tender_id" force_save="1" required="1" width="100px" optional="show"/>-->
+                                    <field name="code" readonly="1" width="100px" optional="show"/>
+                                    <field name="item" readonly="1" width="50px" optional="show"/>
+                                    <field name="name" force_save="1" readonly="1" width="200px" optional="show"/>
+
+                                    <field name="uom_id" readonly="1" optional="show"/>
+                                    <field name="type" invisible="1" optional="show"/>
+
+                                    <field name="quantity" string="Total Quantity"
+                                             sum="total"
+                                           width="100px" optional="show"/>
+                                    <field name="price_unit" attrs="{'readonly':True}" width="50px" optional="show"/>
+                                    <field name="value" attrs="{'readonly':True}" width="50px" optional="show"/>
+
+
+                                    <field name="project_id" invisible="1"/>
+
+
+
+                                    <field name="notes" width="70px" optional="show"/>
+
+
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+<!--                                            <field name="tender_id" required="1" width="100px"/>-->
+                                            <field name="code" readonly="1" width="100px"/>
+                                            <field name="item" readonly="1" width="100px"/>
+
+                                            <field name="uom_id" readonly="1"/>
+                                        </group>
+                                        <group>
+                                            <field name="value"/>
+                                            <field name="notes"/>
+                                        </group>
+                                    </group>
+
+
+                                </form>
+                            </field>
+
+                        </page>
+                        <page string="Deduction" attrs="{'invisible':[('type','!=','owner')]}">
+
+                            <field name="deduction_ids" attrs="{'readonly':[('state','=','posted')]}"
+                                   context="{'default_type':'deduction'}">
+                                <tree editable="bottom">
+                                    <field name="type" invisible="1"  optional="show" />
+
+                                    <field name="name" required="1"  optional="show"/>
+                                    <field name="account_id" required="1" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage" optional="show"/>
+                                    <field name="value" sum="Total" optional="show"/>
+                                    <field name="current_value" sum="Total" optional="show"/>
+                                    <field name="last_value" sum="Total" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Additional" attrs="{'invisible':[('type','!=','owner')]}">
+                            <field name="allowance_ids" attrs="{'readonly':[('state','=','posted')]}"
+                                   context="{'default_type':'addition'}">
+
+                                <tree editable="bottom">
+                                    <field name="type" invisible="1"/>
+                                    <field name="name" required="1"/>
+                                    <field name="account_id" required="1"/>
+                                    <field name="is_precentage"/>
+                                    <field name="precentage"/>
+                                    <field name="value" sum="Total"/>
+                                    <field name="current_value" sum="Total"/>
+                                    <field name="last_value" sum="Total"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                    </notebook>
+
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label string="Due Amount" for="amount_price_total"/>
+                        </div>
+                        <field name="amount_price_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label string="Payment Amount " for="payment_amount"/>
+                        </div>
+                        <field name="payment_amount" nolabel="1" class="oe_subtotal_footer_separator" readonly="1"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+
+                            <label string="Remaining Amount " for="remaining_value"/>
+                        </div>
+                        <field name="remaining_value" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <br/>
+                    </group>
+                    <group>
+                        <group></group>
+                        <group>
+                            <field name="is_payment_visible" invisible="1"/>
+                            <field name="payment_ids_line" context="{'invoice_ids':active_id}"
+                                   attrs="{'invisible':['|','|',('is_payment_visible','=',False),('state','=','draft'),('payment_state','=','paid')]}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                    <field name="invoice_ids" invisible="1"/>
+                                    <button name="add_invoice" string="ADD" type="object"/>
+                                </tree>
+
+
+                            </field>
+
+                        </group>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'post_refresh':True}"
+                           help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                           groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+
+            </form>
+
+
+        </field>
+    </record>
+    <record id="view_move_construction_invoice_sub" model="ir.ui.view">
+        <field name="name">view_move_construction</field>
+        <field name="model">account.invoice</field>
+        <field name="priority">1000</field>
+        <!--        <field name="inherit_id" ref="account.view_move_form"/>-->
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="payment_state" invisible="1"/>
+                    <button name="action_post" string="Post" type="object" states="draft"/>
+                    <field name="is_last" invisible="1"/>
+                    <button name="reset_invoice" string="Reset Draft" id='o_payment_form_pay' type="object"
+                            states="cancel"/>
+                      <button name="action_cancel" string="Cancel" id='o_payment_form_pay' type="object"
+                           states="posted"/>
+                    <button name="action_payment" string="Register Payment" type="object" id='o_payment_form_pay'
+                            attrs="{'invisible':['|',('state','!=','posted'),('payment_state','=','paid')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+
+                         <button name="action_view_engineer_templates"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-cogs">
+                            <field name="engineer_template_count" widget="statinfo" string="Engineer Template"/>
+                        </button>
+                        <field name="payment_amount" invisible="1"/>
+                        <button name="view_payment" type="object" icon="fa-file-text-o"
+                                attrs="{'invisible':['|',('payment_amount','=','paid'),('payment_count','=',0)]}">
+                            <field string="Payments" name="payment_count" widget="statinfo"/>
+                        </button>
+                        <button name="view_journal" type="object" icon="fa-file-text-o" string="Journal"
+                                attrs="{'invisible':[('state','=','draft')]}">
+
+                        </button>
+                    </div>
+
+                     <div class="oe_button_box" name="button_box">
+<div name="ribbon_paid" class="oe_ribbon"
+     style="background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);"
+     attrs="{'invisible': [('payment_state', '!=', 'paid')]}">
+    <span>Paid</span>
+</div>
+
+<!-- Ribbon Partially Paid -->
+<div name="ribbon_in_payment" class="oe_ribbon"
+     style="background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: black;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);"
+     attrs="{'invisible': [('payment_state', '!=', 'in_payment')]}">
+    <span>Partially Paid</span>
+</div>
+
+<!-- Ribbon Not Paid -->
+<div name="ribbon_not_paid" class="oe_ribbon"
+     style="background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);"
+     attrs="{'invisible': [('payment_state', '!=', 'not_paid')]}">
+    <span>Not Paid</span>
+</div>
+                    </div>
+                    <!--<field string="Quotations" name="quotation_count" widget="statinfo"/>-->
+                    <h2>
+                        <field name="name"/>
+                    </h2>
+
+                    <group>
+                        <group>
+                            <field name="type" invisible="1"/>
+                            <field name="contract_id" required="1" domain="[('state','=','confirm'),('type','=',type)]"
+                                   attrs="{'readonly':[('state','=','posted')]}"/>
+
+                            <field name="project_id" required="1"/>
+                            <field name="tag_ids"/>
+                            <field name="partner_id"/>
+                        <field name="tag_ids" widget="many2many_tags" force_save="1"/>
+                             <field name = 'tag_id_custom' invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="sub_contactor"/>
+                            <field name="date" attrs="{'readonly':[('state','=','posted')]}"/>
+
+                            <field name="due_date" attrs="{'readonly':[('state','=','posted')]}"/>
+
+                            <field name="type_move" attrs="{'readonly':[('state','=','posted')]}"/>
+                            <field name="number_manual" attrs="{'readonly':[('state','=','posted')]}"/>
+                            <field name="analytic_account" attrs="{'readonly':[('state','=','posted')]}"/>
+                        </group>
+                    </group>
+<!--                    <button string="select Tender" name="select_contract_lines_ids" type="object" class="btn-primary"/>-->
+                    <field name="type" invisible="1"/>
+                    <notebook>
+
+                        <!-- SUPCONstractor-->
+                        <page string="Lines" attrs="{'invisible':[('type','!=','supconstractor')]}">
+
+                            <field name="invoice_line"
+                                   attrs="{'readonly':[('state','=','posted')]}">
+                                <tree editable="bottom">
+<!--                                    <field name="tender_id" force_save="1" invisible="1" width="100px"/>-->
+                                    <field name="code" readonly="1" width="100px"/>
+                                    <field name="item" readonly="1" width="50px"/>
+                                    <field name="name" force_save="1" readonly="1" width="100px"/>
+
+                                    <field name="uom_id" readonly="1"/>
+                                    <field name="type" invisible="1"/>
+                                    <field name="percentage"  />
+
+                                    <field name="quantity" string="Total Quantity"
+                                             sum="total"/>
+                                    <field name="price_unit" attrs="{'readonly':True}"/>
+                                    <field name="value" attrs="{'readonly':True}"/>
+                                    <field name="sub_contarctor_item_id" width="100px"
+                                           attrs="{ 'required':True}" optional="hide"/>
+                                    <field name="sub_contarctor_item" width="100px"
+                                           attrs="{'required':True}"/>
+                                    <field name="wbs_item_id" width="100px"
+                                           attrs="{ 'required':True}" optional="hide"/>
+                                    <field name="wbs_item" width="100px"
+                                           attrs="{'required':True}"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution"/>
+
+                                    <!--                                <field name="wbs_item" width="100px"-->
+                                    <!--                                        attrs="{'readonly':True}"/>-->
+
+                                    <field name="project_id" invisible="1"/>
+
+
+                                   <field name="previous_value"/>
+                                   <field name="value"/>
+                                   <field name="differance"/>
+                                    <field name="notes"/>
+
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+<!--                                            <field name="tender_id" required="1" width="100px"/>-->
+                                            <field name="code" readonly="1" width="100px"/>
+                                            <field name="item" readonly="1" width="100px"/>
+                                            <field name="uom_id" readonly="1" width="50px"/>
+<!--                                            <field name="last_qty" sum="total" readonly="1" width="50px"/>-->
+                                        </group>
+                                        <group>
+                                                                                     <field name="notes" width="70px"/>
+                                        </group>
+                                    </group>
+
+
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Deduction" attrs="{'invisible':[('type','!=','supconstractor')]}">
+
+                            <field name="deduction_ids" attrs="{'readonly':[('state','=','posted')]}"
+                                   context="{'default_type':'deduction'}">
+                                <tree editable="bottom">
+                                    <field name="type" invisible="1"/>
+                                    <field name="name" required="1"/>
+                                    <field name="account_id" required="1"/>
+                                    <field name="is_precentage"/>
+                                    <field name="precentage"/>
+                                    <field name="value" sum="Total"/>
+                                    <field name="current_value" sum="Total"/>
+                                    <field name="last_value" sum="Total"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Additional" attrs="{'invisible':[('type','!=','supconstractor')]}">
+                            <field name="allowance_ids" attrs="{'readonly':[('state','=','posted')]}"
+                                   context="{'default_type':'addition'}">
+
+                                <tree editable="bottom">
+                                    <field name="type" invisible="1"/>
+                                    <field name="name" required="1"/>
+                                    <field name="account_id" required="1"/>
+                                    <field name="is_precentage"/>
+                                    <field name="precentage"/>
+                                    <field name="value" sum="Total"/>
+                                    <field name="current_value" sum="Total"/>
+                                    <field name="last_value" sum="Total"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label string="Due Amount" for="amount_price_total"/>
+                        </div>
+                        <field name="amount_price_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label string="Work Value Amount" for="work_value_total"/>
+                        </div>
+                        <field name="work_value_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label string="Deduction" for="deduction_value_total"/>
+                        </div>
+                        <field name="deduction_value_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label string="Payment Amount " for="payment_amount"/>
+                        </div>
+                        <field name="payment_amount" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+
+                            <label string="Remaining Amount " for="remaining_value"/>
+                        </div>
+                        <field name="remaining_value" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        <br/>
+                        <button name="register_payment" type="object" class="oe_highlight" string="Payments"/>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'post_refresh':True}"
+                           help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                           groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+            </form>
+
+
+        </field>
+    </record>
+
+
+
+
+
+    <record id="view_account_invoice_tree_report_owner" model="ir.ui.view">
+        <field name="name">view_account_invoice_tree_report_owner</field>
+        <field name="model">account.invoice</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="current_total_value"/>
+                <field name="current_total_value_deduction"/>
+                <field name="current_total_value_addition"/>
+                <field name="amount_price_total"/>
+                <field name="payment_amount"/>
+                <field name="remaining_value"/>
+                <field name="type" invisible="1"/>
+                <field name="project_id" required="1"/>
+                <field name="tag_ids"/>
+                <field name="contract_id" string="owner contract name"/>
+
+                <field name="partner_id"/>
+                <field name="eng_template_id"/>
+
+
+            </tree>
+        </field>
+    </record>
+    <record id="view_account_invoice_tree_report_sup" model="ir.ui.view">
+        <field name="name">view_account_invoice_tree_report</field>
+        <field name="model">account.invoice</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="current_total_value"/>
+                <field name="current_total_value_deduction"/>
+                <field name="current_total_value_addition"/>
+                <field name="amount_price_total"/>
+                <field name="payment_amount"/>
+                <field name="remaining_value"/>
+                <field name="type" invisible="1"/>
+                <field name="project_id" required="1"/>
+                <field name="tag_ids" />
+                <field name="contract_id" string="Sub contractor contract name"/>
+
+                <field name="partner_id"/>
+                <field name="eng_template_id"/>
+
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_search" model="ir.ui.view">
+        <field name="name">view_account_invoice_search</field>
+        <field name="model">account.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="tag_ids"/>
+                <field name="contract_id"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Contract" name="Contract" context="{'group_by': 'contract_id'}"/>
+                    <filter string="Project" name="Project" context="{'group_by': 'project_id'}"/>
+<!--                    <filter string="Tag" name="Tag" domain="[]" context="{'group_by': 'tag_ids'}"/>-->
+                   <filter name="tag_id" string="Tags" domain="[]" context="{'group_by': 'tag_id_custom'}"/>
+                    <filter string="Customer" name="Partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="sub contactor" name="sub contactor" context="{'group_by': 'sub_contactor'}"/>
+                    <filter string="Payment State" name="Payment State" context="{'group_by': 'payment_state'}"/>
+
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+
+    <record id="account_invoice_tree_custom" model="ir.ui.view">
+    <field name="name">account.invoice.tree.custom</field>
+    <field name="model">account.invoice</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="partner_id"/>
+            <field name="amount_price_total"/>
+
+        </tree>
+    </field>
+</record>
+
+</odoo>

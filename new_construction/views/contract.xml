@@ -1,0 +1,450 @@
+<odoo>
+    <record id="view_contract_tree" model="ir.ui.view">
+        <field name="name">view_contract_tree</field>
+        <field name="model">construction.contract</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" optional="show"/>
+                <field name="project_id" optional="show"/>
+                <field name="partner_id_2" optional="show"/>
+                <field name="date" attrs="{'required':True}" optional="show"/>
+                <field name="recieve_date" optional="show"/>
+                <field name="contract_id" optional="show"/>
+                <field name="down_payment_value" optional="show"/>
+                <field name="sub_contactor" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_contract_form" model="ir.ui.view">
+        <field name="name">view_contract_form</field>
+        <field name="model">construction.contract</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Confirm" states="draft" type="object" class="btn-primary"/>
+                    <button name="create_partial_contract" string="Create SUBCONTRACT"
+                            attrs="{'invisible':['|',('state','=','draft'),('is_sub_contract','=',True)]}"
+                            type="object" class="btn-primary"/>
+                    <button name="action_draft" type="object" string="Set To Draft" states="confirm"/>
+<!--                    <button name="create_engineer_template" type="object" string="create Engineer Template"-->
+<!--                            attrs="{'invisible':[('is_sub_contract','=',True)]}"/>-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,quotation"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_partial_contract" type="object" icon="fa-file-text-o"
+                                attrs="{'invisible':[('is_sub_contract','=',True)]}">
+                            <field name="count_sub" string="View SUB contract" widget="statinfo"/>
+                        </button>
+                        <button name="view_engineer_tem" type="object" icon="fa-tasks"
+                                attrs="{'invisible':[('is_sub_contract','=',True)]}">
+                            <field name="count_eng" string="View Engineer Template" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <h2>
+                        <field name="name"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="type" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="is_sub_contract" invisible="1"/>
+                            <field name="sub_contactor"
+                                   attrs="{'invisible':[('type','=','owner')],'required':[('type','=','supconstractor')],'readonly':[('state','!=','draft')]}"/>
+                            <field name="project_id"
+                                   attrs="{'required':True,'readonly':['|',('is_sub_contract','=',True),('state','!=','draft')]}"/>
+                            <field name="partner_id_2"
+                                   attrs="{'required':True,'readonly':['|',('state','!=','draft'),('is_sub_contract','=',True)],}"/>
+                            <field name="contract_id"
+                                   attrs="{'required':True,'readonly':['|',('state','!=','draft'),('is_sub_contract','=',True)]}"/>
+                            <field name="date" attrs="{'required':True,'readonly':[('state','!=','draft')]}"/>
+                            <field name="recieve_date"/>
+                        </group>
+                        <group>
+                            <!--                            <field name="order_id" readonly="1"/>-->
+                            <field name="account_id" string="Partner Account"
+                                   attrs="{'readonly':[('is_sub_contract','=',True)],'readonly':[('state','!=','draft')]}"/>
+                            <field name="down_payment_prectenge" attrs="{ 'readonly':[('is_sub_contract','=',True)],'readonly':[('state','!=','draft')]}"/>
+                            <field name="down_payment_value" attrs="{'invisible':[('is_sub_contract','=',True)],'readonly':[('state','!=','draft')]}"/>
+                            <field name="revenue_account_id" attrs="{'invisible':[('is_sub_contract','=',True)],'readonly':[('state','!=','draft')]}"/>
+                            <field name="referance" attrs="{'invisible':[('is_sub_contract','=',True)],'readonly':[('state','!=','draft')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+
+                        <page string="Lines"
+                              attrs="{'invisible':[('type','=','supconstractor')],'readonly':[('state','!=','draft')]}">
+                            <field name="lines_id" attrs="{'readonly':[('state','!=','draft')]}"
+                                   widget="section_and_note_one2many">
+                                <form>
+
+                                    <group>
+                                        <field name="code" attrs="{'required':True}"/>
+                                        <field name="is_sub_contract" invisible="1"/>
+
+                                        <field name="item" attrs="{'required':True}"/>
+                                        <field name="name" attrs="{'required':True}"/>
+                                        <field name="related_job"/>
+                                        <field name="uom_id" attrs="{'required':True}"/>
+                                        <field name="qty"
+                                               attrs="{'required':True,'readonly':[('is_sub_contract','=',False)]  }"/>
+                                        <field name="price_unit"
+                                               attrs="{'required':True,'readonly':[('is_sub_contract','=',False)] }"/>
+                                        <field name="discount" attrs="{ }"/>
+                                        <field name="total_value"/>
+                                        <field name="notes"/>
+                                    </group>
+                                </form>
+                                <tree editable="bottom">
+                                    <!--                                    <field name="display_type" invisible="1"/>-->
+                                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section"
+                                                context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note"
+                                                context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+
+                                    <field name="sequence" widget="handle" optional="show"/>
+                                    <field name="display_type" optional="hide"/>
+
+                                    <field name="code" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"/>
+                                    <field name="item" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"/>
+                                    <field name="name" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"
+                                           widget="section_and_note_text"/>
+                                    <field name="related_job" optional="show"/>
+                                    <field name="uom_id" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"/>
+                                    <!--                                    <field name="stages_id" widget="many2many_tags" optional="show"/>-->
+                                    <!--                                    <field name="is_sub_contract" attrs="{'invisible':True}" optional="show"/>-->
+                                    <field name="qty" attrs="{'required': [('display_type', '=', False)]}"
+                                           sum="Total" optional="show"/>
+                                    <field name="price_unit"
+                                           attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"/>
+
+                                    <field name="discount" sum="Total" optional="show"/>
+<!--                                    <field name="tax_ids"  widget="many2many_tags" optional="show"/>-->
+                                    <field name="total_value" sum="Total" optional="show"/>
+                                    <field name="notes" optional="show"/>
+                                    <button name="add_stage_line_ids" type="object" string="Add stage"/>
+<!--                                    <button name="view_stage_line_ids" type="object" string="View stage"/>-->
+
+                                </tree>
+
+                            </field>
+                        </page>
+                        <page string="Stages" attrs="{'invisible':[('type','=','supconstractor')]}">
+                            <field name="stage_ids" attrs="{'readonly':[('state','!=','draft')]}">
+                                <tree editable="bottom">
+                                    <field name="stage_id" optional="show"></field>
+                                    <field name="prec" optional="show"></field>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Deduction"
+                              attrs="{'invisible':[('type','!=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="deduction_ids"
+                                   context="{'default_type':'deduction','default_sub_type':'owner'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage" optional="show"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Additional"
+                              attrs="{'invisible':[('type','!=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="allowance_ids"
+                                   context="{'default_type':'addition','default_sub_type':'owner'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
+
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+
+                    <group class="oe_subtotal_footer oe_right">
+
+
+<!--                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                            <label for="amount_tax"/>-->
+<!--                        </div>-->
+<!--                        <field name="amount_tax" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                               widget="monetary"/>-->
+
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label for="total_value"/>
+                        </div>
+                        <field name="total_value" nolabel="1" class="oe_subtotal_footer_separator"
+                               widget="monetary"/>
+
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'post_refresh':True}"
+                           help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                           groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+
+            </form>
+        </field>
+    </record>
+    <record id="view_contract_form_sub" model="ir.ui.view">
+        <field name="name">view_contract_form</field>
+        <field name="model">construction.contract</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Confirm" states="draft" type="object" class="btn-primary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,quotation"/>
+                    <button name="create_partial_contract" string="Create SUBCONTRACT"
+                            attrs="{'invisible':['|',('state','=','draft'),('is_sub_contract','=',True)]}"
+                            type="object" class="btn-primary"/>
+                     <button name="action_draft" type="object" string="Set To Draft" states="confirm"/>
+<!--                    <button name="create_engineer_template" type="object" string="create Engineer Template"-->
+<!--                            attrs="{'invisible':[('is_sub_contract','=',True)]}"/>-->
+                </header>
+                <sheet>
+                     <div class="oe_button_box" name="button_box">
+                        <button name="view_partial_contract" type="object" icon="fa-file-text-o"
+                                attrs="{'invisible':[('is_sub_contract','=',True)]}">
+                            <field name="count_sub" string="View SUB contract" widget="statinfo"/>
+                        </button>
+                        <button name="view_engineer_tem" type="object" icon="fa-tasks"
+                                attrs="{'invisible':[('is_sub_contract','=',True)]}">
+                            <field name="count_eng" string="View Engineer Template" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <h2>
+                        <field name="name"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="type" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="is_sub_contract" invisible="1"/>
+                            <field name="is_sub_contract" invisible="1"/>
+                            <field name="sub_contactor"
+                                   attrs="{'invisible':[('type','=','owner')],'required':[('type','=','supconstractor')]}"/>
+                            <field name="project_id"
+                                   attrs="{'required':True,'readonly':[('is_sub_contract','=',True)]}"/>
+                            <field name="partner_id_2"/>
+                            <field name="contract_id"
+                                   attrs="{'required':True,'readonly':[('is_sub_contract','=',True)]}"/>
+                            <field name="date" attrs="{'required':True,'readonly':[('is_sub_contract','=',True)]}"/>
+                            <field name="recieve_date" attrs="{'readonly':[('is_sub_contract','=',True)]}"/>
+                        </group>
+                        <group>
+                            <!--                            <field name="order_id" readonly="1"/>-->
+                            <field name="account_id" string="Partner Account"/>
+                            <field name="down_payment_prectenge"/>
+                            <field name="down_payment_value"/>
+                            <field name="revenue_account_id" string="Revenue Account"
+                                   attrs="{'invisible':[('type', '!=','owner' )]}"/>
+                            <field name="revenue_account_id" string="Cost Account"
+                                   attrs="{'invisible':[('type', '=','owner' )]}"/>
+                            <field name="referance" attrs="{'invisible':[('is_sub_contract', '=',True )]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines"
+                              attrs="{'readonly':[('state','!=','draft')]}">
+                            <field name="lines_id" attrs="{'readonly':[('state','!=','draft')]}"
+                                   widget="section_and_note_one2many"  context="{'default_type': 'supconstractor','default_project_id':project_id}">
+                                <form>
+                                    <group>
+                                        <field name="code" attrs="{'required':True}"/>
+                                        <field name="is_sub_contract" invisible="1"/>
+
+                                        <field name="item" attrs="{'required':True}" string="بند المقايسه"/>
+                                        <field name="name" attrs="{'required':True}" string="وصف بند المقايسه"/>
+                                        <field name="related_job"/>
+                                        <field name="uom_id" attrs="{'required':True}"/>
+                                        <field name="qty"
+                                               attrs="{'required':True,'readonly':[('is_sub_contract','=',False)]  }"/>
+                                        <field name="price_unit"
+                                               attrs="{'required':True,'readonly':[('is_sub_contract','=',False)] }"/>
+                                        <field name="discount" attrs="{ }"/>
+                                        <field name="total_value"/>
+                                        <field name="notes"/>
+                                    </group>
+                                </form>
+                                <tree editable="bottom">
+                                    <!--                                    <field name="display_type" invisible="1"/>-->
+                                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section"
+                                                context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note"
+                                                context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+
+                                    <field name="sequence" widget="handle" optional="show"/>
+                                    <field name="display_type" optional="hide"/>
+                                    <field name="item" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show" string="بند المقايسه"/>
+                                    <field name="name" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"
+                                           widget="section_and_note_text"  string="وصف بند المقايسه"/>
+                                    <field name="uom_id" attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"/>
+                                    <field name="qty" attrs="{'required': [('display_type', '=', False)]}"
+                                           sum="Total" optional="show"/>
+                                    <field name="price_unit"
+                                           attrs="{'required': [('display_type', '=', False)]}"
+                                           optional="show"/>
+                                    <field name="discount" sum="Total" optional="show"/>
+<!--                                      <field name="tax_ids"  widget="many2many_tags" optional="show"/>-->
+                                    <field name="total_value" sum="Total" optional="show"/>
+                                    <field name="notes" optional="show"/>
+                                    <button name="add_stage_line_ids" type="object" string="Add stage"/>
+<!--                                    <button name="view_stage_line_ids" type="object" string="View stage"/>-->
+
+                                </tree>
+
+                            </field>
+                        </page>
+                         <page string="Stages">
+                            <field name="stage_ids" attrs="{'readonly':[('state','!=','draft')]}">
+                                <tree editable="bottom">
+                                    <field name="stage_id" optional="show"></field>
+                                    <field name="prec" optional="show"></field>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Deduction"
+                              attrs="{'invisible':[('type','=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="deduction_ids"
+                                   context="{'default_type':'deduction','default_sub_type':'supconstractor'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Additional"
+                              attrs="{'invisible':[('type','=','owner')],'readonly':[('state','!=','draft')]}">
+                            <field name="allowance_ids"
+                                   context="{'default_type':'addition','default_sub_type':'supconstractor'}">
+                                <tree editable="top">
+                                    <field name="type" invisible="1" optional="show"/>
+                                    <field name="sub_type" invisible="1" optional="show"/>
+                                    <field name="name" attrs="{'required':True}" optional="show"/>
+                                    <field name="account_id" optional="show"/>
+                                    <field name="is_precentage" optional="show"/>
+                                    <field name="precentage"
+                                           attrs="{'readonly':[('is_precentage','=',False)]}" optional="show"/>
+                                   <field name="is_down_payment" optional="show"  attrs="{'readonly':[('is_precentage','=',True)]}" string ="Value"/>
+
+                                </tree>
+                            </field>
+                        </page>
+
+
+                    </notebook>
+
+                    <group class="oe_subtotal_footer oe_right">
+
+<!--                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">-->
+<!--                            <label for="amount_tax"/>-->
+<!--                        </div>-->
+<!--                        <field name="amount_tax" nolabel="1" class="oe_subtotal_footer_separator"-->
+<!--                               widget="monetary"/>-->
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label for="total_value"/>
+                        </div>
+                        <field name="total_value" nolabel="1" class="oe_subtotal_footer_separator"
+                               widget="monetary"/>
+
+                    </group>
+
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'post_refresh':True}"
+                           help="Follow this project to automatically track the events associated to tasks and issues of this project."
+                           groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_contract_tree_line" model="ir.ui.view">
+        <field name="name">view_contract_tree_line</field>
+        <field name="model">construction.contract.line</field>
+        <field name="arch" type="xml">
+            <tree>
+
+                <field name="tender_id" attrs="{'required':True}" optional="show"/>
+
+                <field name="qty" attrs="{'required':True}" sum="Total" optional="show"/>
+                <field name="price_unit" attrs="{'required':True}" optional="show"/>
+                <field name="total_value" attrs="{'required':True}" sum="Total" optional="show"/>
+            </tree>
+
+
+        </field>
+    </record>
+
+    <record id="view_contract_tree_sub_contract" model="ir.ui.view">
+        <field name="name">view_contract_tree_sub_contract</field>
+        <field name="model">construction.contract</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="new_construction.view_contract_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_contract_form_sub_contract_view" model="ir.ui.view">
+        <field name="name">view_contract_form_sub_contract_view</field>
+        <field name="model">construction.contract</field>
+         <field name="mode">primary</field>
+        <field name="inherit_id" ref="new_construction.view_contract_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">0</attribute>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

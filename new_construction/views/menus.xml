@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- This Menu Item must have a parent and an action -->
+    <menuitem id="contract_root" name="CONSTRUCTION" groups="access_right_tender_cons.group_construction_user,access_right_tender_cons.group_construction_manager"/>
+    <menuitem id="contract_root_project" name="Contract Project" parent="contract_root"/>
+    <menuitem name="Contracts Owner" id="construction_contract_owner" parent="contract_root_project" sequence="1"
+              action="action_contract_owner"/>
+    <menuitem name="SubContractors" id="construction_contract_subcontractor" parent="contract_root_project" sequence="2"
+              action="action_contract_subcontratcor"/>
+
+<!--    <menuitem id="contract_root_def" name="Contract Users" parent="contract_root"/>-->
+
+
+    <menuitem name="Invoice" id="construction_invoice" parent="new_construction.contract_root" sequence="20"/>
+    <menuitem name="Invoice Owner" id="construction_invoice_owner" parent="construction_invoice" sequence="1"
+              action="action_window_account_invoice_owner"/>
+    <menuitem name="Invoice Subconstructor" id="construction_invoice_subcontractor" parent="construction_invoice"
+              sequence="2" action="action_window_account_invoice_sup"/>
+
+    <menuitem id="construction_configuration" name="configuration" parent="contract_root" sequence="100"/>
+    <menuitem name="Deduction" id="construction_deduction" parent="construction_configuration" sequence="7"
+              action="action_contract_deduction"/>
+
+    <menuitem name="Additional" id="construction_allowance" parent="construction_configuration" sequence="8"
+              action="action_contract_allowance"/>
+    <menuitem name="Stages" id="construction_stage" parent="construction_configuration" sequence="10"
+              action="action_contract_stage"/>
+      <menuitem name="Owner Contract" id="construction_contract_owner_user" parent="construction_configuration"
+              action="action_owner_contract_user"/>
+    <menuitem name="Sub-contractors" id="construction_contract_sub_sub" parent="construction_configuration"
+              action="action_sub_contract_user"/>
+    <menuitem name="Item" id="construction_items_2" parent="construction_configuration" action="action_window_item_product_2"/>
+    <menuitem name="Related Job" id="menu_related_job_2" parent="construction_configuration" action="action_job_related_2"/>
+
+
+    <!-- This Menu Item must have a parent and an action -->
+    <menuitem id="menu_wbs" name="WBS" sequence="10" parent="contract_root"/>
+    <menuitem id="menu_wbs_item" name="WBS" parent="menu_wbs" action="action_wbs" sequence="1"/>
+    <menuitem id="menu_wbs_item_line" name="WBS Item" parent="menu_wbs" action="action_wbs_line" sequence="2"/>
+    <menuitem id="menu_boq_root" name="BOM"   sequence="10" parent="contract_root"/>
+    <menuitem id="menu_boq" name="BOM" action="action_boq" sequence="10" parent="menu_boq_root"/>
+    <menuitem id="menu_boq_item" name="BOM Item" action="action_boq_item" sequence="10" parent="menu_boq_root"/>
+    <menuitem id="menu_engineer" name="Engineer Template" sequence="10"
+              parent="contract_root"/>
+     <menuitem id="menu_engineer_owner" name="Engineer Template Owner" action="action_engineer" sequence="1"
+              parent="menu_engineer"/>
+     <menuitem id="menu_engineer_sub" name="Engineer Template Subcontractor" action="action_engineer_2" sequence="2"
+              parent="menu_engineer"/>
+</odoo>

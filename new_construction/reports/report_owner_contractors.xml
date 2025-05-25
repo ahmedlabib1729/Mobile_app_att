@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_owner_contractors">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page" dir="rtl">
+
+                            <style>
+                                .tb table,.tb th,.tb td {
+                                border: 1px solid black;
+                                border-collapse: collapse;
+                                text-align:center;
+                                }
+                                table{
+                                width: 100%;
+                                }
+                            </style>
+                            <div class="text-left">Contract Date:
+                                <span t-esc="doc.date"/>
+                            </div>
+                            <h4 class="text-center">
+                                <span t-esc="doc.partner_id_2.name"/>
+                            </h4>
+                            <table class="tb">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">البند</th>
+                                        <th rowspan="2">بيان الأعمال</th>
+                                        <th colspan="4">كمية العقد</th>
+                                    </tr>
+                                    <tr>
+                                        <th>الوحدة</th>
+                                        <th>الكمية</th>
+                                        <th>السعر</th>
+                                        <th>الاجمالي</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.lines_id" t-as="line">
+                                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                            <t t-if="line.display_type == 'line_section'">
+                                                <td colspan="99" id="section" class="text-right">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                            </t>
+                                            <t t-if="not line.display_type">
+                                                <td id="code">
+                                                    <span t-field="line.code"/>
+                                                </td>
+                                                <td id="name">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td id="uom_id">
+                                                    <span t-field="line.uom_id.name"/>
+                                                </td>
+                                                <td id="qty">
+                                                    <span t-field="line.qty"/>
+                                                </td>
+                                                <td id="price_unit">
+                                                    <span t-field="line.price_unit"/>
+                                                </td>
+                                                <td id="total_value">
+                                                    <span t-field="line.total_value"/>
+                                                </td>
+
+                                            </t>
+                                            <t t-if="line.display_type == 'line_note'">
+                                                <td colspan="99" id="note">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td colspan="5">الاجمالي</td>
+                                        <td>
+                                            <span t-field="doc.total_value"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

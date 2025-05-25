@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_subcontractor">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page" dir="rtl">
+
+                            <style>
+                                .tb table,.tb th,.tb td {
+                                border: 1px solid black;
+                                border-collapse: collapse;
+                                text-align:center;
+                                }
+                                table{
+                                width: 100%;
+                                }
+                            </style>
+                            <div class="row">
+                                <div class="col-4">
+                                    <h5>الشركة التخصصية للمقاولات</h5>
+                                </div>
+                                <div class="col-5">
+                                    <h5>مستخلص مقاول باطن جارى / ختامى</h5>
+                                </div>
+                            </div><br/>
+                            <table class="table table-borderless text-right">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            اسم المقاول:
+                                            <span t-esc="doc.contract_id.sub_contactor.name"/>
+                                        </td>
+                                        <td>
+                                            رقم :
+                                            <span t-esc="doc.name"/>
+                                        </td>
+                                        <td>
+                                            بتاريخ :
+                                            <span t-esc="doc.create_date"
+                                                  t-options="{'widget':'date','format':'dd-MM-yyyy'}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="tb">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">رقم البند</th>
+                                        <th rowspan="2">بند الأعمال</th>
+                                        <th rowspan="2">الوحدة</th>
+                                        <th rowspan="2">النسبة</th>
+                                        <th rowspan="2">السعر</th>
+                                        <th colspan="3">الكمية المنفذة</th>
+                                        <th rowspan="2">القيمة الإجمالية</th>
+                                        <th rowspan="2">ملاحظات</th>
+                                    </tr>
+                                    <tr>
+                                        <th>السابقة</th>
+                                        <th>الحالية</th>
+                                        <th>الجملة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="count" t-value="0"/>
+                                    <t t-set="total_previous" t-value="0"/>
+                                    <t t-foreach="doc.lines" t-as="line">
+                                        <t t-set="count" t-value="count+1"/>
+                                        <t t-set="price" t-value="0"/>
+                                        <t t-set="previous" t-value="0"/>
+                                        <tr>
+                                            <td>
+                                                <span t-esc="count"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.name"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.uom_id.name"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.percentage"/>
+                                            </td>
+                                            <td>
+                                                <t t-if="line.qty">
+                                                    <span t-esc="line.amount / line.qty"/>
+                                                    <t t-set="price" t-value="line.amount / line.total_qty"/>
+                                                    <t t-set="previous" t-value="price * line.previous_qty"/>
+                                                    <t t-set="total_previous" t-value="total_previous + previous"/>
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.previous_qty"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.qty"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.total_qty"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.amount"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="line.notes"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8">إجـــــــــــــــــــــمالى قيمة المســــتخلص</td>
+                                            <td>
+                                                <span t-esc="'{0:,.2f}'.format(doc.total_value)"/>
+                                            </td>
+                                            <td colspan="1"/>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8">يخصم إجمالى قيمة المستخلص السابق</td>
+                                            <td>
+                                                <span t-esc="'{0:,.2f}'.format(total_previous)"/>
+                                            </td>
+                                            <td colspan="1"/>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8">قــــــــــيمة الأعمال بالمستخلص الحالى</td>
+                                            <td>
+                                                <span t-esc="'{0:,.2f}'.format(doc.total_value - total_previous)"/>
+                                            </td>
+                                            <td colspan="1"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <div class="text-right">
+                                <div>مهندس العملية:</div>
+                                <div>مدير التنفيذ:</div>
+                                <div>صافى المستحق عن هذا المستخلص : فقط
+                                    <span t-esc="doc.change_to_word(doc.total_value - total_previous)"/>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

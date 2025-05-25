@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="action_contract_owner">
+            <field name="name">Owner Contractors</field>
+            <field name="res_model">construction.contract</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_type':'owner'}</field>
+            <field name="domain">[('type','=','owner'),('is_sub_contract','=',False)]</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('new_construction.view_contract_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('new_construction.view_contract_form')})]"/>
+
+        </record>
+        <record model="ir.actions.act_window" id="action_contract_subcontratcor">
+            <field name="name">SubContractors</field>
+            <field name="res_model">construction.contract</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_type':'supconstractor'}</field>
+            <field name="domain">[('type','=','supconstractor')]</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('new_construction.view_contract_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('new_construction.view_contract_form_sub')})]"/>
+
+        </record>
+
+        <record model="ir.actions.act_window" id="action_owner_contract_user">
+            <field name="name">Owner</field>
+            <field name="res_model">construction.contract.user</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','owner')]</field>
+            <field name="context">{'default_type':'owner'}</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_contract_user">
+            <field name="name">Sub-Contractors</field>
+            <field name="res_model">construction.contract.user</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','supconstractor')]</field>
+            <field name="context">{'default_type':'supconstractor'}</field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="action_contract_deduction">
+            <field name="name">Deductions</field>
+            <field name="res_model">contract.deduction.allowance</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','deduction')]</field>
+            <field name="context">{'default_type':'deduction'}</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_contract_allowance">
+            <field name="name">Additional</field>
+            <field name="res_model">contract.deduction.allowance</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','addition')]</field>
+            <field name="context">{'default_type':'addition'}</field>
+        </record>
+        <record id="action_contract_stage" model="ir.actions.act_window">
+            <field name="name">Stages</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">contract.stage</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_wbs" model="ir.actions.act_window">
+            <field name="name">WBS</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wbs.item</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record id="action_wbs_line" model="ir.actions.act_window">
+            <field name="name">WBS Lines</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wbs.item.line</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record id="action_boq" model="ir.actions.act_window">
+            <field name="name">BOM</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.boq</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record id="action_boq_item" model="ir.actions.act_window">
+            <field name="name">BOM Item</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.boq.lines</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'create':0,'edit':0}</field>
+        </record>
+        <record id="action_engineer" model="ir.actions.act_window">
+            <field name="name">engineer Template Owner</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">construction.engineer</field>
+             <field name="domain">[('contract_id.type','=','owner')]</field>
+             <field name="context">{'default_type':'owner'}</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+         <record id="action_engineer_2" model="ir.actions.act_window">
+            <field name="name">engineer Template Subcontractor</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">construction.engineer</field>
+            <field name="view_mode">tree,form</field>
+             <field name="context">{'default_type':'supconstractor'}</field>
+             <field name="domain">[('contract_id.type','=','supconstractor')]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_window_account_invoice_owner">
+            <field name="name">Invoice Owner</field>
+            <field name="res_model">account.invoice</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','owner')]</field>
+            <field name="context">{'default_type':'owner','default_rate':100}</field>
+
+            <field name="view_ids" eval="[(5, 0, 0),
+                        (0, 0, {'view_mode': 'tree', 'view_id': ref('new_construction.view_move_construction_tree')}),
+                        (0, 0, {'view_mode': 'form', 'view_id': ref('new_construction.view_move_construction_invoice_form')})]"/>
+        </record>
+        <record model="ir.actions.act_window" id="action_window_account_invoice_sup">
+            <field name="name">Invoice Sub contractor</field>
+            <field name="res_model">account.invoice</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','supconstractor')]</field>
+            <field name="context">{'default_type':'supconstractor'}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                        (0, 0, {'view_mode': 'tree', 'view_id': ref('new_construction.view_move_construction_tree_sub')}),
+                        (0, 0, {'view_mode': 'form', 'view_id': ref('new_construction.view_move_construction_invoice_sub')})]"/>
+
+        </record>
+        <record model="ir.actions.act_window" id="action_window_item_product_2">
+            <field name="name">Items</field>
+            <field name="res_model">product.item</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+        <record model="ir.actions.act_window" id="action_job_related_2">
+            <field name="name">Related Job</field>
+            <field name="res_model">tender.related.job</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

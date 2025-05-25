@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+<!--    <record id="product_template_only_form_view_construction" model="ir.ui.view">-->
+<!--        <field name="name">product_template_only_form_view_construction</field>-->
+<!--        <field name="model">product.template</field>-->
+<!--        <field name="inherit_id" ref="product.product_template_only_form_view"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//notebook" position="before">-->
+<!--                <group>-->
+<!--                    <group>-->
+<!--                          <field name="expense"/>-->
+<!--                          <field name="material"/>-->
+<!--                          <field name="indirect_cost"/>-->
+
+<!--                    </group>-->
+<!--                    <group>-->
+<!--                          <field name="labour"/>-->
+<!--                          <field name="equipment"/>-->
+<!--                          <field name="subContractor"/>-->
+<!--                    </group>-->
+
+<!--                </group>-->
+<!--                &lt;!&ndash; Add your fields or attributes here &ndash;&gt;-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+<!--    <record id="product_template_only_form_view_construction" model="ir.ui.view">-->
+<!--        <field name="name">product_template_form_view_view_construction</field>-->
+<!--        <field name="model">product.template</field>-->
+<!--        <field name="inherit_id" ref="product.product_template_form_view"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//notebook" position="before">-->
+<!--                <group>-->
+<!--                    <group>-->
+<!--                          <field name="expense"/>-->
+<!--                          <field name="material"/>-->
+<!--                          <field name="indirect_cost"/>-->
+
+<!--                    </group>-->
+<!--                    <group>-->
+<!--                          <field name="labour"/>-->
+<!--                          <field name="equipment"/>-->
+<!--                          <field name="subContractor"/>-->
+<!--                    </group>-->
+
+<!--                </group>-->
+<!--                &lt;!&ndash; Add your fields or attributes here &ndash;&gt;-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+</odoo>

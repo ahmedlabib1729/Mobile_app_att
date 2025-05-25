@@ -1,0 +1,57 @@
+<odoo>
+     <record id="view_move_construction_pop_wizard_pop" model="ir.ui.view">
+        <field name="name">view_move_construction_pop</field>
+        <field name="model">invoice.tender.wizard</field>
+
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="project_id" invisible="1"/>
+                        <!--                    <field name="tender_ids" widget="many2many_tags"  />-->
+                        <field name="tender_ids" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="add_lines" string="save" type="object" class="btn-primary"/>
+                    <button name="cancel" string="Cancel" type="object" class="btn-primary"/>
+
+
+                </footer>
+
+            </form>
+        </field>
+    </record>
+     <record id="view_move_construction_pop_wizard_pop_subcontractor" model="ir.ui.view">
+        <field name="name">view_move_construction_pop</field>
+        <field name="model">invoice.tender.wizard</field>
+
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="contract_id"/>
+                        <!--                    <field name="tender_ids" widget="many2many_tags"  />-->
+                        <field name="contract_lines_ids_ids" context="{'tree_view_ref': 'construction.view_contract_tree_line'}">
+                            <tree >
+                                <field name="tender_id" required="1"/>
+                                <field name="sub_contarctor_item" required="1"/>
+                                <field name="wbs_item" required="1"/>
+                                <field name="qty" required="1" sum="Total"/>
+                                <field name="price_unit" required="1"/>
+                                <field name="total_value" required="1" sum="Total"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="add_lines" string="save" type="object" class="btn-primary"/>
+                    <button name="cancel" string="Cancel" type="object" class="btn-primary"/>
+
+
+                </footer>
+
+            </form>
+        </field>
+    </record>
+</odoo>

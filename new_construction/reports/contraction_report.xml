@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- QWeb Reports -->
+        <record id="action_report_subcontractor" model="ir.actions.report">
+            <field name="name">SubContractor</field>
+            <field name="model">construction.engineer</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">new_construction.report_subcontractor</field>
+            <field name="report_file">new_construction.report_subcontractor</field>
+            <field name="binding_model_id" ref="model_construction_engineer"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="action_report_owner_contractors" model="ir.actions.report">
+            <field name="name">Owner Contractors</field>
+            <field name="model">construction.contract</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">new_construction.report_owner_contractors</field>
+            <field name="report_file">new_construction.report_owner_contractors</field>
+            <field name="binding_model_id" ref="model_construction_contract"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>
