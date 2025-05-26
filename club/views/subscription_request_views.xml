@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_subscription_request_list" model="ir.ui.view">
+        <field name="name">subscription.request.list</field>
+        <field name="model">subscription.request</field>
+        <field name="arch" type="xml">
+            <list string="طلبات الاشتراك" decoration-success="state == 'approved'" decoration-danger="state == 'rejected'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="request_type"/>
+                <field name="parent_id"/>
+                <field name="total_amount" sum="الإجمالي"/>
+                <field name="created_subscriptions_count" string="الاشتراكات"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_subscription_request_form" model="ir.ui.view">
+        <field name="name">subscription.request.form</field>
+        <field name="model">subscription.request</field>
+        <field name="arch" type="xml">
+            <form string="طلب اشتراك">
+                <header>
+                    <button name="action_send" string="إرسال" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_review" string="بدء المراجعة" type="object" class="btn-info" invisible="state != 'sent'"/>
+                    <button name="action_approve" string="موافقة وتنفيذ" type="object" class="btn-success" invisible="state != 'review'" confirm="هل أنت متأكد من الموافقة على الطلب وإنشاء الاشتراكات؟"/>
+                    <button name="action_reject" string="رفض" type="object" class="btn-danger" invisible="state != 'review'"/>
+                    <button name="action_cancel" string="إلغاء" type="object" invisible="state not in ['draft', 'sent']"/>
+                    <button name="action_view_subscriptions" string="عرض الاشتراكات" type="object" class="btn-secondary" invisible="created_subscriptions_count == 0"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,review,approved"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="موافق عليه" invisible="state != 'approved'" bg_color="bg-success"/>
+                    <widget name="web_ribbon" title="مرفوض" invisible="state != 'rejected'" bg_color="bg-danger"/>
+                    <widget name="web_ribbon" title="ملغي" invisible="state != 'cancelled'" bg_color="bg-secondary"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="معلومات الطلب">
+                            <field name="request_date"/>
+                            <field name="request_type"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="created_subscriptions_count" invisible="state != 'approved'"/>
+                        </group>
+                        <group string="ولي الأمر">
+                            <field name="parent_exists" readonly="state != 'draft'"/>
+                            <field name="parent_id" invisible="not parent_exists" readonly="state != 'draft'" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+
+                    <!-- New Parent Information -->
+                    <group string="بيانات ولي الأمر الجديد" invisible="parent_exists">
+                        <group>
+                            <field name="new_parent_name" required="not parent_exists" readonly="state != 'draft'"/>
+                            <field name="new_parent_identification" required="not parent_exists" readonly="state != 'draft'"/>
+                            <field name="new_parent_id_type" required="not parent_exists" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="new_parent_phone" required="not parent_exists" readonly="state != 'draft'"/>
+                            <field name="new_parent_email" readonly="state != 'draft'"/>
+                            <field name="new_parent_address" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="تفاصيل الطلب">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="player_exists"/>
+                                    <field name="player_id" invisible="not player_exists" domain="existing_players_domain" options="{'no_create': True}"/>
+                                    <field name="new_player_name" invisible="player_exists" required="not player_exists"/>
+                                    <field name="new_player_birth_date" invisible="player_exists" required="not player_exists"/>
+                                    <field name="new_player_gender" invisible="player_exists" required="not player_exists"/>
+                                    <field name="sport_id"/>
+                                    <field name="subscription_period"/>
+                                    <field name="subtotal" sum="الإجمالي"/>
+                                    <field name="note"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="existing_players_domain" invisible="1"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="total_amount" widget="monetary" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="بيانات إضافية للاعبين" invisible="not line_ids">
+                            <p class="text-muted">الحالة الصحية للاعبين الجدد (إن وجدت)</p>
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list>
+                                    <field name="new_player_name" readonly="1"/>
+                                    <field name="new_player_medical_conditions" invisible="player_exists"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="سبب الرفض" invisible="state != 'rejected'">
+                            <field name="rejection_reason" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_subscription_request_search" model="ir.ui.view">
+        <field name="name">subscription.request.search</field>
+        <field name="model">subscription.request</field>
+        <field name="arch" type="xml">
+            <search string="بحث طلبات الاشتراك">
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="new_parent_name"/>
+                <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="مرسل" name="sent" domain="[('state', '=', 'sent')]"/>
+                <filter string="قيد المراجعة" name="review" domain="[('state', '=', 'review')]"/>
+                <filter string="موافق عليه" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="مرفوض" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="اشتراك جديد" name="new" domain="[('request_type', '=', 'new')]"/>
+                <filter string="تجديد" name="renewal" domain="[('request_type', '=', 'renewal')]"/>
+                <separator/>
+                <filter string="اليوم" name="today" domain="[('request_date', '=', context_today())]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الحالة" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="نوع الطلب" name="request_type" context="{'group_by': 'request_type'}"/>
+                    <filter string="ولي الأمر" name="parent" context="{'group_by': 'parent_id'}"/>
+                    <filter string="التاريخ" name="date" context="{'group_by': 'request_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_subscription_request_kanban" model="ir.ui.view">
+        <field name="name">subscription.request.kanban</field>
+        <field name="model">subscription.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="state"/>
+                <field name="parent_id"/>
+                <field name="total_amount"/>
+                <field name="created_subscriptions_count"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <i class="fa fa-user"/> <field name="parent_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar"/> <field name="request_date"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-money"/> <field name="total_amount" widget="monetary"/>
+                                </div>
+                                <div invisible="created_subscriptions_count == 0">
+                                    <i class="fa fa-check-circle"/> <field name="created_subscriptions_count"/> اشتراك
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_subscription_request" model="ir.actions.act_window">
+        <field name="name">طلبات الاشتراك</field>
+        <field name="res_model">subscription.request</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_subscription_request_search"/>
+        <field name="context">{'search_default_review': 1, 'search_default_sent': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء طلب اشتراك جديد
+            </p>
+            <p>
+                قم بإدارة طلبات الاشتراك من أولياء الأمور
+            </p>
+        </field>
+    </record>
+</odoo>

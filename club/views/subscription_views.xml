@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_player_subscription_list" model="ir.ui.view">
+        <field name="name">player.subscription.list</field>
+        <field name="model">player.subscription</field>
+        <field name="arch" type="xml">
+            <list string="الاشتراكات" decoration-success="state == 'active'" decoration-warning="is_expiring_soon" decoration-danger="state == 'expired'">
+                <field name="player_id"/>
+                <field name="sport_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="days_to_expire" string="الأيام المتبقية"/>
+                <field name="subscription_fee"/>
+                <field name="paid_amount"/>
+                <field name="payment_state" widget="badge" decoration-success="payment_state == 'paid'" decoration-warning="payment_state == 'partial'" decoration-danger="payment_state == 'unpaid'"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'" decoration-muted="state == 'draft'" decoration-danger="state == 'expired'"/>
+                <field name="is_expiring_soon" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_player_subscription_form" model="ir.ui.view">
+        <field name="name">player.subscription.form</field>
+        <field name="model">player.subscription</field>
+        <field name="arch" type="xml">
+            <form string="اشتراك اللاعب">
+                <header>
+                    <button name="action_make_payment" string="دفع" type="object" class="btn-success" invisible="remaining_amount &lt;= 0 or state == 'cancelled'"/>
+                    <button name="action_activate" string="تفعيل" type="object" class="btn-primary" invisible="state != 'draft' or payment_state == 'unpaid'"/>
+                    <button name="action_renew" string="تجديد الاشتراك" type="object" class="btn-success" invisible="state not in ['expired', 'active'] or days_to_expire > 7"/>
+                    <button name="action_cancel" string="إلغاء" type="object" class="btn-danger" invisible="state in ['cancelled', 'renewed']" confirm="هل أنت متأكد من إلغاء هذا الاشتراك؟"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_payments" icon="fa-money" invisible="paid_amount == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="paid_amount" widget="monetary"/>
+                                </span>
+                                <span class="o_stat_text">المدفوع</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="منتهي" invisible="state != 'expired'" bg_color="bg-danger"/>
+                    <widget name="web_ribbon" title="قرب الانتهاء" invisible="not is_expiring_soon or state != 'active'" bg_color="bg-warning"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="معلومات الاشتراك">
+                            <field name="player_id" readonly="state != 'draft'"/>
+                            <field name="parent_id"/>
+                            <field name="sport_id" readonly="state != 'draft'"/>
+                            <field name="duration_months"/>
+                        </group>
+                        <group string="التواريخ">
+                            <field name="start_date" readonly="state != 'draft'"/>
+                            <field name="end_date" readonly="state == 'active'"/>
+                            <field name="days_to_expire" invisible="state != 'active'"/>
+                        </group>
+                    </group>
+                    <group string="المعلومات المالية">
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="subscription_fee" widget="monetary"/>
+                            <field name="paid_amount" widget="monetary" readonly="state != 'draft'"/>
+                            <field name="remaining_amount" widget="monetary" decoration-danger="remaining_amount > 0"/>
+                        </group>
+                        <group>
+                            <field name="payment_state" widget="badge"/>
+                            <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_player_subscription_kanban" model="ir.ui.view">
+        <field name="name">player.subscription.kanban</field>
+        <field name="model">player.subscription</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="id"/>
+                <field name="player_id"/>
+                <field name="sport_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="days_to_expire"/>
+                <field name="subscription_fee"/>
+                <field name="payment_state"/>
+                <field name="state"/>
+                <field name="is_expiring_soon"/>
+                <field name="currency_id"/>
+                <progressbar field="payment_state" colors='{"paid": "success", "partial": "warning", "unpaid": "danger"}'/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="player_id"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <i class="fa fa-trophy" title="اللعبة"/> <field name="sport_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar" title="الفترة"/>
+                                    <field name="start_date"/> - <field name="end_date"/>
+                                </div>
+                                <div t-if="record.state.raw_value == 'active' and record.days_to_expire.raw_value >= 0">
+                                    <span class="badge rounded-pill text-bg-warning" t-if="record.is_expiring_soon.raw_value">
+                                        متبقي <field name="days_to_expire"/> يوم
+                                    </span>
+                                    <span class="badge rounded-pill text-bg-success" t-else="">
+                                        متبقي <field name="days_to_expire"/> يوم
+                                    </span>
+                                </div>
+                                <div>
+                                    <field name="subscription_fee" widget="monetary"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <field name="payment_state" widget="badge"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_player_subscription_calendar" model="ir.ui.view">
+        <field name="name">player.subscription.calendar</field>
+        <field name="model">player.subscription</field>
+        <field name="arch" type="xml">
+            <calendar string="الاشتراكات" date_start="start_date" date_stop="end_date" color="sport_id">
+                <field name="player_id"/>
+                <field name="sport_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_player_subscription_search" model="ir.ui.view">
+        <field name="name">player.subscription.search</field>
+        <field name="model">player.subscription</field>
+        <field name="arch" type="xml">
+            <search string="بحث الاشتراكات">
+                <field name="player_id"/>
+                <field name="sport_id"/>
+                <field name="parent_id"/>
+                <filter string="نشط" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="منتهي" name="expired" domain="[('state', '=', 'expired')]"/>
+                <filter string="قرب الانتهاء" name="expiring_soon" domain="[('is_expiring_soon', '=', True)]"/>
+                <separator/>
+                <filter string="مدفوع" name="paid" domain="[('payment_state', '=', 'paid')]"/>
+                <filter string="غير مدفوع" name="unpaid" domain="[('payment_state', '=', 'unpaid')]"/>
+                <separator/>
+                <filter string="اشتراكاتي" name="my_subscriptions" domain="[('create_uid', '=', uid)]"/>
+                <filter string="اليوم" name="today" domain="[('start_date', '=', context_today())]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="اللاعب" name="player" context="{'group_by': 'player_id'}"/>
+                    <filter string="اللعبة" name="sport" context="{'group_by': 'sport_id'}"/>
+                    <filter string="ولي الأمر" name="parent" context="{'group_by': 'parent_id'}"/>
+                    <filter string="الحالة" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="حالة السداد" name="payment_state" context="{'group_by': 'payment_state'}"/>
+                    <filter string="تاريخ البداية" name="start_date" context="{'group_by': 'start_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_player_subscription" model="ir.actions.act_window">
+        <field name="name">الاشتراكات</field>
+        <field name="res_model">player.subscription</field>
+        <field name="view_mode">list,kanban,form,calendar</field>
+        <field name="search_view_id" ref="view_player_subscription_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                أضف اشتراك جديد
+            </p>
+            <p>
+                قم بإدارة اشتراكات اللاعبين في الألعاب المختلفة
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_club_root"
+              name="إدارة النادي"
+              sequence="10"/>
+
+    <!-- Members Menu -->
+    <menuitem id="menu_club_members"
+              name="الأعضاء"
+              parent="menu_club_root"
+              sequence="10"/>
+
+    <!-- Players Menu -->
+    <menuitem id="menu_club_players"
+              name="اللاعبين"
+              parent="menu_club_members"
+              action="action_club_player"
+              sequence="10"/>
+
+    <!-- Parents Menu -->
+    <menuitem id="menu_club_parents"
+              name="أولياء الأمور"
+              parent="menu_club_members"
+              action="action_club_parent"
+              sequence="20"/>
+
+    <!-- Sports Menu -->
+    <menuitem id="menu_club_sports"
+              name="الألعاب الرياضية"
+              parent="menu_club_root"
+              action="action_club_sport"
+              sequence="20"/>
+
+    <!-- Subscriptions Menu -->
+    <menuitem id="menu_club_subscriptions"
+              name="الاشتراكات"
+              parent="menu_club_root"
+              sequence="30"/>
+
+    <!-- All Subscriptions -->
+    <menuitem id="menu_all_subscriptions"
+              name="جميع الاشتراكات"
+              parent="menu_club_subscriptions"
+              action="action_player_subscription"
+              sequence="10"/>
+
+
+
+    <!-- Payments Menu -->
+    <menuitem id="menu_club_payments"
+              name="المدفوعات"
+              parent="menu_club_root"
+              sequence="40"/>
+
+    <!-- Payment Receipts -->
+    <menuitem id="menu_payment_receipts"
+              name="سندات القبض"
+              parent="menu_club_payments"
+              action="action_payment_receipt"
+              sequence="10"/>
+
+    <!-- Requests Menu -->
+    <menuitem id="menu_club_requests"
+              name="الطلبات"
+              parent="menu_club_root"
+              sequence="50"/>
+
+    <!-- Subscription Requests -->
+    <menuitem id="menu_subscription_requests"
+              name="طلبات الاشتراك"
+              parent="menu_club_requests"
+              action="action_subscription_request"
+              sequence="10"/>
+</odoo>
