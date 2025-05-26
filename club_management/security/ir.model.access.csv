@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_club_membership_type_user,club.membership.type.user,model_club_membership_type,base.group_user,1,0,0,0
+access_club_membership_type_manager,club.membership.type.manager,model_club_membership_type,base.group_system,1,1,1,1
+access_club_membership_user,club.membership.user,model_club_membership,base.group_user,1,1,1,0
+access_club_membership_manager,club.membership.manager,model_club_membership,base.group_system,1,1,1,1
+access_club_sport_activity_user,club.sport.activity.user,model_club_sport_activity,base.group_user,1,0,0,0
+access_club_sport_activity_manager,club.sport.activity.manager,model_club_sport_activity,base.group_system,1,1,1,1
+access_club_member_activity_user,club.member.activity.user,model_club_member_activity,base.group_user,1,1,1,0
+access_club_member_activity_manager,club.member.activity.manager,model_club_member_activity,base.group_system,1,1,1,1

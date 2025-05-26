@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_parent_list" model="ir.ui.view">
+        <field name="name">club.parent.list</field>
+        <field name="model">club.parent</field>
+        <field name="arch" type="xml">
+            <list string="أولياء الأمور">
+                <field name="name"/>
+                <field name="identification_number"/>
+                <field name="nationality"/>
+                <field name="mobile"/>
+                <field name="email"/>
+                <field name="player_count"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="view_parent_form" model="ir.ui.view">
+        <field name="name">club.parent.form</field>
+        <field name="model">club.parent</field>
+        <field name="arch" type="xml">
+            <form string="ولي أمر">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="اسم ولي الأمر"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="معلومات شخصية">
+                            <field name="identification_number"/>
+                            <field name="nationality"/>
+                            <field name="job"/>
+                        </group>
+                        
+                        <group string="معلومات الاتصال">
+                            <field name="mobile"/>
+                            <field name="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="address"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="الأبناء المسجلين">
+                            <field name="player_ids" context="{'default_parent_id': active_id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="identification_number"/>
+                                    <field name="age"/>
+                                    <field name="gender"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="player_count" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="ملاحظات">
+                            <field name="notes" placeholder="أي ملاحظات إضافية..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_parent_search" model="ir.ui.view">
+        <field name="name">club.parent.search</field>
+        <field name="model">club.parent</field>
+        <field name="arch" type="xml">
+            <search string="بحث أولياء الأمور">
+                <field name="name"/>
+                <field name="identification_number"/>
+                <field name="mobile"/>
+                <field name="email"/>
+                
+                <filter string="لديه أبناء" name="has_children" domain="[('player_count', '&gt;', 0)]"/>
+                <filter string="بدون أبناء" name="no_children" domain="[('player_count', '=', 0)]"/>
+                
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الجنسية" name="group_nationality" domain="[]" context="{'group_by': 'nationality'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_parent" model="ir.actions.act_window">
+        <field name="name">أولياء الأمور</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">club.parent</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_parent_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إضافة ولي أمر جديد
+            </p>
+            <p>
+                قم بإضافة بيانات أولياء أمور اللاعبين
+            </p>
+        </field>
+    </record>
+</odoo>

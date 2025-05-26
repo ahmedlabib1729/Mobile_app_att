@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- القائمة الرئيسية -->
+    <menuitem id="menu_club_root"
+              name="إدارة النادي"
+              web_icon="club_management,static/description/icon.png"
+              sequence="10"/>
+
+    <!-- قائمة العضويات -->
+    <menuitem id="menu_memberships"
+              name="العضويات"
+              parent="menu_club_root"
+              sequence="10"/>
+
+    <!-- العضويات -->
+    <menuitem id="menu_membership"
+              name="العضويات"
+              parent="menu_memberships"
+              action="action_membership"
+              sequence="10"/>
+
+    <!-- أنواع العضويات -->
+    <menuitem id="menu_membership_type"
+              name="أنواع العضويات"
+              parent="menu_memberships"
+              action="action_membership_type"
+              sequence="20"/>
+
+    <!-- قائمة الأنشطة -->
+    <menuitem id="menu_activities"
+              name="الأنشطة الرياضية"
+              parent="menu_club_root"
+              sequence="20"/>
+
+    <!-- الأنشطة الرياضية -->
+    <menuitem id="menu_sport_activity"
+              name="الأنشطة الرياضية"
+              parent="menu_activities"
+              action="action_sport_activity"
+              sequence="10"/>
+
+    <!-- اشتراكات الأعضاء -->
+    <menuitem id="menu_member_activity"
+              name="اشتراكات الأعضاء"
+              parent="menu_activities"
+              action="action_member_activity"
+              sequence="20"/>
+
+    <!-- قائمة التقارير -->
+    <menuitem id="menu_reports"
+              name="التقارير"
+              parent="menu_club_root"
+              sequence="100"/>
+
+    <!-- قائمة الإعدادات -->
+    <menuitem id="menu_configuration"
+              name="الإعدادات"
+              parent="menu_club_root"
+              sequence="200"/>
+</odoo>

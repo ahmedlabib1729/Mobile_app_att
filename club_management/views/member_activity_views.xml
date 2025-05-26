@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_member_activity_list" model="ir.ui.view">
+        <field name="name">club.member.activity.list</field>
+        <field name="model">club.member.activity</field>
+        <field name="arch" type="xml">
+            <list string="اشتراكات الأعضاء" decoration-success="state == 'active'" 
+                  decoration-warning="state == 'suspended'"
+                  decoration-muted="state in ['expired', 'cancelled']">
+                <field name="partner_id"/>
+                <field name="activity_id"/>
+                <field name="level"/>
+                <field name="subscription_type"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"
+                       decoration-warning="state == 'suspended'"
+                       decoration-info="state == 'draft'"
+                       decoration-danger="state == 'cancelled'"/>
+                <field name="payment_state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="view_member_activity_form" model="ir.ui.view">
+        <field name="name">club.member.activity.form</field>
+        <field name="model">club.member.activity</field>
+        <field name="arch" type="xml">
+            <form string="اشتراك في نشاط">
+                <header>
+                    <button name="action_activate" string="تفعيل" type="object" 
+                            class="btn-primary" 
+                            invisible="state != 'draft' or payment_state != 'paid'"/>
+                    <button name="action_suspend" string="تعليق" type="object" 
+                            invisible="state != 'active'" class="btn-warning"/>
+                    <button name="action_reactivate" string="إعادة تفعيل" type="object" 
+                            invisible="state != 'suspended'" class="btn-success"/>
+                    <button name="action_cancel" string="إلغاء" type="object" 
+                            invisible="state in ['cancelled','expired']" class="btn-danger" 
+                            confirm="هل أنت متأكد من إلغاء هذا الاشتراك؟"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,expired"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="معلق" bg_color="bg-warning" 
+                            invisible="state != 'suspended'"/>
+                    <widget name="web_ribbon" title="منتهي" bg_color="bg-info" 
+                            invisible="state != 'expired'"/>
+                    <widget name="web_ribbon" title="ملغي" bg_color="bg-danger" 
+                            invisible="state != 'cancelled'"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" options="{'no_create': True}"/>
+                            <field name="membership_id" options="{'no_create': True}"/>
+                            <field name="activity_id" options="{'no_create': True}"/>
+                            <field name="level"/>
+                        </group>
+                        <group>
+                            <field name="subscription_type"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="instructor_id"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="المعلومات المالية">
+                            <group>
+                                <group>
+                                    <field name="registration_fee" widget="monetary"/>
+                                    <field name="subscription_fee" widget="monetary"/>
+                                </group>
+                                <group>
+                                    <field name="total_paid" widget="monetary"/>
+                                    <field name="payment_state"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="الأداء والحضور">
+                            <group>
+                                <field name="attendance_rate" widget="percentage"/>
+                                <field name="performance_score" widget="progressbar"/>
+                            </group>
+                        </page>
+                        
+                        <page string="الملاحظات">
+                            <group>
+                                <field name="notes" placeholder="ملاحظات عامة..."/>
+                                <field name="medical_notes" placeholder="ملاحظات طبية..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+               <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Calendar View -->
+    <record id="view_member_activity_calendar" model="ir.ui.view">
+        <field name="name">club.member.activity.calendar</field>
+        <field name="model">club.member.activity</field>
+        <field name="arch" type="xml">
+            <calendar string="اشتراكات الأنشطة" date_start="start_date" date_stop="end_date" 
+                      color="activity_id" mode="month">
+                <field name="partner_id"/>
+                <field name="activity_id"/>
+            </calendar>
+        </field>
+    </record>
+    
+    <!-- Pivot View -->
+    <record id="view_member_activity_pivot" model="ir.ui.view">
+        <field name="name">club.member.activity.pivot</field>
+        <field name="model">club.member.activity</field>
+        <field name="arch" type="xml">
+            <pivot string="تحليل الاشتراكات">
+                <field name="activity_id" type="row"/>
+                <field name="level" type="col"/>
+                <field name="partner_id" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_member_activity_search" model="ir.ui.view">
+        <field name="name">club.member.activity.search</field>
+        <field name="model">club.member.activity</field>
+        <field name="arch" type="xml">
+            <search string="البحث في الاشتراكات">
+                <field name="partner_id"/>
+                <field name="activity_id"/>
+                <field name="instructor_id"/>
+                <separator/>
+                <filter string="نشط" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="معلق" name="suspended" domain="[('state', '=', 'suspended')]"/>
+                <filter string="منتهي" name="expired" domain="[('state', '=', 'expired')]"/>
+                <separator/>
+                <filter string="مدفوع" name="paid" domain="[('payment_state', '=', 'paid')]"/>
+                <filter string="غير مدفوع" name="not_paid" domain="[('payment_state', '=', 'not_paid')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="group_by_activity" string="النشاط" domain="[]" context="{'group_by': 'activity_id'}"/>
+                    <filter name="group_by_level" string="المستوى" domain="[]" context="{'group_by': 'level'}"/>
+                    <filter name="group_by_instructor" string="المدرب" domain="[]" context="{'group_by': 'instructor_id'}"/>
+                    <filter name="group_by_state" string="الحالة" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_member_activity" model="ir.actions.act_window">
+        <field name="name">اشتراكات الأعضاء</field>
+        <field name="res_model">club.member.activity</field>
+        <field name="view_mode">list,form,calendar,pivot</field>
+        <field name="search_view_id" ref="view_member_activity_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                تسجيل عضو في نشاط جديد
+            </p>
+            <p>
+                قم بتسجيل الأعضاء في الأنشطة الرياضية المختلفة
+            </p>
+        </field>
+    </record>
+</odoo>
