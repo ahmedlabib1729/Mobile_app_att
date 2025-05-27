@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="act_avail_units" model="ir.actions.act_window">
+      <field name="name">Available Units</field>
+      <field name="res_model">product.template</field>
+      <field name="view_mode">tree,form,graph</field>
+      <field name="domain">[('state','=','free'),('is_property','=',1),]</field>
+      <field name="context">{}</field>
+      <field name="target">current</field>
+      <field name="search_view_id" ref='product.product_template_search_view' />
+      <field name="view_ids" eval="[(5, 0, 0), 
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('itsys_real_estate.building_unit_list')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('itsys_real_estate.building_unit_form')}),
+      ]"
+      />
+    </record>
+
+    <record id="view_oppo_form" model="ir.ui.view">
+      <field name="name">view_oppo_form</field>
+      <field name="model">crm.lead</field>
+      <field name="inherit_id" ref="crm.crm_lead_view_form" />
+      <field name="arch" type="xml">
+        <div class="oe_button_box" position='inside'>
+          <button name="%(itsys_real_estate.act_avail_units)d" type="action" class="oe_stat_button" icon="fa-building" string="Avail. Units" context="{'search_default_state': 'free','default_state': 'free',}"></button>
+        </div>
+      </field>
+    </record>
+
+    <record id="view_partner_form" model="ir.ui.view">
+      <field name="name">view_partner_form</field>
+      <field name="model">res.partner</field>
+      <field name="priority">1111</field>
+      <field name="inherit_id" ref="base.view_partner_form" />
+      <field name="arch" type="xml">
+        
+        <button name="action_view_partner_invoices" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </button>
+        <button icon="fa-pencil-square-o" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </button>
+        <xpath expr="//div[@name='button_box']" position="inside">
+          <button name="partner_rs_units" type="object" class="oe_stat_button" icon="fa-building">
+            <div class="o_stat_info">
+              <field name="unit_count" class="o_stat_value"/>
+              <span class="o_stat_text"> Units</span>
+            </div>
+          </button>
+          <button name="partner_cheques" type="object" class="oe_stat_button" icon="fa-credit-card">
+            <div class="o_stat_info">
+              <field name="cheque_count" class="o_stat_value"/>
+              <span class="o_stat_text"> Cheques</span>
+          </div>
+          </button>
+        </xpath>
+<!--        <button name='action_view_opportunity' position="before">-->
+<!--          <button name="partner_rs_units" type="object" class="oe_stat_button" icon="fa-building">-->
+<!--            <div class="o_stat_info">-->
+<!--              <field name="unit_count" class="o_stat_value"/>-->
+<!--              <span class="o_stat_text"> Units</span>-->
+<!--            </div>-->
+<!--          </button>-->
+<!--          <button name="partner_cheques" type="object" class="oe_stat_button" icon="fa-credit-card">-->
+<!--            <div class="o_stat_info">-->
+<!--              <field name="cheque_count" class="o_stat_value"/>-->
+<!--              <span class="o_stat_text"> Cheques</span>-->
+<!--          </div>-->
+<!--          </button>-->
+<!--        </button>-->
+<!--        <button name="action_open_helpdesk_ticket" position="attributes">-->
+<!--          <attribute name="attrs">{}</attribute>-->
+<!--        </button>-->
+      </field>
+    </record>
+
+  </data>
+</odoo>

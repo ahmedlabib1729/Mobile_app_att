@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+            <record id="notify_based_on_reservation_date_cron" model="ir.cron">
+            <field name="name">notify_based_on_reservation_date</field>
+            <field name="model_id" ref="itsys_real_estate.model_ownership_contract"/>
+            <field name="state">code</field>
+            <field name="code">model.notify_based_on_reservation_date()</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>                             
+        <menuitem id="real_estate_report_menu" name="Reports" parent="itsys_real_estate.menu_itsys_real_estate" groups="group_real_estate_reports" sequence="400"/>
+    </data>
+</odoo>

@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+
+import calendar
+import time
+import datetime
+from datetime import datetime, date,timedelta
+from dateutil import relativedelta
+from openerp.report import report_sxw
+from openerp.osv import osv
+import datetime
+from datetime import datetime, date,timedelta as td
+
+class Parser(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context=None):
+        super(Parser, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'get_units_status':self._get_units_status,            
+        })
+  
+    def _get_units_status(self,city_ids, region_ids, building_ids, unit_ids):
+	units = []
+	cities = []
+	buildings = []
+	regions = []
+	result=[]
+        empty=0
+        now = datetime.now()
+        now = now.strftime("%Y-%m-%d")
+	if unit_ids:
+	    for unit in unit_ids:
+		units.append(unit.id)
+
+	if building_ids:
+            units_ids = self.pool.get('building.unit').search(self.cr, self.uid, [('building_id','in', building_ids)], context=None)  
+            for unit in units_ids:
+		units.append(unit.id)        
+
+	if region_ids:
+            building_ids = self.pool.get('building').search(self.cr, self.uid, [('region_id','in', region_ids)], context=None)  
+	    for building in building_ids:  
+                units_ids = self.pool.get('building.unit').search(self.cr, self.uid, [('building_id','in', building_ids)], context=None)  
+                for unit in units_ids:
+		    units.append(unit.id)    
+
+	if city_ids:
+            regions_ids = self.pool.get('regions').search(self.cr, self.uid, [('city_id','in', city_ids)], context=None)  
+	    for region in regions_ids:
+	        building_ids = self.pool.get('building').search(self.cr, self.uid, [('region_id','in', region)], context=None)  
+		for building in building_ids:
+                    units_ids = self.pool.get('building.unit').search(self.cr, self.uid, [('building_id','in', building)], context=None)  
+                    for unit in units_ids:
+		        units.append(unit.id)
+        units = list(set(units))
+	if len(units)==0:
+            units_ids = self.pool.get('building.unit').search(self.cr, self.uid, [], context=None)  
+	    for unit in units_ids:
+		units.append(unit)
+
+	ownership_pool = self.pool.get('ownership.contract')
+	rental_pool = self.pool.get('rental.contract')
+	for unit in units:
+	    unit_obj=self.pool.get('building.unit').browse(self.cr, self.uid, unit, context=None)
+	    unit_line = {}
+	    unit_line['city']=None
+	    unit_line['region']=None
+	    unit_line['building']=None
+	    unit_line['type']=None
+            unit_line['city'] = unit_obj.city_id.name
+            unit_line['region'] = unit_obj.region_id.name
+            unit_line['building'] = unit_obj.building_id.name
+            unit_line['country'] = unit_obj.country_id.name
+	    unit_line['state'] = unit_obj.state
+	    unit_line['name'] = unit_obj.name
+	    if  unit_obj.state != 'free':
+                rental_ids = rental_pool.search(self.cr, self.uid, [('building_unit', '=', unit)], context=None)     
+            	rentals = rental_pool.browse(self.cr, self.uid, rental_ids) 
+		if len(rentals) > 0:
+	            for rental in rentals:
+		            dates=[]
+			    for line in rental.loan_line:
+		                dates.append(line.date)
+		            if len(dates)>0:
+		                date_s=min(dates)
+		                date_e=max(dates)
+		                if date_s <= now <= date_e:
+		                    unit_line['rental']=''
+				else:
+				    unit_line['type']='Rental'
+				    unit_line['rental']=rental.name
+				    unit_line['rental_date']=rental.date
+
+	    self.cr.execute("select name,date from ownership_contract where building_unit = "+str(unit)+" order by date desc")
+	    res = self.cr.dictfetchone()
+	    if res:
+	        unit_line['ownership'] = res['name']
+	        unit_line['ownership_date'] = res['date']
+		unit_line['type']='Ownership'
+	    result.append(unit_line)
+	return result
+
+class report_occupancy_details(osv.AbstractModel):
+    _name = 'report.real_estate.report_occupancy'
+    _inherit = 'report.abstract_report'
+    _template = 'real_estate.report_occupancy'
+    _wrapped_report_class = Parser
+

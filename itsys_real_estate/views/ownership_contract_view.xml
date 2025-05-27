@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ownership_contract_comp_rule" model="ir.rule">
+            <field name="name">ownership contract multi-company</field>
+            <field name="model_id" ref="model_ownership_contract"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="ir_cron_calc_penalty" model="ir.cron">
+            <field name="name">Compute Penalty</field>
+            <field name="model_id" ref="model_ownership_contract"/>
+            <field name="state">code</field>
+            <field name="code">model.calc_penalty()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=00, minute=00, second=00) + timedelta(days=1)+ timedelta(hours=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+
+        <record id="ownership_contract_tree_view" model="ir.ui.view">
+            <field name="name">ownership.contract.tree</field>
+            <field name="model">ownership.contract</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <field name="pricing"/>
+                    <field name="building"/>
+                    <field name="building_code"/>
+                    <field name="building_unit"/>
+                    <field name="unit_code"/>
+                    <field name="floor"/>
+                    <field name="address"/>
+                    <field name="state" widget="badge" decoration-info="state == 'draft'"
+                           decoration-warning="state =='cancel'" decoration-success="state == 'confirmed'"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ownership_contract_filter" model="ir.ui.view">
+            <field name="name">ownership.contract.tree.filter</field>
+            <field name="model">ownership.contract</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Top Search">
+                    <group>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="user_id"/>
+                        <field name="building"/>
+                        <field name="building_code"/>
+                        <field name="building_unit" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="unit_code"/>
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter name="user_id" string="Responsible" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter name="partner_id" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter name="building" string="Building" domain="[]" context="{'group_by':'building'}"/>
+                        <filter name="state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_own_contract_graph">
+            <field name="name">ownership.contract.graph</field>
+            <field name="model">ownership.contract</field>
+            <field name="arch" type="xml">
+                <graph string="Contracts" type="bar">
+                    <field name="user_id" type="row"/>
+                    <field name="total_amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="ownership_contract_form_view" model="ir.ui.view">
+            <field name="name">ownership.contract.form</field>
+            <field name="model">ownership.contract</field>
+            <field name="arch" type="xml">
+                <form string="Ownership Contract">
+                    <header>
+                        <button name="approval" type="object"
+                                attrs="{'invisible':[('state','!=','draft')]}"
+                                string="Approval" class="oe_highlight"/>
+                        <button name="action_confirm" type="object" groups="itsys_real_estate.group_confirm_reservation"
+                                attrs="{'invisible':['|','|',('state','=','cancel'),('state','=','draft'),('state','=','confirmed')]}"
+                                string="Confirm" class="oe_highlight"/>
+                        <button name="action_cancel" type="object" attrs="{'invisible':[('state','=','cancel')]}"
+                                string="Cancel"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approval,confirmed,cancel"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="view_vouchers" class="oe_stat_button" icon="fa-dollar"
+                                    attrs="{'invisible': [('voucher_count', '=', 0)]}">
+                                <field name="voucher_count" widget="statinfo" string="Vouchers"/>
+                            </button>
+                            <button type="object" name="view_entries" class="oe_stat_button" icon="fa-book"
+                                    attrs="{'invisible': [('entry_count', '=', 0)]}">
+                                <field name="entry_count" widget="statinfo" string="Journal Entries"/>
+                            </button>
+                            <button type="object" name="view_payments" class="oe_stat_button" icon="fa-book"
+                                    attrs="{'invisible': [('entry_count_payment', '=', 0)]}">
+                                <field name="entry_count_payment" widget="statinfo" string="Payments/Checques"/>
+                            </button>
+                            <button type="object" class="oe_stat_button" icon="fa-pencil-square-o"
+                                    name="action_view_penalty_reservation"
+                                    attrs="{'invisible': [('counter_penalty', '=',0)]}"
+                            >
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="counter_penalty" readonly="1"/>
+                                    </span>
+                                    <span class="o_stat_text">Penalty</span>
+                                </div>
+                            </button>
+
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="m_is_create"/> <!-- todo : must remove from herre it moved to adj module -->
+                                <field name="partner_id" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                <field name="building_unit" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'readonly': [('state','!=','draft')]}" required="1"/>
+                                <field name="date_payment" attrs="{'readonly': [('state','!=','draft')]}" required="1"/>
+                                <field name="installment_group" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="discount"/>
+                                <field name="discount_type"
+                                       attrs="{'invisible':[('discount', '!=', True)], 'required':[('discount', '=', True)]}"/>
+                                <field name="discount_value"
+                                       attrs="{'invisible':[('discount', '!=', True)], 'required':[('discount', '=', True)]}"/>
+
+                                <field name="pricing"/>
+                                <field name="user_id"/>
+                                <!-- <field name="reservation_id" /> -->
+                                <field name="date" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                <field name="origin" attrs="{'readonly': [('state','!=','draft')]}"/>
+
+
+                            </group>
+
+                        </group>
+                        <notebook colspan="2">
+                            <page string="Installments">
+                                <group>
+                                    <group>
+                                        <field name="adv_pay" attrs="{'readonly':[('old_contract','!=',False)]}"/>
+                                        <field name="month_count"/>
+                                        <field name="inst_count"/>
+                                        <field name="penalty_amount_type"/>
+                                        <field name="penalty_amount"
+                                               attrs="{'invisible':[('penalty_amount_type','!=','amount')],'required':[('penalty_amount_type','=','amount')]}"/>
+                                        <field name="penalty_percentage" widget="percentage"
+                                               attrs="{'invisible':[('penalty_amount_type','!=','percentage')],'required':[('penalty_amount_type','=','percentage')]}"/>
+                                        <field name="penalty_days"
+                                               attrs="{'invisible':[('penalty_amount_type','not in',('amount','percentage'))],'required':[('penalty_amount_type','in',('amount','percentage'))]}"/>
+                                    </group>
+                                    <group>
+                                        <field name="handover_inst"/>
+                                        <field name="handover_seq"/>
+                                        <field name="yearly_inst" readonly="1" force_save="1"/>
+                                        <field name="yearly_seq"/>
+                                        <field name="one_year_inst"/>
+                                        <field name="year_inst_count"
+                                               attrs="{'invisible':[('one_year_inst','=',False)]}"/>
+                                        <field name="total_npv"/>
+                                        <button name="update_inst_lines" type='object' string='Calculate'
+                                                attrs="{'invisible': [('state','=','confirmed')]}"
+                                                class='btn btn-primary'/>
+                                    </group>
+                                </group>
+                                <field name="loan_line">
+                                    <tree string="Installments" editable="none">
+                                        <field name="number"
+                                               attrs="{'readonly': [('parent.state','=','confirmed'),('parent.installment_group','=',False)]}"/>
+                                        <field name="date"
+                                               attrs="{'readonly': [('parent.state','=','confirmed'),('parent.installment_group','=',False)]}"/>
+                                        <field name="name"
+                                               attrs="{'readonly': [('parent.state','=','confirmed'),('parent.installment_group','=',False)]}"/>
+                                        <field name="disable_penalty"/>
+                                        <field name="amount" sum="Total"
+                                               attrs="{'readonly': [('parent.state','=','confirmed'),('parent.installment_group','=',False)]}"/>
+                                        <field name="total_paid_amount" readonly="1" sum="Total"/>
+                                        <field name="total_remaining_amount" sum="Total"/>
+                                        <field name="penalty_days" force_save="1"/>
+                                        <!--                                        <field name="penalty_percentage" widget="percentage"/>-->
+                                        <field name="penalty_amount" force_save="1"
+                                               attrs="{'readonly': [('parent.state','=','confirmed'),('parent.installment_group','=',False)]}"/>
+                                        <field name="total_entry_amount" string="Total penalty Entries Amount"/>
+                                        <field name="penalty_status"/>
+                                        <field name="npv"
+                                               attrs="{'readonly': [('parent.state','=','confirmed'),('parent.installment_group','=',False)]}"/>
+                                        <field name="penalty" invisible="1"/>
+                                        <field name="payment_id"/>
+                                        <field name="payment_date"/>
+                                        <button name="%(itsys_real_estate.action_installment_payment_check)d"
+                                                type="action" icon="fa-money"
+                                                attrs="{'invisible': [('parent.state','in',('draft','cancel'))]}"
+                                                groups="itsys_real_estate.group_payments"/>
+                                        <!--                                        <button name="create_penalty"-->
+                                        <!--                                                type="object" string="Create Penalty"-->
+                                        <!--                                                attrs="{'invisible': ['|',('penalty_amount','=',0),('penalty','=',True)]}"-->
+                                        <!--                                                groups="itsys_real_estate.group_payments"/>-->
+                                        <field name="payment_count" invisible="1"/>
+                                        <button name="view_payments" type="object" icon="fa-folder"
+                                                style="background-color:rgba(0, 160, 74, 0.5);color: #333;"
+                                                attrs="{'invisible': [('payment_count','=',0)]}"
+                                                groups="itsys_real_estate.group_payments"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page string="Unit Details">
+                                <group>
+                                    <group>
+                                        <!-- <field name="building_unit" options="{'no_create': True, 'no_open': True}" readonly='1' /> -->
+                                        <field name="unit_code" readonly='1' force_save="1"/>
+                                        <field name="floor" readonly='1' force_save="1"/>
+                                        <field name="address" readonly='1' force_save="1"/>
+                                        <field name="type" readonly='1' force_save="1"/>
+                                        <field name="status" readonly='1' force_save="1"/>
+                                        <field name="building_area" readonly='1' force_save="1"/>
+                                    </group>
+
+                                    <group string="Location">
+                                        <field name="country" readonly='1' force_save="1"/>
+                                        <field name="city" readonly='1' force_save="1"/>
+                                        <field name="region" readonly='1' force_save="1"/>
+                                        <field name="building" readonly='1' force_save="1"/>
+                                        <field name="building_code" readonly='1' force_save="1"/>
+                                        <field name="no_of_floors" force_save="1"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Payment Cheques">
+                                <group>
+                                    <group>
+                                        <field name="account_analytic_id"
+                                               attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="account_income" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="cheque_bank"/>
+                                        <field name="cheque_no"/>
+                                        <!--                    <field name="cheque_numbers" />-->
+                                        <!--                    <field name="cheque_acc_id" />-->
+                                        <field name="journal_id"/>
+                                    </group>
+                                    <group>
+                                        <field name="is_create" invisible="1"/>
+                                        <tr>
+                                            <button style="padding:5px !important;"
+                                                    name="create_payment_cash" type="object"
+                                                    string="Pay by Bank" class="btn btn-primary"
+                                                    attrs="{'invisible':['|',('state','!=','confirmed'),('is_create','=',True)]}"/>
+                                            -
+                                            <button style="padding:5px !important;"
+                                                    name="create_cheques" type="object"
+                                                    string="Create Cheques" class="btn btn-primary"
+                                                    attrs="{'invisible':['|',('state','!=','confirmed'),('is_create','=',True)]}"/>
+                                            -
+                                            <button style="padding:5px !important;"
+                                                    name="create_payment" type="object"
+                                                    string="Cash payment" class="btn btn-primary"
+                                                    attrs="{'invisible':['|',('state','!=','confirmed'),('is_create','=',True)]}"/>
+                                        </tr>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Unit Replace" attrs="{'invisible': [('state','!=','confirmed')]}">
+                                <group>
+                                    <group>
+                                        <field name="rplc_building_unit"/>
+                                        <field name="old_contract" readonly="True"/>
+                                    </group>
+                                    <group>
+                                        <button
+                                                name="replace_unit" type="object"
+                                                string="Replace" class="btn btn-primary"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Mortgage Calculations">
+                                <group>
+                                    <group>
+                                        <field name="interest_rate" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="loan_amount" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="advance_payment_percent"
+                                               attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="advance_payment" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                    </group>
+                                    <group>
+                                        <field name="principal_interest"
+                                               attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="property_tax" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="home_insurance" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="hoa" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                        <field name="monthly_payment" attrs="{'readonly': [('state','!=','draft')]}"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        <group>
+                            <group></group>
+                            <group>
+                                <field name="total_amount"/>
+                                <field name="paid"/>
+                                <field name="balance"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="ownership_contract_form_action" model="ir.actions.act_window">
+            <field name="name">Ownership Contract</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ownership.contract</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="view_id" ref="ownership_contract_tree_view"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to add a new Ownership Contract
+                </p>
+            </field>
+        </record>
+
+        <menuitem action="ownership_contract_form_action" id="menu_ownership_contract_form_action"
+                  parent="itsys_real_estate.menu_contracts_main" sequence="30"/>
+        <menuitem id="menu_reservation_main" name="Reservations" parent="itsys_real_estate.menu_contracts_main"
+                  action="ownership_contract_form_action" sequence="1"/>
+    </data>
+</odoo>

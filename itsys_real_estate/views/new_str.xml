@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="real_city_view_form" model="ir.ui.view">
+            <field name="name">real.city</field>
+            <field name="model">real.city</field>
+            <field name="arch" type="xml">
+                <form string="real_city_form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="real_zone_view_form" model="ir.ui.view">
+            <field name="name">real.zone</field>
+            <field name="model">real.zone</field>
+            <field name="arch" type="xml">
+                <form string="real_city_form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="city_id"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="real_floor_view_form" model="ir.ui.view">
+            <field name="name">real.floor</field>
+            <field name="model">real.floor</field>
+            <field name="arch" type="xml">
+                <form string="real_city_form">
+                    <sheet>
+                        <group>
+                              
+                            <field name="name"/>
+                            <field name="building_id"/>
+                            <field name="city_id" force_save="1"/>
+                            <field name="zone_id" force_save="1"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="real_entrance_view_form" model="ir.ui.view">
+            <field name="name">real.entrance</field>
+            <field name="model">real.entrance</field>
+            <field name="arch" type="xml">
+                <form string="real_city_form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                              <field name="name"/>
+                            <field name="city_id"/>
+                            <field name="zone_id"/>
+                            <field name="building_id"/>
+                            <field name="floor_id"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="real_city_view_tree" model="ir.ui.view">
+            <field name="name">real.city</field>
+            <field name="model">real.city</field>
+            <field name="arch" type="xml">
+                <tree string="_tree">
+                            <field name="name"/>
+
+                </tree>
+            </field>
+        </record>
+        <record id="real_zone_view_tree" model="ir.ui.view">
+            <field name="name">real.zone</field>
+            <field name="model">real.zone</field>
+            <field name="arch" type="xml">
+                 <tree string="_tree">
+                            <field name="name"/>
+                            <field name="city_id"/>
+
+                 </tree>
+            </field>
+        </record>
+        <record id="real_floor_view_tree" model="ir.ui.view">
+            <field name="name">real.floor</field>
+            <field name="model">real.floor</field>
+            <field name="arch" type="xml">
+                <tree>
+                            <field name="name"/>
+                            <field name="city_id"/>
+                            <field name="zone_id"/>
+                            <field name="building_id"/>
+
+                </tree>
+            </field>
+        </record>
+        <record id="real_entrance_view_tree" model="ir.ui.view">
+            <field name="name">real.entrance</field>
+            <field name="model">real.entrance</field>
+            <field name="arch" type="xml">
+                 <tree>
+                              <field name="name"/>
+                            <field name="city_id"/>
+                            <field name="zone_id"/>
+                            <field name="building_id"/>
+                            <field name="floor_id"/>
+                 </tree>
+            </field>
+        </record>
+
+        <record id="real_city_action" model="ir.actions.act_window">
+            <field name="name">City</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">real.city</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record id="real_zone_action" model="ir.actions.act_window">
+            <field name="name">Zone</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">real.zone</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+          <record id="real_floor_action" model="ir.actions.act_window">
+            <field name="name">Floor</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">real.floor</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+         <record id="real_entrance_action" model="ir.actions.act_window">
+            <field name="name">Entrance</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">real.entrance</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <menuitem id="real_city_menu" action="real_city_action" name="City" parent="itsys_real_estate.menu_building_list" sequence="1" />
+        <menuitem id="real_zone_menu" action="real_zone_action" name="Zone" parent="itsys_real_estate.menu_building_list" sequence="2" />
+        <menuitem id="real_floor_menu" action="real_floor_action" name="Floor" parent="itsys_real_estate.menu_building_list" sequence="4" />
+        <menuitem id="real_entrance_menu" action="real_entrance_action" name="Entrance" parent="itsys_real_estate.menu_building_list" sequence="5" />
+
+
+
+
+    </data>
+</odoo>

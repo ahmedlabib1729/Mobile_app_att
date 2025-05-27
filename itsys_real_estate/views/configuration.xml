@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_rs" model="ir.ui.view">
+        <field name="name">res.config.settings.form.inherit.rs</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="70"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Real Estate" string="Real Estate"
+                     data-key="itsys_real_estate">
+
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">NPV</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Set NPV
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="npv" class="col-lg-3 o_light_label"/>
+                                        <field name="npv"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Reservation</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Reservation
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="reservation_hours" class="col-lg-3 o_light_label"/>
+                                        <field name="reservation_hours"/>
+                                    </div>
+                                </div>
+                                <!--                                <div class="content-group">-->
+                                <!--                                    <div class="row mt16">-->
+                                <!--                                        <label for="x_handover_inst" class="col-lg-3 o_light_label" />-->
+                                <!--                                        <field name="x_handover_inst" />-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <h2>Ownership Contracts</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Contracts Income Account</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Set default Income Account for properties
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="income_account" class="col-lg-3 o_light_label"/>
+                                        <field name="income_account" options="{'no_create_edit': True, 'no_open': True}"
+                                               context="{'active_test': False}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Analytics</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Analytic Account used in contracts
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="analytic_account" class="col-lg-3 o_light_label"/>
+                                        <field name="analytic_account"
+                                               options="{'no_create_edit': True, 'no_open': True}"
+                                               context="{'active_test': False}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Penalty</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label for="debit_penalty_account" class="col-lg-3 o_light_label"/>
+                                        <field name="debit_penalty_account"
+                                               options="{'no_create_edit': True, 'no_open': True}"/>
+                                    </div>
+                                    <div class="row mt16">
+                                        <label for="credit_penalty_account" class="col-lg-3 o_light_label"/>
+                                        <field name="credit_penalty_account"
+                                               options="{'no_create_edit': True, 'no_open': True}"/>
+                                    </div>
+                                    <div class="row mt16">
+                                        <label for="penalty_journal" class="col-lg-3 o_light_label"/>
+                                        <field name="penalty_journal"
+                                               options="{'no_create_edit': True, 'no_open': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Rental Contracts</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Security Deposit</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Set default Security Deposit for properties
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <!--<label for="security_deposit_account" class="col-lg-3 o_light_label"/>-->
+                                        <field name="security_deposit_account"
+                                               options="{'no_create_edit': True, 'no_open': True}"
+                                               context="{'active_test': False}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Discounts &amp; Penalties</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Discounts</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Set default discount account for properties
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <field name="discount_account"
+                                               options="{'no_create_edit': True, 'no_open': True}"
+                                               context="{'active_test': False}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Penalties</span>
+                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                      aria-label="Values set here are company-specific."
+                                      groups="base.group_multi_company" role="img"/>
+                                <div class="text-muted">
+                                    Set default penalty account for properties
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <field name="penalty_account"
+                                               options="{'no_create_edit': True, 'no_open': True}"
+                                               context="{'active_test': False}"/>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Property Refunds</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Managerial Expenses</span>
+                                <div class="text-muted">
+                                    Set here managerial expenses account used in properties refund
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <field name="me_account" options="{'no_create_edit': True, 'no_open': True}"
+                                               context="{'active_test': False}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_real_estate_config" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'itsys_real_estate'}</field>
+    </record>
+
+    <menuitem id="menu_real_estate_config" name="Settings" parent="itsys_real_estate.menu_settings" sequence="1000"
+              groups="base.group_system" action="action_real_estate_config"/>
+
+</odoo>

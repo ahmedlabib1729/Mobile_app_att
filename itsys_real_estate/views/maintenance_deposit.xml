@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="maintenance_deposit_view" model="ir.ui.view">
+            <field name="name">ownership.contract.form.view</field>
+            <field name="model">ownership.contract</field>
+            <field name="inherit_id" ref="itsys_real_estate.ownership_contract_form_view"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Maintenance Deposit">
+                        <field name="m_is_create" invisible="1"/>
+                        <group>
+                            <group>
+                                <field name="total_maintenance"/>
+                                <field name="m_adv_pay"/>
+                                <field name="m_month_count"/>
+                                <field name="m_inst_count"/>
+                                <button name="calc_deposit_lines" type="object" string="Calculate" class="oe_highlight"/>
+                            </group>
+                            <group>
+                                <field name="m_account_income_id"/>
+                                <field name="m_analytic_account_id"/>
+                                <field name="m_cheque"/>
+                                <field name="m_cheque_bank_id"/>
+                                <field name="m_cheque_account_id" invisible="1"/>
+                                <field name="m_journal_id"/>
+                                <field name="m_is_create" invisible="1"/>
+                                <button name="calc_cheques" attrs="{'invisible':['|',('state','!=','confirmed'),('m_is_create','=',True)]}"
+                                        type="object" string="Create Cheques" class="oe_highlight"/>
+                            </group>
+                        </group>
+                        <field name="maintenance_deposit_ids">
+                            <tree string="Maintenance Deposit" edit="0">
+                                <field name="number" />
+                                <field name="date" />
+                                <field name="name" />
+                                <field name="amount" />
+                                <field name="total_paid_amount" readonly="1" />
+                                <field name="total_remaining_amount" />
+                                <field name="npv"  invisible="1"/>
+                                <field name="payment_count" invisible="1" />
+                                <button name="view_payments" type="object" icon="fa-folder" style="background-color:rgba(0, 160, 74, 0.5);color: #333;" attrs="{'invisible': [('payment_count','=',0)]}" groups="itsys_real_estate.group_payments" />
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+    </data>
+</odoo>

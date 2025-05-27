@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<odoo>
+<data noupdate="0">
+        <record id="report_reservation_rs" model="ir.actions.report">
+            <field name="name">Reservation</field>
+            <field name="model">unit.reservation</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">itsys_real_estate.report_pricelist</field>
+            <field name="report_file">itsys_real_estate.report_pricelist</field>
+        </record>
+
+        <record id="report_ownership_contract_rs" model="ir.actions.report">
+            <field name="name">Ownership Contract</field>
+            <field name="model">ownership.contract</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">itsys_real_estate.report_ownership_contract</field>
+            <field name="report_file">itsys_real_estate.report_ownership_contract</field>
+        </record>
+
+        <record id="report_release_contract_rs" model="ir.actions.report">
+            <field name="name">Release Contract</field>
+            <field name="model">unit.release</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">itsys_real_estate.report_release_contract</field>
+            <field name="report_file">itsys_real_estate.report_release_contract</field>
+        </record>
+
+        <record id="report_quittance_letter_rs" model="ir.actions.report">
+            <field name="name">Quittance Letter</field>
+            <field name="model">ownership.contract</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">itsys_real_estate.report_quittance_letter</field>
+            <field name="report_file">itsys_real_estate.report_quittance_letter</field>
+        </record>
+
+        <record id="report_rental_contract_rs" model="ir.actions.report">
+            <field name="name">Rental Contract</field>
+            <field name="model">rental.contract</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">itsys_real_estate.report_rental_contract</field>
+            <field name="report_file">itsys_real_estate.report_rental_contract</field>
+        </record>
+</data>
+</odoo>
+
