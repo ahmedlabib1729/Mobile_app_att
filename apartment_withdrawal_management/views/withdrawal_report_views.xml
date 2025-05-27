@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Withdrawal Report Wizard Form -->
+        <record id="withdrawal_report_form_view" model="ir.ui.view">
+            <field name="name">withdrawal.report.form</field>
+            <field name="model">withdrawal.report</field>
+            <field name="arch" type="xml">
+                <form string="Withdrawal Report">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="report_type" readonly="1" widget="radio" options="{'horizontal': true}"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Date Range">
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                            <group string="Filters">
+                                <field name="partner_id" options="{'no_create': True}"/>
+                                <field name="building_id" options="{'no_create': True}"/>
+                                <field name="status"/>
+                            </group>
+                        </group>
+
+                        <group string="Report Type">
+                            <field name="report_type" widget="radio" options="{'horizontal': true}"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_generate_report" string="Generate Report" type="object"
+                                class="btn-primary" default_focus="1"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Statistics Display Form -->
+        <record id="withdrawal_report_statistics_form_view" model="ir.ui.view">
+            <field name="name">withdrawal.report.statistics.form</field>
+            <field name="model">withdrawal.report.statistics</field>
+            <field name="arch" type="xml">
+                <form string="Withdrawal Statistics">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>Apartment Withdrawal Statistics</h1>
+                            <h3>
+                                <field name="date_from" readonly="1"/> -
+                                <field name="date_to" readonly="1"/>
+                            </h3>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card bg-primary text-white mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">
+                                            <i class="fa fa-exclamation-triangle"/>
+                                            <field name="total_withdrawals" readonly="1"/>
+                                        </h4>
+                                        <p class="card-text">Total Withdrawals</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card bg-success text-white mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">
+                                            <i class="fa fa-check-circle"/>
+                                            <field name="total_restorations" readonly="1"/>
+                                        </h4>
+                                        <p class="card-text">Total Restorations</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card bg-warning text-white mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">
+                                            <i class="fa fa-eye"/>
+                                            <field name="total_monitoring" readonly="1"/>
+                                        </h4>
+                                        <p class="card-text">Currently Monitoring</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card bg-info text-white mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">
+                                            <i class="fa fa-bell"/>
+                                            <field name="total_warnings" readonly="1"/>
+                                        </h4>
+                                        <p class="card-text">Warnings Sent</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group string="Financial Impact">
+                                <field name="total_overdue_amount" widget="monetary" readonly="1"/>
+                                <field name="average_overdue_months" readonly="1"/>
+                            </group>
+                            <group string="Success Rate">
+                                <field name="restoration_rate" widget="percentage" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="Close" class="btn-primary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Report Action -->
+        <record id="action_withdrawal_report" model="ir.actions.act_window">
+            <field name="name">Withdrawal Report</field>
+            <field name="res_model">withdrawal.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{
+                'default_report_type': 'summary',
+                'default_status': 'all'
+            }</field>
+        </record>
+    </data>
+</odoo>

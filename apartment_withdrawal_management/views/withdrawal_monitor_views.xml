@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="withdrawal_monitor_tree_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.tree</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <tree string="Withdrawal Monitors" decoration-danger="status == 'withdrawn'"
+                      decoration-warning="status == 'warning_sent'" decoration-success="status == 'restored'"
+                      decoration-muted="status == 'cancelled'">
+                    <field name="contract_id"/>
+                    <field name="partner_id"/>
+                    <field name="building_unit_id"/>
+                    <field name="building_id"/>
+                    <field name="installment_id"/>
+                    <field name="installment_number"/>
+                    <field name="installment_number"/>
+                    <field name="installment_number"/>  <!-- Add installment number -->
+                    <field name="due_date"/>
+                    <field name="overdue_months"/>
+                    <field name="overdue_amount" sum="Total Overdue Amount"/>
+                    <field name="status" widget="badge"
+                           decoration-danger="status == 'withdrawn'"
+                           decoration-warning="status == 'warning_sent'"
+                           decoration-success="status == 'restored'"
+                           decoration-info="status == 'monitoring'"
+                           decoration-muted="status == 'cancelled'"/>
+                    <field name="withdrawal_date"/>
+                    <field name="restoration_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="withdrawal_monitor_form_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.form</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <form string="Withdrawal Monitor">
+                    <header>
+                        <button name="action_send_warning" string="Send Warning" type="object"
+                                class="btn-warning" attrs="{'invisible': [('status', '!=', 'monitoring')]}"/>
+                        <button name="action_withdraw_apartment" string="Withdraw Apartment" type="object"
+                                class="btn-danger" attrs="{'invisible': [('status', 'not in', ['monitoring', 'warning_sent'])]}"/>
+                        <button name="action_restore_apartment" string="Restore Apartment" type="object"
+                                class="btn-success" attrs="{'invisible': [('status', '!=', 'withdrawn')]}"/>
+                        <button name="action_cancel_withdrawal" string="Cancel Monitoring" type="object"
+                                class="btn-secondary" attrs="{'invisible': [('status', 'in', ['withdrawn', 'restored', 'cancelled'])]}"/>
+                        <field name="status" widget="statusbar" statusbar_visible="monitoring,warning_sent,withdrawn,restored"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <!-- Status indicator -->
+                            <div class="oe_stat_button" attrs="{'invisible': [('status', '!=', 'withdrawn')]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value text-danger">
+                                        <i class="fa fa-exclamation-triangle"/> WITHDRAWN
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="oe_stat_button" attrs="{'invisible': [('status', '!=', 'restored')]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value text-success">
+                                        <i class="fa fa-check-circle"/> RESTORED
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="contract_id" options="{'no_create': True}"/>
+                                <field name="partner_id" options="{'no_create': True}"/>
+                                <field name="building_unit_id" options="{'no_create': True}"/>
+                                <field name="building_id"/>
+                            </group>
+                            <group>
+                                <field name="installment_id" options="{'no_create': True}" string="Overdue Installment"/>
+                                <field name="installment_number" string="Installment Number"/>
+                                <field name="due_date"/>
+                                <field name="overdue_months"/>
+                                <field name="overdue_amount"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Timeline" name="timeline">
+                                <group>
+                                    <group string="Important Dates">
+                                        <field name="due_date" readonly="1"/>
+                                        <field name="warning_sent_date" readonly="1"/>
+                                        <field name="withdrawal_date" readonly="1"/>
+                                        <field name="restoration_date" readonly="1"/>
+                                    </group>
+                                    <group string="Status">
+                                        <field name="status" readonly="1"/>
+                                        <field name="overdue_months" readonly="1"/>
+                                        <field name="overdue_amount" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <group>
+                                    <field name="withdrawal_reason" readonly="1"/>
+                                    <field name="notes"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="withdrawal_monitor_search_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.search</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="contract_id" string="Contract"/>
+                    <field name="partner_id" string="Partner"/>
+                    <field name="building_unit_id" string="Unit"/>
+                    <field name="building_id" string="Building"/>
+                    <field name="installment_id" string="Installment"/>
+                    <field name="installment_number" string="Installment Number"/>
+                    <field name="status"/>
+
+                    <filter string="Monitoring" name="filter_monitoring" domain="[('status', '=', 'monitoring')]"/>
+                    <filter string="Warning Sent" name="filter_warning" domain="[('status', '=', 'warning_sent')]"/>
+                    <filter string="Withdrawn" name="filter_withdrawn" domain="[('status', '=', 'withdrawn')]"/>
+                    <filter string="Restored" name="filter_restored" domain="[('status', '=', 'restored')]"/>
+
+                    <separator/>
+                    <filter string="This Month" name="filter_this_month"
+                            domain="[('withdrawal_date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01')),
+                                     ('withdrawal_date', '&lt;', (context_today().replace(day=1) + relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Last 3 Months" name="filter_last_3_months"
+                            domain="[('withdrawal_date', '&gt;=', (context_today() - relativedelta(months=3)).strftime('%Y-%m-%d'))]"/>
+
+                    <separator/>
+                    <filter string="High Overdue Amount" name="filter_high_amount"
+                            domain="[('overdue_amount', '&gt;', 10000)]"/>
+                    <filter string="Long Overdue" name="filter_long_overdue"
+                            domain="[('overdue_months', '&gt;', 12)]"/>
+
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                        <filter string="Partner" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Building" name="group_by_building" context="{'group_by': 'building_id'}"/>
+                        <filter string="Installment" name="group_by_installment" context="{'group_by': 'installment_id'}"/>
+                        <filter string="Withdrawal Month" name="group_by_withdrawal_month"
+                                context="{'group_by': 'withdrawal_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Kanban View -->
+        <record id="withdrawal_monitor_kanban_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.kanban</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="status" class="o_kanban_small_column o_kanban_dashboard">
+                    <field name="status"/>
+                    <field name="contract_id"/>
+                    <field name="partner_id"/>
+                    <field name="building_unit_id"/>
+                    <field name="building_id"/>
+                    <field name="installment_id"/>
+                    <field name="installment_number"/>
+                    <field name="overdue_amount"/>
+                    <field name="overdue_months"/>
+                    <field name="due_date"/>
+                    <field name="withdrawal_date"/>
+                    <field name="restoration_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click" style="margin: 8px;">
+                                <!-- Header with Contract and Status -->
+                                <div class="o_kanban_record_top mb-2">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title" style="font-size: 14px; color: #2C5282;">
+                                            <i class="fa fa-file-text-o mr-1"/>
+                                            <field name="contract_id"/>
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle text-muted" style="font-size: 12px;">
+                                            <i class="fa fa-user mr-1"/>
+                                            <field name="partner_id"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_manage_button_section">
+                                        <!-- Status Badge -->
+                                        <t t-if="record.status.raw_value == 'withdrawn'">
+                                            <span class="badge badge-danger" style="font-size: 10px;">
+                                                <i class="fa fa-exclamation-triangle"/> Withdrawn
+                                            </span>
+                                        </t>
+                                        <t t-elif="record.status.raw_value == 'warning_sent'">
+                                            <span class="badge badge-warning" style="font-size: 10px;">
+                                                <i class="fa fa-warning"/> Warning
+                                            </span>
+                                        </t>
+                                        <t t-elif="record.status.raw_value == 'restored'">
+                                            <span class="badge badge-success" style="font-size: 10px;">
+                                                <i class="fa fa-check-circle"/> Restored
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge badge-info" style="font-size: 10px;">
+                                                <i class="fa fa-eye"/> Monitoring
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- Property Information -->
+                                <div class="o_kanban_record_body" style="padding: 8px 0;">
+                                    <div class="row no-gutters mb-2">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center" style="background: #F7F9FC; padding: 6px; border-radius: 4px; margin-bottom: 6px;">
+                                                <i class="fa fa-building text-primary mr-2"/>
+                                                <div>
+                                                    <strong style="font-size: 12px; color: #2C5282;">
+                                                        <field name="building_id"/> - <field name="building_unit_id"/>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Installment Information -->
+                                    <div class="row no-gutters mb-2">
+                                        <div class="col-12">
+                                            <div style="background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 6px; border-radius: 0 4px 4px 0;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <span style="font-size: 11px; color: #92400E; font-weight: 600;">INSTALLMENT</span>
+                                                        <br/>
+                                                        <strong style="font-size: 12px; color: #1F2937;">
+                                                            <field name="installment_number"/>
+                                                        </strong>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <span style="font-size: 11px; color: #92400E; font-weight: 600;">AMOUNT</span>
+                                                        <br/>
+                                                        <strong style="font-size: 12px; color: #DC2626;">
+                                                            <field name="overdue_amount" widget="monetary"/>
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Due Date and Overdue Months -->
+                                    <div class="row no-gutters">
+                                        <div class="col-6 pr-1">
+                                            <div style="background: #FEF2F2; padding: 6px; border-radius: 4px; text-align: center;">
+                                                <span style="font-size: 10px; color: #991B1B; font-weight: 600;">DUE DATE</span>
+                                                <br/>
+                                                <strong style="font-size: 11px; color: #1F2937;">
+                                                    <field name="due_date"/>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 pl-1">
+                                            <div style="background: #F3F4F6; padding: 6px; border-radius: 4px; text-align: center;">
+                                                <span style="font-size: 10px; color: #374151; font-weight: 600;">OVERDUE</span>
+                                                <br/>
+                                                <strong style="font-size: 11px; color: #DC2626;">
+                                                    <field name="overdue_months"/> months
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dates based on status -->
+                                    <t t-if="record.withdrawal_date.raw_value">
+                                        <div class="mt-2">
+                                            <div style="background: #FECACA; padding: 4px 6px; border-radius: 4px; font-size: 10px;">
+                                                <i class="fa fa-calendar text-danger mr-1"/>
+                                                <strong>Withdrawn:</strong> <field name="withdrawal_date"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-if="record.restoration_date.raw_value">
+                                        <div class="mt-2">
+                                            <div style="background: #D1FAE5; padding: 4px 6px; border-radius: 4px; font-size: 10px;">
+                                                <i class="fa fa-calendar text-success mr-1"/>
+                                                <strong>Restored:</strong> <field name="restoration_date"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <!-- Footer with action buttons -->
+                                <div class="o_kanban_record_bottom mt-2" style="border-top: 1px solid #E5E7EB; padding-top: 6px;">
+                                    <div class="oe_kanban_bottom_left">
+                                        <!-- Remove ID display -->
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <a class="o_kanban_manage_toggle_button" href="#" style="color: #6B7280;">
+                                            <i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Calendar View -->
+        <record id="withdrawal_monitor_calendar_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.calendar</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <calendar string="Withdrawal Calendar" date_start="withdrawal_date" color="status">
+                    <field name="contract_id"/>
+                    <field name="partner_id"/>
+                    <field name="building_unit_id"/>
+                    <field name="installment_id"/>
+                    <field name="status"/>
+                    <field name="overdue_amount"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="withdrawal_monitor_pivot_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.pivot</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <pivot string="Withdrawal Analysis">
+                    <field name="withdrawal_date" type="row" interval="month"/>
+                    <field name="status" type="col"/>
+                    <field name="overdue_amount" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Graph View -->
+        <record id="withdrawal_monitor_graph_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.graph</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <graph string="Withdrawal Trends" type="line">
+                    <field name="withdrawal_date" type="row" interval="month"/>
+                    <field name="overdue_amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_withdrawal_monitor" model="ir.actions.act_window">
+            <field name="name">Withdrawal Monitors</field>
+            <field name="res_model">withdrawal.monitor</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph</field>
+            <field name="search_view_id" ref="withdrawal_monitor_search_view"/>
+            <field name="context">{
+                'search_default_filter_monitoring': 1,
+                'search_default_group_by_status': 1
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No withdrawal monitors found!
+                </p>
+                <p>
+                    Withdrawal monitors are automatically created when installments become overdue.
+                    You can also create manual monitors for specific contracts.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

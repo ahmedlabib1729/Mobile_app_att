@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit the original ownership contract form view -->
+        <record id="ownership_contract_form_view_withdraw" model="ir.ui.view">
+            <field name="name">ownership.contract.form.inherit.withdraw</field>
+            <field name="model">ownership.contract</field>
+            <field name="inherit_id" ref="itsys_real_estate.ownership_contract_form_view"/>
+            <field name="arch" type="xml">
+                <!-- Add withdrawal monitoring stats button -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" type="object"
+                            name="action_view_withdrawal_monitors" icon="fa-exclamation-triangle">
+                        <field string="Monitors" name="withdrawal_monitor_count" widget="statinfo"/>
+                    </button>
+                </xpath>
+
+                <!-- Add withdrawal monitoring tab inside existing notebook -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Withdrawal Monitoring" name="withdrawal_monitoring">
+                        <!-- Status Overview -->
+                        <div class="alert alert-info" role="alert" style="margin-bottom: 20px;">
+                            <h4 style="margin-top: 0;"><i class="fa fa-info-circle"/> Withdrawal Monitoring Status</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Has Overdue Installments:</strong>
+                                    <field name="has_overdue_installments" widget="boolean_toggle" readonly="1"/>
+                                </div>
+                                <div class="col-md-6" attrs="{'invisible': [('has_overdue_installments', '=', False)]}">
+                                    <strong>Max Overdue Months:</strong>
+                                    <field name="overdue_months" readonly="1"/> months
+                                </div>
+                            </div>
+                            <div class="row" attrs="{'invisible': [('has_overdue_installments', '=', False)]}">
+                                <div class="col-md-12">
+                                    <strong>Total Overdue Amount:</strong>
+                                    <field name="total_overdue_amount" readonly="1" widget="monetary"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monitoring Settings (Read-only from System Configuration) -->
+                        <group string="System Withdrawal Settings (Read Only)">
+                            <group>
+                                <field name="withdrawal_enabled" readonly="1"/>
+                                <field name="withdrawal_months" readonly="1" attrs="{'invisible': [('withdrawal_enabled', '=', False)]}"/>
+                            </group>
+                            <group>
+                                <field name="withdrawal_warning_days" readonly="1" attrs="{'invisible': [('withdrawal_enabled', '=', False)]}"/>
+                                <div class="text-muted" attrs="{'invisible': [('withdrawal_enabled', '=', True)]}">
+                                    <i class="fa fa-info-circle"/> Configure withdrawal settings in General Settings
+                                </div>
+                            </group>
+                        </group>
+
+                        <!-- Action Buttons -->
+                        <div class="row" style="margin: 20px 0;">
+                            <div class="col-md-12">
+                                <button name="action_create_withdrawal_monitor" type="object"
+                                        string="Create Withdrawal Monitor"
+                                        class="btn btn-warning"
+                                        attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmed'), ('has_overdue_installments', '=', False), ('withdrawal_enabled', '=', False)]}"/>
+
+                                <button name="action_manual_withdraw" type="object"
+                                        string="Withdraw Apartment"
+                                        class="btn btn-danger"
+                                        attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmed'), ('has_overdue_installments', '=', False), ('withdrawal_enabled', '=', False)]}"
+                                        confirm="Are you sure you want to withdraw this apartment? This action will change the contract status."/>
+
+                                <button name="action_manual_restore" type="object"
+                                        string="Restore Apartment"
+                                        class="btn btn-success"
+                                        attrs="{'invisible': [('state', '!=', 'withdrawn')]}"
+                                        confirm="Are you sure you want to restore this apartment?"/>
+                            </div>
+                        </div>
+
+                        <!-- Withdrawal Monitors List -->
+                        <separator string="Withdrawal Monitors History"/>
+                        <field name="withdrawal_monitor_ids" readonly="1" nolabel="1">
+                            <tree decoration-danger="status == 'withdrawn'"
+                                  decoration-warning="status == 'warning_sent'"
+                                  decoration-success="status == 'restored'"
+                                  decoration-info="status == 'monitoring'"
+                                  decoration-muted="status == 'cancelled'">
+                                <field name="installment_id"/>
+                                <field name="installment_number"/>
+                                <field name="due_date"/>
+                                <field name="overdue_months"/>
+                                <field name="overdue_amount" sum="Total Overdue"/>
+                                <field name="status" widget="badge"/>
+                                <field name="withdrawal_date"/>
+                                <field name="restoration_date"/>
+                                <field name="create_date" string="Created"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add withdrawal state to status bar if needed -->
+        <record id="ownership_contract_form_view_withdraw_statusbar" model="ir.ui.view">
+            <field name="name">ownership.contract.statusbar.inherit</field>
+            <field name="model">ownership.contract</field>
+            <field name="inherit_id" ref="itsys_real_estate.ownership_contract_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="attributes">
+                    <attribute name="statusbar_visible">draft,approval,confirmed,withdrawn</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

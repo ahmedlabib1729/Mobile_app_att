@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_withdrawal_monitor,withdrawal.monitor,model_withdrawal_monitor,base.group_user,1,1,1,1
+access_withdrawal_report,withdrawal.report,model_withdrawal_report,base.group_user,1,1,1,1
+access_withdrawal_report_statistics,withdrawal.report.statistics,model_withdrawal_report_statistics,base.group_user,1,1,1,1
