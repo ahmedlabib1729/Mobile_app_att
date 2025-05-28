@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_enrollment_application_form" model="ir.ui.view">
+        <field name="name">quran.enrollment.application.form</field>
+        <field name="model">quran.enrollment.application</field>
+        <field name="arch" type="xml">
+            <form string="طلب الالتحاق">
+                <header>
+                    <button name="action_submit" string="تقديم الطلب" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="قبول" type="object"
+                            class="btn-success" invisible="state != 'submitted'" groups="base.group_system"/>
+                    <button name="action_reject" string="رفض" type="object"
+                            class="btn-danger" invisible="state != 'submitted'" groups="base.group_system"/>
+                    <button name="action_draft" string="إعادة للمسودة" type="object"
+                            invisible="state not in ['submitted', 'rejected']" groups="base.group_system"/>
+                    <button name="action_create_student" string="إنشاء طالب" type="object"
+                            class="btn-primary" invisible="state != 'approved' or has_student == True"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                    <field name="has_student" invisible="1"/>
+                </header>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image'}"/>
+                    <div class="oe_title">
+                        <label for="name" string="رقم الطلب"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <label for="name_ar" string="اسم مقدم الطلب"/>
+                        <h2>
+                            <field name="name_ar" placeholder="الاسم باللغة العربية"/>
+                        </h2>
+                        <div invisible="not student_id" class="alert alert-info">
+                            <strong>تم إنشاء طالب من هذا الطلب:</strong>
+                            <field name="student_id" readonly="1"/>
+                        </div>
+                    </div>
+
+                    <group string="البيانات الشخصية">
+                        <group>
+                            <field name="name_ar" string="الاسم باللغة العربية"/>
+                            <field name="name_en" string="Name in English"/>
+                            <field name="birth_date" string="تاريخ الميلاد"/>
+                            <field name="age" string="العمر" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="gender" string="الجنس" widget="radio"/>
+                            <field name="nationality" string="الجنسية"/>
+                            <field name="id_number" string="رقم الهوية/الجواز"/>
+                        </group>
+                    </group>
+
+                    <group string="البيانات التعليمية">
+                        <group>
+                            <field name="education_level" string="المرحلة الدراسية"/>
+                        </group>
+                        <group>
+                            <field name="enrollment_date" string="تاريخ الالتحاق"/>
+                        </group>
+                    </group>
+
+                    <group string="مستوى الحفظ">
+                        <group>
+                            <field name="current_memorized_pages" string="عدد صفحات الحفظ عند الالتحاق"/>
+                            <field name="memorization_level" string="مستوى حفظ الطالب"/>
+                            <field name="memorization_start_page" string="بداية الحفظ (من صفحة)"/>
+                        </group>
+                        <group>
+                            <field name="memorization_end_page" string="نهاية الحفظ (إلى صفحة)"/>
+                            <field name="total_memorization_pages" string="عدد صفحات الحفظ" readonly="1"/>
+                            <field name="review_pages" string="عدد صفحات المراجعة"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_enrollment_application_list" model="ir.ui.view">
+        <field name="name">quran.enrollment.application.list</field>
+        <field name="model">quran.enrollment.application</field>
+        <field name="arch" type="xml">
+            <list string="طلبات الالتحاق">
+                <field name="name_ar" string="الاسم"/>
+                <field name="age" string="العمر"/>
+                <field name="gender" string="الجنس"/>
+                <field name="nationality" string="الجنسية"/>
+                <field name="education_level" string="المرحلة الدراسية"/>
+                <field name="memorization_level" string="مستوى الحفظ"/>
+                <field name="enrollment_date" string="تاريخ الالتحاق"/>
+                <field name="state" string="الحالة" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_enrollment_application_search" model="ir.ui.view">
+        <field name="name">quran.enrollment.application.search</field>
+        <field name="model">quran.enrollment.application</field>
+        <field name="arch" type="xml">
+            <search string="بحث طلبات الالتحاق">
+                <field name="name_ar" string="الاسم بالعربية"/>
+                <field name="name_en" string="Name in English"/>
+                <field name="id_number" string="رقم الهوية"/>
+                <filter string="ذكور" name="male" domain="[('gender', '=', 'male')]"/>
+                <filter string="إناث" name="female" domain="[('gender', '=', 'female')]"/>
+                <separator/>
+                <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="مقدم" name="submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="مقبول" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="مرفوض" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الجنس" name="group_gender" context="{'group_by': 'gender'}"/>
+                    <filter string="الجنسية" name="group_nationality" context="{'group_by': 'nationality'}"/>
+                    <filter string="المرحلة الدراسية" name="group_education" context="{'group_by': 'education_level'}"/>
+                    <filter string="مستوى الحفظ" name="group_level" context="{'group_by': 'memorization_level'}"/>
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_enrollment_application_kanban" model="ir.ui.view">
+        <field name="name">quran.enrollment.application.kanban</field>
+        <field name="model">quran.enrollment.application</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="name_ar"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <field name="memorization_level"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name_ar"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <i class="fa fa-user"/>
+                                    <field name="age"/> سنة -
+                                    <field name="gender"/>
+                                </div>
+                                <div>
+                                    <span class="badge badge-pill">
+                                        <field name="memorization_level"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_enrollment_application" model="ir.actions.act_window">
+        <field name="name">طلبات الالتحاق</field>
+        <field name="res_model">quran.enrollment.application</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء طلب التحاق جديد
+            </p>
+            <p>
+                قم بإنشاء وإدارة طلبات الالتحاق لمركز تحفيظ القرآن الكريم
+            </p>
+        </field>
+    </record>
+</odoo>
