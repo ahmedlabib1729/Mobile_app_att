@@ -1,0 +1,383 @@
+<!-- shipping_integration/data/porter_field_mappings.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Porter Field Mappings -->
+        <record id="porter_mapping_reference" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">10</field>
+            <field name="field_key">order_reference</field>
+            <field name="field_name">Order Reference</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">name</field>
+            <field name="provider_field_path">Reference2</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_product_code" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">20</field>
+            <field name="field_key">product_code</field>
+            <field name="field_name">Product Code</field>
+            <field name="field_type">string</field>
+            <field name="provider_field_path">ProductCode</field>
+            <field name="default_value">DE</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- Shipment Details -->
+        <record id="porter_mapping_cod_amount" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">30</field>
+            <field name="field_key">cod_amount</field>
+            <field name="field_name">COD Amount</field>
+            <field name="field_type">float</field>
+            <field name="odoo_field">amount_total</field>
+            <field name="provider_field_path">ShipmentDetail.CodAmount</field>
+            <field name="default_value">0</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_goods_cost" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">40</field>
+            <field name="field_key">goods_cost</field>
+            <field name="field_name">Goods Cost</field>
+            <field name="field_type">float</field>
+            <field name="odoo_field">amount_untaxed</field>
+            <field name="provider_field_path">ShipmentDetail.GoodsCost</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_description" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">50</field>
+            <field name="field_key">description</field>
+            <field name="field_name">Description</field>
+            <field name="field_type">string</field>
+            <field name="provider_field_path">ShipmentDetail.Description1</field>
+            <field name="default_value">Products</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_pieces" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">60</field>
+            <field name="field_key">pieces</field>
+            <field name="field_name">Number of Pieces</field>
+            <field name="field_type">integer</field>
+            <field name="provider_field_path">ShipmentDetail.Pieces</field>
+            <field name="default_value">1</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_weight" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">70</field>
+            <field name="field_key">weight</field>
+            <field name="field_name">Weight</field>
+            <field name="field_type">float</field>
+            <field name="provider_field_path">ShipmentDetail.Weight</field>
+            <field name="default_value">1</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- Shipper Details -->
+        <record id="porter_mapping_shipper_name" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">100</field>
+            <field name="field_key">shipper_name</field>
+            <field name="field_name">Shipper Name</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.name</field>
+            <field name="provider_field_path">ShipmentShipper.Address.ContactPerson</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_shipper_address" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">110</field>
+            <field name="field_key">shipper_address</field>
+            <field name="field_name">Shipper Address</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.street</field>
+            <field name="provider_field_path">ShipmentShipper.Address.FullAddress</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_shipper_phone" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">120</field>
+            <field name="field_key">shipper_phone</field>
+            <field name="field_name">Shipper Phone</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.phone</field>
+            <field name="provider_field_path">ShipmentShipper.Address.Phone</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- Consignee Details -->
+        <record id="porter_mapping_consignee_name" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">200</field>
+            <field name="field_key">consignee_name</field>
+            <field name="field_name">Consignee Name</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.name</field>
+            <field name="provider_field_path">ShipmentConsignee.ConsigneeName</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_consignee_email" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">210</field>
+            <field name="field_key">consignee_email</field>
+            <field name="field_name">Consignee Email</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.email</field>
+            <field name="provider_field_path">ShipmentConsignee.Email</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_consignee_address" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">220</field>
+            <field name="field_key">consignee_address</field>
+            <field name="field_name">Consignee Address</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.street</field>
+            <field name="provider_field_path">ShipmentConsignee.Address.FullAddress</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="porter_mapping_consignee_phone" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_porter"/>
+            <field name="sequence">230</field>
+            <field name="field_key">consignee_phone</field>
+            <field name="field_name">Consignee Phone</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.phone</field>
+            <field name="provider_field_path">ShipmentConsignee.Address.Phone</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- IW Express Field Mappings -->
+        <record id="iw_mapping_customer_code" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">10</field>
+            <field name="field_key">customer_code</field>
+            <field name="field_name">Customer Code</field>
+            <field name="field_type">string</field>
+            <field name="provider_field_path">customer_code</field>
+            <field name="default_value">TESTSHOP</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_reference" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">20</field>
+            <field name="field_key">customer_reference</field>
+            <field name="field_name">Customer Reference</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">name</field>
+            <field name="provider_field_path">customer_reference_number</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_service_type" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">30</field>
+            <field name="field_key">service_type</field>
+            <field name="field_name">Service Type</field>
+            <field name="field_type">string</field>
+            <field name="provider_field_path">service_type_id</field>
+            <field name="default_value">PREMIUM</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_consignment_type" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">40</field>
+            <field name="field_key">consignment_type</field>
+            <field name="field_name">Consignment Type</field>
+            <field name="field_type">string</field>
+            <field name="provider_field_path">consignment_type</field>
+            <field name="default_value">FORWARD</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_currency" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">50</field>
+            <field name="field_key">currency</field>
+            <field name="field_name">Currency</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">currency_id.name</field>
+            <field name="provider_field_path">currency</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- Origin Details -->
+        <record id="iw_mapping_origin_name" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">100</field>
+            <field name="field_key">origin_name</field>
+            <field name="field_name">Origin Name</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.name</field>
+            <field name="provider_field_path">origin_details.name</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_origin_phone" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">110</field>
+            <field name="field_key">origin_phone</field>
+            <field name="field_name">Origin Phone</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.phone</field>
+            <field name="provider_field_path">origin_details.phone</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_origin_address" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">120</field>
+            <field name="field_key">origin_address</field>
+            <field name="field_name">Origin Address</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.street</field>
+            <field name="provider_field_path">origin_details.address_line_1</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_origin_city" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">130</field>
+            <field name="field_key">origin_city</field>
+            <field name="field_name">Origin City</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.city</field>
+            <field name="provider_field_path">origin_details.city</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_origin_country" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">140</field>
+            <field name="field_key">origin_country</field>
+            <field name="field_name">Origin Country</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">company_id.country_id.name</field>
+            <field name="provider_field_path">origin_details.country</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- Destination Details -->
+        <record id="iw_mapping_dest_name" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">200</field>
+            <field name="field_key">dest_name</field>
+            <field name="field_name">Destination Name</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.name</field>
+            <field name="provider_field_path">destination_details.name</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_dest_phone" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">210</field>
+            <field name="field_key">dest_phone</field>
+            <field name="field_name">Destination Phone</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.phone</field>
+            <field name="provider_field_path">destination_details.phone</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_dest_address" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">220</field>
+            <field name="field_key">dest_address</field>
+            <field name="field_name">Destination Address</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.street</field>
+            <field name="provider_field_path">destination_details.address_line_1</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_dest_city" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">230</field>
+            <field name="field_key">dest_city</field>
+            <field name="field_name">Destination City</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.city</field>
+            <field name="provider_field_path">destination_details.city</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_dest_country" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">240</field>
+            <field name="field_key">dest_country</field>
+            <field name="field_name">Destination Country</field>
+            <field name="field_type">string</field>
+            <field name="odoo_field">partner_shipping_id.country_id.name</field>
+            <field name="provider_field_path">destination_details.country</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <!-- Weight and Dimensions -->
+        <record id="iw_mapping_weight" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">300</field>
+            <field name="field_key">weight</field>
+            <field name="field_name">Weight</field>
+            <field name="field_type">float</field>
+            <field name="provider_field_path">weight</field>
+            <field name="default_value">1</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="iw_mapping_weight_unit" model="shipping.field.mapping">
+            <field name="provider_id" ref="provider_iwexpress"/>
+            <field name="sequence">310</field>
+            <field name="field_key">weight_unit</field>
+            <field name="field_name">Weight Unit</field>
+            <field name="field_type">string</field>
+            <field name="provider_field_path">weight_unit</field>
+            <field name="default_value">KG</field>
+            <field name="is_required">True</field>
+            <field name="is_active">True</field>
+        </record>
+    </data>
+</odoo>
