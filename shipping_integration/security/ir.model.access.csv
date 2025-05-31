@@ -1,8 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_shipping_provider,shipping.provider,model_shipping_provider,base.group_user,1,0,0,0
-access_shipping_provider_manager,shipping.provider.manager,model_shipping_provider,stock.group_stock_manager,1,1,1,1
-access_shipping_field_mapping,shipping.field.mapping,model_shipping_field_mapping,base.group_user,1,0,0,0
-access_shipping_field_mapping_manager,shipping.field.mapping.manager,model_shipping_field_mapping,stock.group_stock_manager,1,1,1,1
-access_shipping_request,shipping.request,model_shipping_request,base.group_user,1,1,1,0
-access_shipping_request_manager,shipping.request.manager,model_shipping_request,stock.group_stock_manager,1,1,1,1
-access_create_shipment_wizard,create.shipment.wizard,model_create_shipment_wizard,base.group_user,1,1,1,1
