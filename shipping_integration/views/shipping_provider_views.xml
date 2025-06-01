@@ -1,0 +1,170 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_shipping_provider_tree" model="ir.ui.view">
+        <field name="name">shipping.provider.tree</field>
+        <field name="model">shipping.provider</field>
+        <field name="arch" type="xml">
+            <tree string="Shipping Providers">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="auth_type"/>
+                <field name="base_url"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_shipping_provider_form" model="ir.ui.view">
+        <field name="name">shipping.provider.form</field>
+        <field name="model">shipping.provider</field>
+        <field name="arch" type="xml">
+            <form string="Shipping Provider">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="authenticate" type="object" string="Test Authentication" class="oe_stat_button" icon="fa-key"/>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Provider Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="base_url"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="request_content_type"/>
+                            <field name="response_type"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Authentication">
+                            <group>
+                                <field name="auth_type"/>
+                                <field name="auth_endpoint" invisible="auth_type != 'bearer'"/>
+                                <field name="auth_username" invisible="auth_type not in ['basic', 'bearer']"/>
+                                <field name="auth_password" password="True" invisible="auth_type not in ['basic', 'bearer']"/>
+                                <field name="auth_token" invisible="auth_type != 'basic'"/>
+                                <field name="auth_api_key" invisible="auth_type != 'api_key'"/>
+                                <field name="current_token" invisible="auth_type != 'bearer'" readonly="1"/>
+                                <field name="token_expiry" invisible="auth_type != 'bearer'" readonly="1"/>
+                            </group>
+                        </page>
+
+                        <page string="Endpoints">
+                            <group>
+                                <field name="create_shipment_endpoint"/>
+                                <field name="get_label_endpoint"/>
+                                <field name="track_shipment_endpoint"/>
+                                <field name="cancel_shipment_endpoint"/>
+                            </group>
+                            <group>
+                                <field name="tracking_number_path"/>
+                                <field name="error_message_path"/>
+                            </group>
+                        </page>
+
+                        <page string="Field Mappings">
+                            <field name="field_mapping_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="field_key"/>
+                                    <field name="field_name"/>
+                                    <field name="field_type"/>
+                                    <field name="odoo_field"/>
+                                    <field name="provider_field_path"/>
+                                    <field name="default_value"/>
+                                    <field name="transformation"/>
+                                    <field name="is_required"/>
+                                    <field name="is_active"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_shipping_provider" model="ir.actions.act_window">
+        <field name="name">Shipping Providers</field>
+        <field name="res_model">shipping.provider</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_shipping_root" name="Shipping Integration" parent="stock.menu_stock_root" sequence="50"/>
+    <menuitem id="menu_shipping_provider" name="Providers" parent="menu_shipping_root" action="action_shipping_provider" sequence="10"/>
+
+    <!-- Shipping Requests Views -->
+    <record id="view_shipping_request_tree" model="ir.ui.view">
+        <field name="name">shipping.request.tree</field>
+        <field name="model">shipping.request</field>
+        <field name="arch" type="xml">
+            <tree string="Shipping Requests">
+                <field name="name"/>
+                <field name="sale_order_id"/>
+                <field name="provider_id"/>
+                <field name="request_type"/>
+                <field name="tracking_number"/>
+                <field name="state"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_shipping_request_form" model="ir.ui.view">
+        <field name="name">shipping.request.form</field>
+        <field name="model">shipping.request</field>
+        <field name="arch" type="xml">
+            <form string="Shipping Request">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sale_order_id"/>
+                            <field name="provider_id"/>
+                            <field name="request_type"/>
+                        </group>
+                        <group>
+                            <field name="tracking_number"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Request Data">
+                            <field name="request_data" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Response Data">
+                            <field name="response_data" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Error" invisible="state != 'error'">
+                            <field name="error_message"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_shipping_request" model="ir.actions.act_window">
+        <field name="name">Shipping Requests</field>
+        <field name="res_model">shipping.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_shipping_request" name="Requests Log" parent="menu_shipping_root" action="action_shipping_request" sequence="20"/>
+</odoo>
