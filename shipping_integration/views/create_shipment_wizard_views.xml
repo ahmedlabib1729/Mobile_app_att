@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_create_shipment_wizard" model="ir.ui.view">
+        <field name="name">create.shipment.wizard.form</field>
+        <field name="model">create.shipment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Shipment">
+                <group>
+                    <field name="sale_order_id" readonly="1"/>
+                    <field name="provider_id" options="{'no_create': True}"/>
+                </group>
+                <group>
+                    <group>
+                        <field name="weight"/>
+                        <field name="pieces_count"/>
+                    </group>
+                    <group>
+                        <field name="cod_amount"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="notes" placeholder="Any special instructions..."/>
+                </group>
+                <footer>
+                    <button name="action_create_shipment" type="object" string="Create Shipment" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
