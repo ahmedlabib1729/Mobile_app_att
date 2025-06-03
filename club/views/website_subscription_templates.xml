@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="subscription_request_form" name="نموذج طلب الاشتراك">
+        <t t-call="website.layout">
+            <div id="wrap" class="subscription-request-page">
+                <!-- Hero Section -->
+                <section class="hero-section text-white text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
+                    <div class="container position-relative z-index-1">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="hero-content">
+                                    <i class="fa fa-trophy mb-4" style="font-size: 60px; opacity: 0.9;"/>
+                                    <h1 class="display-4 fw-bold mb-3">انضم إلى نادينا الرياضي</h1>
+                                    <p class="lead mb-0">ابدأ رحلتك الرياضية معنا اليوم</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative shapes -->
+                    <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                    <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                </section>
+
+                <div class="container my-5">
+                    <div class="row">
+                        <div class="col-lg-10 mx-auto">
+                            <!-- Progress Steps -->
+                            <div class="progress-steps mb-5">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="step-item active">
+                                        <div class="step-icon">
+                                            <i class="fa fa-user-circle"></i>
+                                        </div>
+                                        <span class="step-label">بيانات ولي الأمر</span>
+                                    </div>
+                                    <div class="step-line"></div>
+                                    <div class="step-item">
+                                        <div class="step-icon">
+                                            <i class="fa fa-users"></i>
+                                        </div>
+                                        <span class="step-label">بيانات اللاعبين</span>
+                                    </div>
+                                    <div class="step-line"></div>
+                                    <div class="step-item">
+                                        <div class="step-icon">
+                                            <i class="fa fa-check-circle"></i>
+                                        </div>
+                                        <span class="step-label">تأكيد الطلب</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- رسائل الخطأ العامة -->
+                            <div id="form-errors"></div>
+                            <t t-if="error.get('general')">
+                                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                                    <i class="fa fa-exclamation-triangle me-2"></i>
+                                    <t t-esc="error['general']"/>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </t>
+
+                            <!-- النموذج -->
+                            <form action="/subscription/submit" method="post" class="needs-validation" id="subscription_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <!-- نوع الطلب -->
+                                <div class="card shadow-sm border-0 mb-4 animate-card">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <h5 class="mb-0"><i class="fa fa-file-text-o me-2"></i>نوع الطلب</h5>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check custom-radio-card">
+                                                    <input class="form-check-input" type="radio" name="request_type"
+                                                           id="request_new" value="new" checked="checked"/>
+                                                    <label class="form-check-label" for="request_new">
+                                                        <div class="radio-card-content">
+                                                            <i class="fa fa-plus-circle mb-2" style="font-size: 24px; color: #667eea;"></i>
+                                                            <h6 class="mb-0">اشتراك جديد</h6>
+                                                            <small class="text-muted">للأعضاء الجدد</small>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check custom-radio-card">
+                                                    <input class="form-check-input" type="radio" name="request_type"
+                                                           id="request_renewal" value="renewal"/>
+                                                    <label class="form-check-label" for="request_renewal">
+                                                        <div class="radio-card-content">
+                                                            <i class="fa fa-refresh mb-2" style="font-size: 24px; color: #764ba2;"></i>
+                                                            <h6 class="mb-0">تجديد اشتراك</h6>
+                                                            <small class="text-muted">للأعضاء الحاليين</small>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- بيانات ولي الأمر -->
+                                <div class="card shadow-sm border-0 mb-4 animate-card">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <h5 class="mb-0"><i class="fa fa-user-circle me-2"></i>بيانات ولي الأمر</h5>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <!-- رقم الموبايل للتحقق -->
+                                        <div class="mobile-check-section p-4 mb-4" style="background: #f8f9fa; border-radius: 10px;">
+                                            <h6 class="mb-3"><i class="fa fa-mobile me-2"></i>التحقق من رقم الموبايل</h6>
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label class="form-label fw-bold">كود الدولة</label>
+                                                    <select name="parent_country_code" id="parent_country_code"
+                                                            class="form-select form-select-lg">
+                                                        <t t-foreach="country_codes" t-as="code">
+                                                            <option t-att-value="code[0]"
+                                                                    t-att-selected="parent_country_code == code[0] or (not parent_country_code and code[0] == '+966')">
+                                                                <t t-esc="code[1]"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-8 mb-3">
+                                                    <label class="form-label fw-bold">رقم الموبايل <span class="text-danger">*</span></label>
+                                                    <div class="input-group input-group-lg">
+                                                        <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                                        <input type="text" name="parent_mobile" id="parent_mobile"
+                                                               class="form-control" placeholder="501234567"
+                                                               t-att-value="parent_mobile"
+                                                               t-attf-class="form-control #{error.get('parent_mobile') and 'is-invalid'}"
+                                                               required="required"/>
+                                                        <button class="btn btn-primary" type="button"
+                                                                id="check_mobile_btn">
+                                                            <i class="fa fa-search me-1"></i> تحقق
+                                                        </button>
+                                                        <div class="invalid-feedback">
+                                                            <t t-esc="error.get('parent_mobile', 'يرجى إدخال رقم موبايل صحيح')"/>
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted">أدخل الرقم بدون كود الدولة</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- حقل مخفي لحالة ولي الأمر -->
+                                        <input type="hidden" name="parent_exists" id="parent_exists" value="false"/>
+                                        <input type="hidden" name="parent_id" id="parent_id" value=""/>
+
+                                        <!-- رسالة التحقق -->
+                                        <div id="parent_check_result" class="alert d-none mb-3"></div>
+
+                                        <!-- بقية بيانات ولي الأمر -->
+                                        <div id="parent_details" class="parent-new-fields">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">
+                                                        <i class="fa fa-user me-1"></i>
+                                                        اسم ولي الأمر <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="text" name="parent_name" id="parent_name"
+                                                           t-attf-class="form-control form-control-lg #{error.get('parent_name') and 'is-invalid'}"
+                                                           t-att-value="parent_name"
+                                                           required="required"/>
+                                                    <div class="invalid-feedback">
+                                                        <t t-esc="error.get('parent_name', 'يرجى إدخال اسم ولي الأمر')"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">
+                                                        <i class="fa fa-envelope me-1"></i>
+                                                        البريد الإلكتروني
+                                                    </label>
+                                                    <input type="email" name="parent_email" id="parent_email"
+                                                           class="form-control form-control-lg"
+                                                           t-att-value="parent_email"/>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">
+                                                    <i class="fa fa-map-marker me-1"></i>
+                                                    العنوان
+                                                </label>
+                                                <textarea name="parent_address" id="parent_address"
+                                                          class="form-control form-control-lg" rows="2"><t t-esc="parent_address"/></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- بيانات اللاعبين -->
+                                <div class="card shadow-sm border-0 mb-4 animate-card">
+                                    <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <h5 class="mb-0"><i class="fa fa-users me-2"></i>بيانات اللاعبين</h5>
+                                        <button type="button" class="btn btn-light btn-sm" id="add_player_btn">
+                                            <i class="fa fa-plus me-1"></i> إضافة لاعب
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <!-- قائمة اللاعبين المسجلين (تظهر بعد التحقق من ولي الأمر) -->
+                                        <div id="existing_players_list" class="d-none mb-4">
+                                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                                <h6 class="alert-heading"><i class="fa fa-info-circle me-2"></i>اللاعبون المسجلون:</h6>
+                                                <div id="existing_players_container"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- حاوية اللاعبين -->
+                                        <div id="players_container">
+                                            <!-- سيتم إضافة اللاعبين هنا ديناميكياً -->
+                                        </div>
+
+                                        <!-- عداد اللاعبين -->
+                                        <input type="hidden" name="player_count" id="player_count" value="0"/>
+                                    </div>
+                                </div>
+
+                                <!-- ملخص الرسوم -->
+                                <div class="card shadow-sm border-0 mb-4 animate-card">
+                                    <div class="card-header text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                        <h5 class="mb-0"><i class="fa fa-calculator me-2"></i>ملخص الرسوم</h5>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div id="fees_summary" class="fees-summary">
+                                            <div class="empty-state text-center py-4">
+                                                <i class="fa fa-inbox text-muted mb-3" style="font-size: 48px;"></i>
+                                                <p class="text-muted">لم يتم إضافة أي لاعبين بعد</p>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4"/>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h4 class="mb-0">الإجمالي:</h4>
+                                            <h3 id="total_amount" class="mb-0 text-primary">0 ر.س</h3>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- أزرار الإرسال -->
+                                <div class="text-center mb-5">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 me-3 shadow">
+                                        <i class="fa fa-paper-plane me-2"></i> إرسال الطلب
+                                    </button>
+                                    <a href="/" class="btn btn-outline-secondary btn-lg px-5">
+                                        <i class="fa fa-times me-2"></i> إلغاء
+                                    </a>
+                                </div>
+
+                                <!-- Hidden templates -->
+                                <select name="sport_template" class="d-none">
+                                    <option value="">اختر اللعبة...</option>
+                                    <t t-foreach="sports" t-as="sport">
+                                        <option t-att-value="sport.id">
+                                            <t t-esc="sport.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+
+                                <!-- Hidden countries template -->
+                                <select name="country_template" class="d-none">
+                                    <option value="">اختر الجنسية...</option>
+                                    <t t-foreach="countries" t-as="country">
+                                        <option t-att-value="country.id">
+                                            <t t-esc="country.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom CSS -->
+            <style>
+                /* Progress Steps */
+                .progress-steps {
+                    position: relative;
+                }
+
+                .step-item {
+                    text-align: center;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .step-icon {
+                    width: 60px;
+                    height: 60px;
+                    background: #f8f9fa;
+                    border: 3px solid #dee2e6;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 10px;
+                    font-size: 24px;
+                    color: #6c757d;
+                    transition: all 0.3s ease;
+                }
+
+                .step-item.active .step-icon {
+                    background: #667eea;
+                    border-color: #667eea;
+                    color: white;
+                }
+
+                .step-label {
+                    font-size: 14px;
+                    color: #6c757d;
+                    font-weight: 500;
+                }
+
+                .step-item.active .step-label {
+                    color: #667eea;
+                }
+
+                .step-line {
+                    height: 3px;
+                    background: #dee2e6;
+                    flex: 1;
+                    margin: 0 20px;
+                    align-self: center;
+                    margin-top: -40px;
+                }
+
+                /* Custom Radio Cards */
+                .custom-radio-card {
+                    position: relative;
+                }
+
+                .custom-radio-card .form-check-input {
+                    position: absolute;
+                    opacity: 0;
+                }
+
+                .custom-radio-card .form-check-label {
+                    display: block;
+                    cursor: pointer;
+                }
+
+                .radio-card-content {
+                    padding: 30px;
+                    border: 2px solid #e9ecef;
+                    border-radius: 10px;
+                    text-align: center;
+                    transition: all 0.3s ease;
+                }
+
+                .custom-radio-card .form-check-input:checked ~ .form-check-label .radio-card-content {
+                    border-color: #667eea;
+                    background: #f8f9ff;
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+                }
+
+                /* Animate Cards */
+                .animate-card {
+                    animation: fadeInUp 0.5s ease-out;
+                    transition: transform 0.3s ease;
+                }
+
+                .animate-card:hover {
+                    transform: translateY(-2px);
+                }
+
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Player Item */
+                .player-item {
+                    background: #f8f9fa;
+                    border: 2px solid #e9ecef !important;
+                    transition: all 0.3s ease;
+                    animation: slideIn 0.3s ease-out;
+                }
+
+                .player-item:hover {
+                    border-color: #667eea !important;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+
+                /* Player number badge */
+                .player-item h6 {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .player-item h6::before {
+                    content: attr(data-number);
+                    width: 30px;
+                    height: 30px;
+                    background: #667eea;
+                    color: white;
+                    border-radius: 50%;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+
+                @keyframes slideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+
+                /* Buttons */
+                .btn-primary {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border: none;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-primary:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                }
+
+                /* Form Controls */
+                .form-control:focus, .form-select:focus {
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                }
+
+                /* Mobile Check Section */
+                .mobile-check-section {
+                    border: 2px dashed #dee2e6;
+                }
+
+                /* Fees Summary */
+                .fees-summary .empty-state {
+                    opacity: 0.7;
+                }
+
+                /* Sport Icons */
+                .sport-icon {
+                    width: 40px;
+                    height: 40px;
+                    background: #667eea;
+                    color: white;
+                    border-radius: 50%;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 10px;
+                }
+            </style>
+
+            <!-- إضافة JavaScript -->
+            <script type="text/javascript">
+                // Store countries data globally
+                window.countriesData = [];
+                <t t-foreach="countries" t-as="country">
+                    window.countriesData.push({
+                        id: <t t-esc="country.id"/>,
+                        name: '<t t-esc="country.name"/>'
+                    });
+                </t>
+            </script>
+            <script type="text/javascript" src="/club/static/src/js/subscription_request.js"/>
+        </t>
+    </template>
+
+    <!-- قالب نجاح الطلب -->
+    <template id="subscription_success" name="نجاح طلب الاشتراك">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <!-- Success Hero -->
+                <section class="success-hero text-white text-center py-5" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <div class="container">
+                        <div class="success-animation">
+                            <i class="fa fa-check-circle" style="font-size: 100px; animation: bounceIn 1s ease;"/>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="container my-5">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto text-center">
+                            <div class="card shadow-lg border-0">
+                                <div class="card-body py-5 px-4">
+                                    <h2 class="mb-4 fw-bold">تم إرسال طلبك بنجاح!</h2>
+
+                                    <t t-if="subscription_request">
+                                        <div class="request-info mb-4 p-4" style="background: #f8f9fa; border-radius: 10px;">
+                                            <p class="mb-2">رقم الطلب</p>
+                                            <h3 class="text-primary mb-0">
+                                                <strong t-esc="subscription_request.name"/>
+                                            </h3>
+                                        </div>
+
+                                        <div class="alert alert-info">
+                                            <i class="fa fa-info-circle me-2"></i>
+                                            سيتم مراجعة طلبك والتواصل معك في أقرب وقت ممكن.
+                                        </div>
+                                    </t>
+
+                                    <hr class="my-4"/>
+
+                                    <div class="d-grid gap-3">
+                                        <a href="/" class="btn btn-primary btn-lg">
+                                            <i class="fa fa-home me-2"></i> العودة للرئيسية
+                                        </a>
+                                        <a href="/subscription/request" class="btn btn-outline-primary btn-lg">
+                                            <i class="fa fa-plus me-2"></i> طلب جديد
+                                        </a>
+                                    </div>
+
+                                    <!-- Success Animation -->
+                                    <div class="mt-5">
+                                        <div class="success-checkmark">
+                                            <div class="check-icon">
+                                                <span class="icon-line line-tip"></span>
+                                                <span class="icon-line line-long"></span>
+                                                <div class="icon-circle"></div>
+                                                <div class="icon-fix"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                @keyframes bounceIn {
+                    0%, 20%, 40%, 60%, 80%, 100% {
+                        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+                    }
+                    0% {
+                        opacity: 0;
+                        transform: scale3d(0.3, 0.3, 0.3);
+                    }
+                    20% {
+                        transform: scale3d(1.1, 1.1, 1.1);
+                    }
+                    40% {
+                        transform: scale3d(0.9, 0.9, 0.9);
+                    }
+                    60% {
+                        opacity: 1;
+                        transform: scale3d(1.03, 1.03, 1.03);
+                    }
+                    80% {
+                        transform: scale3d(0.97, 0.97, 0.97);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: scale3d(1, 1, 1);
+                    }
+                }
+
+                /* Success Checkmark Animation */
+                .success-checkmark {
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto;
+                    position: relative;
+                }
+
+                .check-icon {
+                    width: 80px;
+                    height: 80px;
+                    position: relative;
+                    border-radius: 50%;
+                    box-sizing: content-box;
+                    border: 4px solid #4CAF50;
+                }
+
+                .check-icon::before {
+                    top: 3px;
+                    left: -2px;
+                    width: 30px;
+                    transform-origin: 100% 50%;
+                    border-radius: 100px 0 0 100px;
+                }
+
+                .check-icon::after {
+                    top: 0;
+                    left: 30px;
+                    width: 60px;
+                    transform-origin: 0 50%;
+                    border-radius: 0 100px 100px 0;
+                    animation: rotate-circle 4.25s ease-in;
+                }
+
+                .icon-line {
+                    height: 5px;
+                    background-color: #4CAF50;
+                    display: block;
+                    border-radius: 2px;
+                    position: absolute;
+                    z-index: 10;
+                }
+
+                .icon-line.line-tip {
+                    top: 46px;
+                    left: 14px;
+                    width: 25px;
+                    transform: rotate(45deg);
+                    animation: icon-line-tip 0.75s;
+                }
+
+                .icon-line.line-long {
+                    top: 38px;
+                    right: 8px;
+                    width: 47px;
+                    transform: rotate(-45deg);
+                    animation: icon-line-long 0.75s;
+                }
+
+                @keyframes rotate-circle {
+                    0% {
+                        transform: rotate(-45deg);
+                    }
+                    5% {
+                        transform: rotate(-45deg);
+                    }
+                    12% {
+                        transform: rotate(-405deg);
+                    }
+                    100% {
+                        transform: rotate(-405deg);
+                    }
+                }
+
+                @keyframes icon-line-tip {
+                    0% {
+                        width: 0;
+                        left: 1px;
+                        top: 19px;
+                    }
+                    54% {
+                        width: 0;
+                        left: 1px;
+                        top: 19px;
+                    }
+                    70% {
+                        width: 50px;
+                        left: -8px;
+                        top: 37px;
+                    }
+                    84% {
+                        width: 17px;
+                        left: 21px;
+                        top: 48px;
+                    }
+                    100% {
+                        width: 25px;
+                        left: 14px;
+                        top: 46px;
+                    }
+                }
+
+                @keyframes icon-line-long {
+                    0% {
+                        width: 0;
+                        right: 46px;
+                        top: 54px;
+                    }
+                    65% {
+                        width: 0;
+                        right: 46px;
+                        top: 54px;
+                    }
+                    84% {
+                        width: 55px;
+                        right: 0px;
+                        top: 35px;
+                    }
+                    100% {
+                        width: 47px;
+                        right: 8px;
+                        top: 38px;
+                    }
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

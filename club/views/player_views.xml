@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_club_player_list" model="ir.ui.view">
+        <field name="name">club.player.list</field>
+        <field name="model">club.player</field>
+        <field name="arch" type="xml">
+            <list string="اللاعبين">
+                <field name="name"/>
+                <field name="id_number"/>
+                <field name="nationality_id"/>
+                <field name="age"/>
+                <field name="parent_id"/>
+                <field name="total_remaining" widget="monetary" decoration-bf="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_club_player_form" model="ir.ui.view">
+        <field name="name">club.player.form</field>
+        <field name="model">club.player</field>
+        <field name="arch" type="xml">
+            <form string="لاعب">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_create_subscription" icon="fa-plus">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">اشتراك جديد</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_unpaid_subscriptions" icon="fa-money" invisible="total_remaining &lt;= 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_remaining" widget="monetary"/>
+                                </span>
+                                <span class="o_stat_text">المتبقي</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="اسم اللاعب"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="id_number" placeholder="مثال: A12345678"/>
+                            <field name="nationality_id" options="{'no_create': True}"/>
+                            <field name="birth_country_id" options="{'no_create': True}"/>
+                            <field name="birth_date"/>
+                            <field name="age"/>
+                        </group>
+                        <group>
+                            <field name="parent_id"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="المعلومات المالية" col="4">
+                        <field name="total_remaining" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_highlight"/>
+                        <span class="text-muted">إجمالي رسوم الاشتراك المتبقية</span>
+                    </group>
+                    <group string="العنوان">
+                        <field name="address" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="الاشتراكات النشطة">
+                            <field name="active_subscription_ids" readonly="1">
+                                <list decoration-warning="is_expiring_soon" create="0">
+                                    <field name="sport_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="days_to_expire" string="الأيام المتبقية"/>
+                                    <field name="subscription_fee" string="الرسوم"/>
+                                    <field name="paid_amount" string="المدفوع"/>
+                                    <field name="remaining_amount" string="المتبقي" sum="الإجمالي"/>
+                                    <field name="payment_state" widget="badge"/>
+                                    <button name="action_make_payment" string="دفع" type="object" class="btn-sm btn-success" invisible="remaining_amount &lt;= 0"/>
+                                    <button name="action_renew" string="تجديد" type="object" class="btn-sm btn-primary" invisible="days_to_expire > 7"/>
+                                    <field name="is_expiring_soon" invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="كل الاشتراكات">
+                            <field name="subscription_ids" readonly="1">
+                                <list create="0">
+                                    <field name="sport_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="subscription_fee"/>
+                                    <field name="payment_state" widget="badge"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_club_player_search" model="ir.ui.view">
+        <field name="name">club.player.search</field>
+        <field name="model">club.player</field>
+        <field name="arch" type="xml">
+            <search string="بحث اللاعبين">
+                <field name="name"/>
+                <field name="id_number"/>
+                <field name="parent_id"/>
+                <filter string="نشط" name="active" domain="[('active', '=', True)]"/>
+                <filter string="غير نشط" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الجنسية" name="nationality" context="{'group_by': 'nationality_id'}"/>
+                    <filter string="ولي الأمر" name="parent" context="{'group_by': 'parent_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_club_player" model="ir.actions.act_window">
+        <field name="name">اللاعبين</field>
+        <field name="res_model">club.player</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_club_player_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                أضف لاعب جديد
+            </p>
+        </field>
+    </record>
+</odoo>

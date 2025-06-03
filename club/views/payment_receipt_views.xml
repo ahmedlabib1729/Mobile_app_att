@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_payment_receipt_list" model="ir.ui.view">
+        <field name="name">payment.receipt.list</field>
+        <field name="model">payment.receipt</field>
+        <field name="arch" type="xml">
+            <list string="سندات القبض" decoration-success="state == 'confirmed'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="parent_id"/>
+                <field name="amount_total" sum="الإجمالي"/>
+                <field name="payment_method"/>
+                <field name="reference"/>
+                <field name="state" widget="badge" decoration-success="state == 'confirmed'" decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_payment_receipt_form" model="ir.ui.view">
+        <field name="name">payment.receipt.form</field>
+        <field name="model">payment.receipt</field>
+        <field name="arch" type="xml">
+            <form string="سند قبض">
+                <header>
+                    <button name="action_confirm" string="تأكيد" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="إلغاء" type="object" class="btn-danger" invisible="state != 'confirmed'" confirm="هل أنت متأكد من إلغاء هذا السند؟ سيتم إرجاع المبالغ من الاشتراكات."/>
+                    <button name="action_print_receipt" string="طباعة" type="object" class="btn-secondary" invisible="state != 'confirmed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="parent_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="payment_method" readonly="state != 'draft'"/>
+                            <field name="reference" readonly="state != 'draft'" invisible="payment_method == 'cash'"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="التفاصيل">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="subscription_id" domain="[('parent_id', '=', parent.parent_id), ('payment_state', 'in', ['unpaid', 'partial'])]"/>
+                                    <field name="player_id"/>
+                                    <field name="sport_id"/>
+                                    <field name="amount" sum="الإجمالي"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total" widget="monetary" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="ملاحظات">
+                            <field name="note" placeholder="أي ملاحظات إضافية..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_payment_receipt_search" model="ir.ui.view">
+        <field name="name">payment.receipt.search</field>
+        <field name="model">payment.receipt</field>
+        <field name="arch" type="xml">
+            <search string="بحث سندات القبض">
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="reference"/>
+                <filter string="مؤكد" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="ملغي" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="نقدي" name="cash" domain="[('payment_method', '=', 'cash')]"/>
+                <filter string="بنكي" name="bank" domain="[('payment_method', '=', 'bank')]"/>
+                <filter string="شيك" name="cheque" domain="[('payment_method', '=', 'cheque')]"/>
+                <separator/>
+                <filter string="اليوم" name="today" domain="[('date', '=', context_today())]"/>
+                <filter string="هذا الأسبوع" name="this_week" domain="[
+                    ('date', '&gt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d')),
+                    ('date', '&lt;=', context_today().strftime('%Y-%m-%d'))
+                ]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="ولي الأمر" name="parent" context="{'group_by': 'parent_id'}"/>
+                    <filter string="طريقة الدفع" name="payment_method" context="{'group_by': 'payment_method'}"/>
+                    <filter string="الحالة" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="التاريخ" name="date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_payment_receipt" model="ir.actions.act_window">
+        <field name="name">سندات القبض</field>
+        <field name="res_model">payment.receipt</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_payment_receipt_search"/>
+        <field name="context">{'search_default_confirmed': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء سند قبض جديد
+            </p>
+            <p>
+                قم بإدارة سندات القبض ومتابعة المدفوعات
+            </p>
+        </field>
+    </record>
+</odoo>
