@@ -17,12 +17,14 @@ Features:
 - Automatic restoration on payment
 - Notification system
 - Reporting capabilities
+- Excel export functionality
 
 The system works by:
 1. Daily monitoring of overdue installments
 2. Automatic withdrawal after configured months
 3. Status tracking and history
 4. Automatic restoration when payment is made
+5. Comprehensive reporting with Excel export
     """,
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
@@ -44,7 +46,6 @@ The system works by:
     'auto_install': False,
     'license': 'LGPL-3',
     'external_dependencies': {
-        'python': [],
+        'python': ['xlsxwriter'],
     },
-
 }

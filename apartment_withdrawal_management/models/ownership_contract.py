@@ -69,11 +69,6 @@ class OwnershipContract(models.Model):
         compute='_compute_withdrawal_settings',
         help="Based on system configuration"
     )
-    withdrawal_warning_days = fields.Integer(
-        string='Warning Days',
-        compute='_compute_withdrawal_settings',
-        help="Based on system configuration"
-    )
 
     def _compute_withdrawal_settings(self):
         """Get withdrawal settings from system configuration"""
@@ -82,8 +77,6 @@ class OwnershipContract(models.Model):
                 'apartment_withdrawal.withdrawal_enabled', 'False') == 'True'
             record.withdrawal_months = int(self.env['ir.config_parameter'].sudo().get_param(
                 'apartment_withdrawal.withdrawal_months', '10'))
-            record.withdrawal_warning_days = int(self.env['ir.config_parameter'].sudo().get_param(
-                'apartment_withdrawal.withdrawal_warning_days', '30'))
 
     @api.depends('withdrawal_monitor_ids')
     def _compute_withdrawal_monitor_count(self):
@@ -134,61 +127,6 @@ class OwnershipContract(models.Model):
             'target': 'current',
         }
 
-    def action_create_withdrawal_monitor(self):
-        """Create withdrawal monitor for overdue installments"""
-        self.ensure_one()
-
-        if not self.has_overdue_installments:
-            raise UserError(_("No overdue installments found for this contract."))
-
-        # Find the most overdue installment
-        overdue_lines = self.loan_line.filtered(
-            lambda l: l.total_remaining_amount > 0 and l.date and l.date < fields.Date.today()
-        )
-
-        if not overdue_lines:
-            raise UserError(_("No overdue installments found."))
-
-        # Get the oldest overdue installment
-        most_overdue = min(overdue_lines, key=lambda l: l.date)
-
-        # Check if monitor already exists
-        existing_monitor = self.env['withdrawal.monitor'].search([
-            ('contract_id', '=', self.id),
-            ('installment_id', '=', most_overdue.id),
-            ('status', 'in', ['monitoring', 'warning_sent', 'withdrawn'])
-        ])
-
-        if existing_monitor:
-            raise UserError(_("Withdrawal monitor already exists for this installment."))
-
-        # Calculate months overdue
-        today = fields.Date.today()
-        months_overdue = (today.year - most_overdue.date.year) * 12 + (today.month - most_overdue.date.month)
-
-        # Create withdrawal monitor
-        monitor = self.env['withdrawal.monitor'].create({
-            'contract_id': self.id,
-            'partner_id': self.partner_id.id,
-            'building_unit_id': self.building_unit.id,
-            'building_id': self.building.id,
-            'installment_id': most_overdue.id,
-            'due_date': most_overdue.date,
-            'overdue_amount': most_overdue.total_remaining_amount,
-            'overdue_months': months_overdue,
-            'status': 'monitoring',
-            'withdrawal_reason': _('Automatic monitoring due to overdue installment: %s') % most_overdue.name
-        })
-
-        return {
-            'name': _('Withdrawal Monitor Created'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'withdrawal.monitor',
-            'view_mode': 'form',
-            'res_id': monitor.id,
-            'target': 'current'
-        }
-
     def action_manual_withdraw(self):
         """Manually withdraw apartment"""
         self.ensure_one()
@@ -213,17 +151,17 @@ class OwnershipContract(models.Model):
         months_overdue = (today.year - oldest_installment.date.year) * 12 + (
                     today.month - oldest_installment.date.month)
 
-        # Create or update withdrawal monitor
+        # Check if monitor already exists
         existing_monitor = self.env['withdrawal.monitor'].search([
             ('contract_id', '=', self.id),
             ('installment_id', '=', oldest_installment.id)
         ], limit=1)
 
-        if existing_monitor:
-            if existing_monitor.status != 'withdrawn':
-                existing_monitor.action_withdraw_apartment()
-        else:
-            # Create new monitor and withdraw immediately
+        if existing_monitor and existing_monitor.status == 'withdrawn':
+            raise UserError(_("This apartment is already withdrawn."))
+
+        if existing_monitor and existing_monitor.status == 'restored':
+            # Create new monitor for new withdrawal
             monitor = self.env['withdrawal.monitor'].create({
                 'contract_id': self.id,
                 'partner_id': self.partner_id.id,
@@ -233,18 +171,34 @@ class OwnershipContract(models.Model):
                 'due_date': oldest_installment.date,
                 'overdue_amount': oldest_installment.total_remaining_amount,
                 'overdue_months': months_overdue,
-                'status': 'monitoring',
+                'status': 'withdrawn',
                 'withdrawal_reason': _(
                     'Manual withdrawal requested for overdue installment: %s') % oldest_installment.name
             })
-            monitor.action_withdraw_apartment()
+        else:
+            # Create new monitor
+            monitor = self.env['withdrawal.monitor'].create({
+                'contract_id': self.id,
+                'partner_id': self.partner_id.id,
+                'building_unit_id': self.building_unit.id,
+                'building_id': self.building.id,
+                'installment_id': oldest_installment.id,
+                'due_date': oldest_installment.date,
+                'overdue_amount': oldest_installment.total_remaining_amount,
+                'overdue_months': months_overdue,
+                'status': 'withdrawn',
+                'withdrawal_reason': _(
+                    'Manual withdrawal requested for overdue installment: %s') % oldest_installment.name
+            })
+
+        monitor.action_withdraw_apartment()
 
         return {
             'name': _('Apartment Withdrawn'),
             'type': 'ir.actions.act_window',
             'res_model': 'withdrawal.monitor',
             'view_mode': 'form',
-            'res_id': existing_monitor.id if existing_monitor else monitor.id,
+            'res_id': monitor.id,
             'target': 'current'
         }
 
@@ -329,8 +283,6 @@ class OwnershipContract(models.Model):
         # Get all confirmed contracts
         confirmed_contracts = self.search([('state', '=', 'confirmed')])
 
-        monitors_created = 0
-        warnings_sent = 0
         apartments_withdrawn = 0
 
         for contract in confirmed_contracts:
@@ -345,11 +297,6 @@ class OwnershipContract(models.Model):
                 # Get global settings
                 withdrawal_months = int(self.env['ir.config_parameter'].sudo().get_param(
                     'apartment_withdrawal.withdrawal_months', '10'))
-                withdrawal_warning_days = int(self.env['ir.config_parameter'].sudo().get_param(
-                    'apartment_withdrawal.withdrawal_warning_days', '30'))
-
-                # Convert warning days to months (approximately)
-                warning_months = max(1, withdrawal_warning_days // 30)
 
                 # Check overdue installments
                 overdue_lines = contract.loan_line.filtered(
@@ -364,11 +311,11 @@ class OwnershipContract(models.Model):
                     existing_monitor = self.env['withdrawal.monitor'].search([
                         ('contract_id', '=', contract.id),
                         ('installment_id', '=', line.id),
-                        ('status', 'in', ['monitoring', 'warning_sent', 'withdrawn'])
+                        ('status', 'in', ['withdrawn', 'restored'])
                     ], limit=1)
 
-                    if not existing_monitor and months_overdue >= 1:
-                        # Create new monitor
+                    # If no monitor exists and overdue months >= withdrawal threshold, withdraw immediately
+                    if not existing_monitor and months_overdue >= withdrawal_months:
                         monitor = self.env['withdrawal.monitor'].create({
                             'contract_id': contract.id,
                             'partner_id': contract.partner_id.id,
@@ -378,43 +325,20 @@ class OwnershipContract(models.Model):
                             'due_date': line.date,
                             'overdue_amount': line.total_remaining_amount,
                             'overdue_months': months_overdue,
-                            'status': 'monitoring',
-                            'withdrawal_reason': _('Automatic monitoring - %d months overdue') % months_overdue
+                            'status': 'withdrawn',
+                            'withdrawal_reason': _('Automatic withdrawal - %d months overdue') % months_overdue
                         })
-                        monitors_created += 1
-                        _logger.info(f"Created monitor for contract {contract.name}, installment {line.name}")
-
-                    elif existing_monitor:
-                        # Update existing monitor
-                        existing_monitor.write({
-                            'overdue_months': months_overdue,
-                            'overdue_amount': line.total_remaining_amount
-                        })
-
-                        # Check if warning should be sent
-                        if (existing_monitor.status == 'monitoring' and
-                                months_overdue >= warning_months):
-                            existing_monitor.action_send_warning()
-                            warnings_sent += 1
-                            _logger.info(f"Warning sent for contract {contract.name}")
-
-                        # Check if apartment should be withdrawn
-                        elif (existing_monitor.status in ['monitoring', 'warning_sent'] and
-                              months_overdue >= withdrawal_months):
-                            existing_monitor.action_withdraw_apartment()
-                            apartments_withdrawn += 1
-                            _logger.info(f"Apartment withdrawn for contract {contract.name}")
+                        monitor.action_withdraw_apartment()
+                        apartments_withdrawn += 1
+                        _logger.info(f"Apartment withdrawn for contract {contract.name}")
 
             except Exception as e:
                 _logger.error(f"Error processing contract {contract.name}: {e}")
                 continue
 
-        _logger.info(
-            f"Overdue check completed. Created: {monitors_created}, Warnings: {warnings_sent}, Withdrawn: {apartments_withdrawn}")
+        _logger.info(f"Overdue check completed. Withdrawn: {apartments_withdrawn}")
 
         return {
-            'monitors_created': monitors_created,
-            'warnings_sent': warnings_sent,
             'apartments_withdrawn': apartments_withdrawn
         }
 
@@ -440,78 +364,97 @@ class LoanLineRsOwn(models.Model):
         for record in self:
             record.is_monitored = bool(
                 record.withdrawal_monitor_ids.filtered(
-                    lambda m: m.status in ['monitoring', 'warning_sent', 'withdrawn']
+                    lambda m: m.status in ['withdrawn', 'restored']
                 )
             )
 
     def write(self, vals):
-        """Override write to trigger auto-restoration check"""
+        """Override write to trigger instant auto-restoration when payment is made"""
+        # احفظ القيم القديمة قبل التحديث
+        old_remaining_amounts = {record.id: record.total_remaining_amount for record in self}
+
+        # نفذ التحديث العادي
         res = super(LoanLineRsOwn, self).write(vals)
 
-        # If payment amount is updated, check for auto-restoration
-        if 'total_paid_amount' in vals:
-            auto_restore = self.env['ir.config_parameter'].sudo().get_param(
-                'apartment_withdrawal_management.auto_restore', 'False')
+        # تحقق من إعدادات الاستعادة التلقائية
+        auto_restore = self.env['ir.config_parameter'].sudo().get_param(
+            'apartment_withdrawal_management.auto_restore', 'False')
 
-            if auto_restore == 'True':
-                # Check withdrawal monitors for this installment
-                for record in self:
+        if auto_restore == 'True':
+            # تحقق من كل دفعة تم تحديثها
+            for record in self:
+                old_amount = old_remaining_amounts.get(record.id, 0)
+                new_amount = record.total_remaining_amount
+
+                # إذا تغير المبلغ المتبقي (يعني تم دفع شيء)
+                if old_amount != new_amount:
+                    # ابحث عن withdrawal monitors لهذه الدفعة
                     withdrawn_monitors = record.withdrawal_monitor_ids.filtered(
                         lambda m: m.status == 'withdrawn'
                     )
 
                     for monitor in withdrawn_monitors:
+                        # إذا تم دفع الدفعة كاملة (المتبقي = صفر أو أقل)
                         if record.total_remaining_amount <= 0:
                             try:
+                                # استعد الشقة فوراً
                                 monitor.action_restore_apartment()
-                                _logger.info(f"Auto-restored due to payment: {record.loan_id.name}")
+                                _logger.info(f"🎉 INSTANT RESTORE: {record.loan_id.name} - Payment completed!")
+
+                                # أرسل إشعار للمستخدم
+                                monitor.message_post(
+                                    body=f"تم استعادة الشقة تلقائياً بعد دفع الدفعة المتأخرة: {record.name}",
+                                    message_type='notification'
+                                )
+
                             except Exception as e:
-                                _logger.error(f"Auto-restoration failed for {record.loan_id.name}: {e}")
+                                _logger.error(f"❌ RESTORE FAILED: {record.loan_id.name} - {e}")
 
         return res
 
-    def action_create_withdrawal_monitor(self):
-        """Create withdrawal monitor for this specific installment"""
-        self.ensure_one()
 
-        if self.total_remaining_amount <= 0:
-            raise UserError(_("This installment is already fully paid."))
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
 
-        if not self.date or self.date >= fields.Date.today():
-            raise UserError(_("This installment is not overdue yet."))
+    def action_post(self):
+        """Override to check for auto-restoration when payment is posted"""
+        res = super(AccountPayment, self).action_post()
 
-        # Check if monitor already exists
-        existing_monitor = self.env['withdrawal.monitor'].search([
-            ('installment_id', '=', self.id),
-            ('status', 'in', ['monitoring', 'warning_sent', 'withdrawn'])
-        ])
+        # تحقق من إعدادات الاستعادة التلقائية
+        auto_restore = self.env['ir.config_parameter'].sudo().get_param(
+            'apartment_withdrawal_management.auto_restore', 'False')
 
-        if existing_monitor:
-            raise UserError(_("Withdrawal monitor already exists for this installment."))
+        if auto_restore == 'True':
+            for payment in self:
+                # إذا كان الدفع متعلق بعقد ملكية
+                if hasattr(payment, 'ownership_line_id') and payment.ownership_line_id:
+                    contract = payment.ownership_line_id
 
-        # Calculate months overdue
-        today = fields.Date.today()
-        months_overdue = (today.year - self.date.year) * 12 + (today.month - self.date.month)
+                    # إذا كان العقد مسحوب
+                    if contract.state == 'withdrawn':
+                        # ابحث عن withdrawal monitors مسحوبة
+                        withdrawn_monitors = contract.withdrawal_monitor_ids.filtered(
+                            lambda m: m.status == 'withdrawn'
+                        )
 
-        # Create withdrawal monitor
-        monitor = self.env['withdrawal.monitor'].create({
-            'contract_id': self.loan_id.id,
-            'partner_id': self.loan_id.partner_id.id,
-            'building_unit_id': self.loan_id.building_unit.id,
-            'building_id': self.loan_id.building.id,
-            'installment_id': self.id,
-            'due_date': self.date,
-            'overdue_amount': self.total_remaining_amount,
-            'overdue_months': months_overdue,
-            'status': 'monitoring',
-            'withdrawal_reason': _('Manual monitoring created for installment: %s') % self.name
-        })
+                        # تحقق من كل monitor
+                        for monitor in withdrawn_monitors:
+                            # إذا تم دفع الدفعة المتأخرة كاملة
+                            if monitor.installment_id.total_remaining_amount <= 0:
+                                try:
+                                    # استعد الشقة فوراً
+                                    monitor.action_restore_apartment()
+                                    _logger.info(
+                                        f"🎉 PAYMENT RESTORE: {contract.name} - Posted payment triggered restore!")
 
-        return {
-            'name': _('Withdrawal Monitor Created'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'withdrawal.monitor',
-            'view_mode': 'form',
-            'res_id': monitor.id,
-            'target': 'current'
-        }
+                                    # أرسل رسالة للعميل
+                                    contract.message_post(
+                                        body=f"تم استعادة شقتكم تلقائياً بعد تسجيل الدفعة. شكراً لالتزامكم!",
+                                        partner_ids=[contract.partner_id.id]
+                                    )
+
+                                except Exception as e:
+                                    _logger.error(f"❌ PAYMENT RESTORE FAILED: {contract.name} - {e}")
+
+        return res
+

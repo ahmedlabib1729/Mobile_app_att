@@ -16,7 +16,7 @@
         <record id="action_withdrawal_monitor_monitoring" model="ir.actions.act_window">
             <field name="name">Currently Monitoring</field>
             <field name="res_model">withdrawal.monitor</field>
-            <field name="view_mode">kanban,tree,form,calendar,pivot,graph</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
             <field name="search_view_id" ref="withdrawal_monitor_search_view"/>
             <field name="context">{'search_default_filter_monitoring': 1}</field>
             <field name="domain">[('status', '=', 'monitoring')]</field>
@@ -25,7 +25,7 @@
         <record id="action_withdrawal_monitor_withdrawn" model="ir.actions.act_window">
             <field name="name">Withdrawn Apartments</field>
             <field name="res_model">withdrawal.monitor</field>
-            <field name="view_mode">kanban,tree,form,calendar,pivot,graph</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
             <field name="search_view_id" ref="withdrawal_monitor_search_view"/>
             <field name="context">{'search_default_filter_withdrawn': 1}</field>
             <field name="domain">[('status', '=', 'withdrawn')]</field>
@@ -34,7 +34,7 @@
         <record id="action_withdrawal_monitor_restored" model="ir.actions.act_window">
             <field name="name">Restored Apartments</field>
             <field name="res_model">withdrawal.monitor</field>
-            <field name="view_mode">kanban,tree,form,calendar,pivot,graph</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
             <field name="search_view_id" ref="withdrawal_monitor_search_view"/>
             <field name="context">{'search_default_filter_restored': 1}</field>
             <field name="domain">[('status', '=', 'restored')]</field>

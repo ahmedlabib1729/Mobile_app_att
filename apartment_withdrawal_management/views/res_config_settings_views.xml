@@ -36,18 +36,6 @@
                                 </div>
                             </div>
 
-                            <!-- Warning Days -->
-                            <div class="col-12 col-lg-6 o_setting_box" attrs="{'invisible': [('withdrawal_enabled', '=', False)]}">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <label for="withdrawal_warning_days" string="Warning Days Before Withdrawal"/>
-                                    <field name="withdrawal_warning_days" class="o_light_label"/>
-                                    <div class="text-muted">
-                                        Send warning notification X days before withdrawal
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Withdrawal Notifications -->
                             <div class="col-12 col-lg-6 o_setting_box" attrs="{'invisible': [('withdrawal_enabled', '=', False)]}">
                                 <div class="o_setting_left_pane">

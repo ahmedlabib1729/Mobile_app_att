@@ -35,25 +35,10 @@ class ResConfigSettings(models.TransientModel):
         help="Automatically restore apartment when overdue payment is made"
     )
 
-    withdrawal_warning_days = fields.Integer(
-        string='Warning Days Before Withdrawal',
-        config_parameter='apartment_withdrawal.withdrawal_warning_days',
-        default=30,
-        help="Send warning notification X days before withdrawal"
-    )
-
     @api.constrains('withdrawal_months')
     def _check_withdrawal_months(self):
         for record in self:
             if record.withdrawal_months and record.withdrawal_months < 1:
                 raise models.ValidationError(
                     "Withdrawal months must be at least 1 month."
-                )
-
-    @api.constrains('withdrawal_warning_days')
-    def _check_withdrawal_warning_days(self):
-        for record in self:
-            if record.withdrawal_warning_days and record.withdrawal_warning_days < 0:
-                raise models.ValidationError(
-                    "Warning days cannot be negative."
                 )

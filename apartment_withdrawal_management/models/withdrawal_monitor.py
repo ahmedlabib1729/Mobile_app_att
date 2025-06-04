@@ -50,12 +50,6 @@ class WithdrawalMonitor(models.Model):
         ondelete='cascade',
         index=True
     )
-    installment_id = fields.Many2one(
-        'loan.line.rs.own',
-        string='Overdue Installment',
-        required=True,
-        ondelete='cascade'
-    )
     building_unit_id = fields.Many2one(
         'product.template',
         string='Building Unit',
@@ -90,10 +84,6 @@ class WithdrawalMonitor(models.Model):
         help="Date when apartment was restored after payment",
         tracking=True
     )
-    warning_sent_date = fields.Date(
-        string='Warning Sent Date',
-        help="Date when warning notification was sent"
-    )
 
     # Amounts and Calculations
     overdue_amount = fields.Float(
@@ -119,14 +109,11 @@ class WithdrawalMonitor(models.Model):
         help="Number of months the installment is overdue"
     )
 
-    # Status and Control
+    # Status and Control - SIMPLIFIED TO ONLY 2 OPTIONS
     status = fields.Selection([
-        ('monitoring', 'Monitoring'),
-        ('warning_sent', 'Warning Sent'),
         ('withdrawn', 'Withdrawn'),
-        ('restored', 'Restored'),
-        ('cancelled', 'Cancelled')
-    ], string='Status', default='monitoring', required=True, tracking=True)
+        ('restored', 'Restored')
+    ], string='Status', default='withdrawn', required=True, tracking=True)
 
     # Additional Information
     notes = fields.Text(string='Notes')
@@ -167,28 +154,17 @@ class WithdrawalMonitor(models.Model):
             if not vals.get('overdue_amount'):
                 vals['overdue_amount'] = installment.total_remaining_amount
 
+        # Auto-set withdrawal date if creating with withdrawn status
+        if vals.get('status') == 'withdrawn' and not vals.get('withdrawal_date'):
+            vals['withdrawal_date'] = fields.Date.today()
+
         return super().create(vals)
-
-    def action_send_warning(self):
-        """Send warning notification before withdrawal"""
-        self.ensure_one()
-        if self.status != 'monitoring':
-            raise UserError(_("Warning can only be sent for monitoring records."))
-
-        template = self.env.ref('apartment_withdrawal.email_template_withdrawal_warning', False)
-        if template:
-            template.send_mail(self.id, force_send=True)
-
-        self.write({
-            'status': 'warning_sent',
-            'warning_sent_date': fields.Date.today()
-        })
 
     def action_withdraw_apartment(self):
         """Withdraw the apartment"""
         self.ensure_one()
-        if self.status not in ['monitoring', 'warning_sent']:
-            raise UserError(_("Apartment can only be withdrawn from monitoring or warning sent status."))
+        if self.status == 'restored':
+            raise UserError(_("Cannot withdraw a restored apartment. Create a new monitor instead."))
 
         # Update contract status
         self.contract_id.write({
@@ -247,24 +223,9 @@ class WithdrawalMonitor(models.Model):
             'restoration_date': fields.Date.today()
         })
 
-        # Send notification
-        if self.env.company.withdrawal_notification:
-            template = self.env.ref('apartment_withdrawal.email_template_restoration_notification', False)
-            if template:
-                template.send_mail(self.id, force_send=True)
+
 
         _logger.info(f"Apartment restored: Contract {self.contract_id.name}, Unit {self.building_unit_id.name}")
-
-    def action_cancel_withdrawal(self):
-        """Cancel withdrawal monitoring"""
-        self.ensure_one()
-        if self.status == 'withdrawn':
-            raise UserError(_("Cannot cancel already withdrawn apartments. Use restore instead."))
-
-        self.write({
-            'status': 'cancelled',
-            'active': False
-        })
 
     @api.model
     def check_overdue_installments(self):
@@ -281,63 +242,36 @@ class WithdrawalMonitor(models.Model):
         withdrawal_months = int(self.env['ir.config_parameter'].sudo().get_param(
             'apartment_withdrawal.withdrawal_months', 10))
 
-        warning_days = int(self.env['ir.config_parameter'].sudo().get_param(
-            'apartment_withdrawal.withdrawal_warning_days', 30))
-
         auto_restore = self.env['ir.config_parameter'].sudo().get_param(
             'apartment_withdrawal.auto_restore', True)
 
         # Calculate cutoff dates
         today = fields.Date.today()
         withdrawal_cutoff = today - relativedelta(months=withdrawal_months)
-        warning_cutoff = today - relativedelta(months=withdrawal_months, days=-warning_days)
 
-        _logger.info(
-            f"Checking overdue installments. Withdrawal cutoff: {withdrawal_cutoff}, Warning cutoff: {warning_cutoff}")
+        _logger.info(f"Checking overdue installments. Withdrawal cutoff: {withdrawal_cutoff}")
 
         # Find overdue installments that are not already being monitored
         existing_monitors = self.search([]).mapped('installment_id').ids
 
         overdue_installments = self.env['loan.line.rs.own'].search([
-            ('date', '<=', warning_cutoff),
+            ('date', '<=', withdrawal_cutoff),
             ('total_remaining_amount', '>', 0),
             ('loan_id.state', '=', 'confirmed'),
             ('id', 'not in', existing_monitors)
         ])
 
-        _logger.info(f"Found {len(overdue_installments)} new overdue installments to monitor")
+        _logger.info(f"Found {len(overdue_installments)} new overdue installments to withdraw")
 
-        # Create monitoring records for new overdue installments
+        # Create withdrawal records and withdraw immediately
         for installment in overdue_installments:
-            self.create({
+            monitor = self.create({
                 'contract_id': installment.loan_id.id,
                 'installment_id': installment.id,
                 'due_date': installment.date,
                 'overdue_amount': installment.total_remaining_amount,
-                'status': 'monitoring'
+                'status': 'withdrawn'
             })
-
-        # Send warnings for installments approaching withdrawal
-        warning_monitors = self.search([
-            ('status', '=', 'monitoring'),
-            ('due_date', '<=', warning_cutoff),
-            ('due_date', '>', withdrawal_cutoff)
-        ])
-
-        for monitor in warning_monitors:
-            try:
-                monitor.action_send_warning()
-                _logger.info(f"Warning sent for contract {monitor.contract_id.name}")
-            except Exception as e:
-                _logger.error(f"Failed to send warning for contract {monitor.contract_id.name}: {e}")
-
-        # Withdraw apartments that have passed the deadline
-        withdrawal_monitors = self.search([
-            ('status', 'in', ['monitoring', 'warning_sent']),
-            ('due_date', '<=', withdrawal_cutoff)
-        ])
-
-        for monitor in withdrawal_monitors:
             try:
                 monitor.action_withdraw_apartment()
                 _logger.info(f"Apartment withdrawn for contract {monitor.contract_id.name}")
@@ -370,3 +304,32 @@ class WithdrawalMonitor(models.Model):
             name = f"{record.contract_id.name} - {record.building_unit_id.name} ({record.status})"
             result.append((record.id, name))
         return result
+
+    @api.model
+    def check_and_restore_paid_contracts(self):
+        """Manual method to check and restore all paid contracts"""
+        restored_count = 0
+
+        # ابحث عن كل withdrawal monitors المسحوبة
+        withdrawn_monitors = self.search([('status', '=', 'withdrawn')])
+
+        for monitor in withdrawn_monitors:
+            # إذا تم دفع الدفعة المتأخرة
+            if monitor.installment_id.total_remaining_amount <= 0:
+                try:
+                    monitor.action_restore_apartment()
+                    restored_count += 1
+                    _logger.info(f"✅ MANUAL RESTORE: {monitor.contract_id.name}")
+                except Exception as e:
+                    _logger.error(f"❌ MANUAL RESTORE FAILED: {monitor.contract_id.name} - {e}")
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'استعادة العقود',
+                'message': f'تم استعادة {restored_count} عقد تم دفع دفعاتهم المتأخرة',
+                'type': 'success',
+                'sticky': False,
+            }
+        }

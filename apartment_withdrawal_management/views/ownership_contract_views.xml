@@ -7,6 +7,22 @@
             <field name="model">ownership.contract</field>
             <field name="inherit_id" ref="itsys_real_estate.ownership_contract_form_view"/>
             <field name="arch" type="xml">
+
+                <!-- Add buttons to header -->
+                <xpath expr="//header" position="inside">
+                    <button name="action_manual_withdraw" type="object"
+                            string="Withdraw Apartment"
+                            class="btn-danger"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmed'), ('has_overdue_installments', '=', False), ('withdrawal_enabled', '=', False)]}"
+                            confirm="Are you sure you want to withdraw this apartment? This action will change the contract status."/>
+
+                    <button name="action_manual_restore" type="object"
+                            string="Restore Apartment"
+                            class="btn-success"
+                            attrs="{'invisible': [('state', '!=', 'withdrawn')]}"
+                            confirm="Are you sure you want to restore this apartment?"/>
+                </xpath>
+
                 <!-- Add withdrawal monitoring stats button -->
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" type="object"
@@ -46,43 +62,24 @@
                                 <field name="withdrawal_months" readonly="1" attrs="{'invisible': [('withdrawal_enabled', '=', False)]}"/>
                             </group>
                             <group>
-                                <field name="withdrawal_warning_days" readonly="1" attrs="{'invisible': [('withdrawal_enabled', '=', False)]}"/>
                                 <div class="text-muted" attrs="{'invisible': [('withdrawal_enabled', '=', True)]}">
                                     <i class="fa fa-info-circle"/> Configure withdrawal settings in General Settings
                                 </div>
                             </group>
                         </group>
 
-                        <!-- Action Buttons -->
-                        <div class="row" style="margin: 20px 0;">
-                            <div class="col-md-12">
-                                <button name="action_create_withdrawal_monitor" type="object"
-                                        string="Create Withdrawal Monitor"
-                                        class="btn btn-warning"
-                                        attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmed'), ('has_overdue_installments', '=', False), ('withdrawal_enabled', '=', False)]}"/>
-
-                                <button name="action_manual_withdraw" type="object"
-                                        string="Withdraw Apartment"
-                                        class="btn btn-danger"
-                                        attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmed'), ('has_overdue_installments', '=', False), ('withdrawal_enabled', '=', False)]}"
-                                        confirm="Are you sure you want to withdraw this apartment? This action will change the contract status."/>
-
-                                <button name="action_manual_restore" type="object"
-                                        string="Restore Apartment"
-                                        class="btn btn-success"
-                                        attrs="{'invisible': [('state', '!=', 'withdrawn')]}"
-                                        confirm="Are you sure you want to restore this apartment?"/>
-                            </div>
+                        <!-- Quick Actions Section -->
+                        <div class="alert alert-warning" role="alert" style="margin: 20px 0;"
+                             attrs="{'invisible': ['|', ('state', '!=', 'confirmed'), ('has_overdue_installments', '=', False)]}">
+                            <h4 style="margin-top: 0;"><i class="fa fa-warning"/> Action Required</h4>
+                            <p>This contract has overdue installments. Use the buttons in the header above to take action.</p>
                         </div>
 
                         <!-- Withdrawal Monitors List -->
                         <separator string="Withdrawal Monitors History"/>
                         <field name="withdrawal_monitor_ids" readonly="1" nolabel="1">
                             <tree decoration-danger="status == 'withdrawn'"
-                                  decoration-warning="status == 'warning_sent'"
-                                  decoration-success="status == 'restored'"
-                                  decoration-info="status == 'monitoring'"
-                                  decoration-muted="status == 'cancelled'">
+                                  decoration-success="status == 'restored'">
                                 <field name="installment_id"/>
                                 <field name="installment_number"/>
                                 <field name="due_date"/>
@@ -99,7 +96,7 @@
             </field>
         </record>
 
-        <!-- Add withdrawal state to status bar if needed -->
+        <!-- Add withdrawal state to status bar -->
         <record id="ownership_contract_form_view_withdraw_statusbar" model="ir.ui.view">
             <field name="name">ownership.contract.statusbar.inherit</field>
             <field name="model">ownership.contract</field>
