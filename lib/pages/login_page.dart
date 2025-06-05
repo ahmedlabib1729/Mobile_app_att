@@ -19,8 +19,8 @@ class _LoginPageState extends State<LoginPage> {
 
   // Odoo Service
   final OdooService _odooService = OdooService(
-    url: 'http://192.168.64.132:8018/',
-    database: 'mobile',
+    url: 'https://ahmedlabib1729-erp-accounting-stage-20957446.dev.odoo.com/',
+    database: 'ahmedlabib1729-erp-accounting-stage-20957446',
   );
 
   @override

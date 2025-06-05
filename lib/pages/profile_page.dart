@@ -1,7 +1,8 @@
-// lib/pages/profile_page.dart - Modern English Version
+// lib/pages/profile_page.dart - تحديث عرض الصورة
 import 'package:flutter/material.dart';
 import '../models/employee.dart';
 import '../services/odoo_service.dart';
+import '../widgets/employee_avatar.dart'; // إضافة هذا الاستيراد
 
 class ProfilePage extends StatefulWidget {
   final OdooService odooService;
@@ -32,6 +33,8 @@ class _ProfilePageState extends State<ProfilePage> {
       _loadEmployeeData();
     }
   }
+
+
 
   Future<void> _loadEmployeeData() async {
     try {
@@ -161,16 +164,12 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
         child: Column(
           children: [
-            // Employee image
-            CircleAvatar(
+            // استخدام EmployeeAvatar بدلاً من CircleAvatar
+            EmployeeAvatar(
+              employee: _employee!,
               radius: 56,
-              backgroundColor: Color(0xFF2196F3),
-              backgroundImage: _employee!.hasImage
-                  ? NetworkImage(_employee!.bestAvailableImage!)
-                  : null,
-              child: !_employee!.hasImage
-                  ? Icon(Icons.person, size: 60, color: Colors.white)
-                  : null,
+              odooService: widget.odooService,
+              showEditButton: false,
             ),
 
             const SizedBox(height: 16),

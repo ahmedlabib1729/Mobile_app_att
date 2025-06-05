@@ -293,7 +293,7 @@ class OdooService {
                 [
                   'id', 'name', 'job_title', 'department_id',
                   'work_email', 'work_phone', 'mobile_phone',
-                  'avatar_128', 'image_1920' // إضافة حقول الصورة
+                  'avatar_128', 'image_1920' // التأكد من جلب حقول الصورة
                 ]
               ],
               'kwargs': {
@@ -320,7 +320,7 @@ class OdooService {
             workEmail: employeeData['work_email'] == false ? '' : employeeData['work_email'].toString(),
             workPhone: employeeData['work_phone'] == false ? '' : employeeData['work_phone'].toString(),
             mobilePhone: employeeData['mobile_phone'] == false ? '' : employeeData['mobile_phone'].toString(),
-            // إضافة معلومات الصورة
+            // إضافة معلومات الصورة بشكل صحيح
             avatar128: employeeData['avatar_128'] != false && employeeData['avatar_128'] != null
                 ? 'data:image/png;base64,${employeeData['avatar_128']}'
                 : null,
@@ -336,6 +336,10 @@ class OdooService {
           if (employeeData['avatar_128'] != false && employeeData['avatar_128'] != null) {
             _cacheEmployeeImageFromBase64(employeeData['id'], employeeData['avatar_128']);
           }
+
+          print('تم جلب بيانات الموظف بنجاح');
+          print('hasImage: ${currentEmployee!.hasImage}');
+          print('avatar128: ${currentEmployee!.avatar128 != null ? 'موجود' : 'غير موجود'}');
 
           return currentEmployee;
         } else {
