@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة زر إنشاء حساب البورتال -->
+    <record id="view_student_form_portal" model="ir.ui.view">
+        <field name="name">quran.student.form.portal</field>
+        <field name="model">quran.student</field>
+        <field name="inherit_id" ref="quran_center.view_student_form"/>
+        <field name="arch" type="xml">
+            <!-- إضافة الزر في الهيدر -->
+            <xpath expr="//header" position="inside">
+                <field name="user_id" invisible="1"/>
+                <button name="action_create_portal_user"
+                        string="إنشاء حساب بورتال"
+                        type="object"
+                        class="btn-info"
+                        invisible="user_id"
+                        confirm="هل تريد إنشاء حساب بورتال لهذا الطالب؟ سيتم إرسال بيانات الدخول إلى البريد الإلكتروني المسجل."/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

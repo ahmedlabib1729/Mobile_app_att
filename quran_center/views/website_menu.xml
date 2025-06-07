@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة رابط في قائمة الموقع -->
+    <record id="menu_enrollment_application" model="website.menu">
+        <field name="name">طلب الالتحاق</field>
+        <field name="url">/enrollment/application</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">50</field>
+    </record>
+</odoo>
