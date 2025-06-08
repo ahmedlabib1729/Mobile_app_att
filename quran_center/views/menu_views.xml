@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_quran_center_root"
+              name="مركز تحفيظ القرآن"
+              sequence="10"
+              web_icon="quran_center,static/description/quran_7222172.png"/>
+
+
+    <!-- Enrollment Menu -->
+    <menuitem id="menu_enrollment"
+              name="التسجيل"
+              parent="menu_quran_center_root"
+              sequence="10"/>
+
+    <!-- Enrollment Applications -->
+    <menuitem id="menu_enrollment_applications"
+              name="طلبات الالتحاق"
+              parent="menu_enrollment"
+              action="action_enrollment_application"
+              sequence="10"/>
+
+    <!-- Students Menu -->
+    <menuitem id="menu_students"
+              name="الطلاب"
+              parent="menu_quran_center_root"
+              sequence="20"/>
+
+    <!-- Students List -->
+    <menuitem id="menu_students_list"
+              name="قائمة الطلاب"
+              parent="menu_students"
+              action="action_student"
+              sequence="10"/>
+
+    <!-- Education Menu -->
+    <menuitem id="menu_education"
+              name="التعليم"
+              parent="menu_quran_center_root"
+              sequence="30"/>
+
+    <!-- Study Covenants -->
+    <menuitem id="menu_study_covenants"
+              name="المواثيق الدراسية"
+              parent="menu_education"
+              action="action_study_covenant"
+              sequence="10"/>
+
+    <!-- Classes -->
+    <menuitem id="menu_classes"
+              name="الصفوف"
+              parent="menu_education"
+              action="action_quran_class"
+              sequence="20"/>
+
+    <!-- Sessions -->
+    <menuitem id="menu_sessions"
+              name="الجلسات"
+              parent="menu_education"
+              action="action_session"
+              sequence="30"/>
+</odoo>

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة جلساتي في قائمة البورتال -->
+    <template id="portal_my_home_sessions" name="Show Sessions" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">جلساتي</t>
+                <t t-set="url" t-value="'/my/sessions'"/>
+                <t t-set="placeholder_count" t-value="'session_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- صفحة الجلسات -->
+    <template id="portal_my_sessions" name="My Sessions">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">جلساتي القادمة</t>
+            </t>
+
+            <div class="container mt-3">
+                <!-- رسالة ترحيب -->
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">مرحباً <t t-esc="student.name"/></h4>
+                    <p>هنا يمكنك مشاهدة جلساتك القادمة والانضمام للجلسات الأونلاين.</p>
+                </div>
+
+                <t t-if="not sessions">
+                    <div class="alert alert-warning">
+                        <p class="mb-0">لا توجد جلسات قادمة حالياً.</p>
+                    </div>
+                </t>
+
+                <t t-if="sessions">
+                    <div class="row">
+                        <t t-foreach="sessions" t-as="session_data">
+                            <div class="col-12 mb-3">
+                                <div t-attf-class="card #{session_data['is_ongoing'] and 'border-success' or ''} #{session_data['is_today'] and 'border-primary' or ''}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i t-if="session_data['session'].class_session_type == 'Online'"
+                                               class="fa fa-video-camera text-info me-2"/>
+                                            <t t-esc="session_data['session'].name"/>
+                                        </h5>
+
+                                        <!-- شارة الحالة -->
+                                        <div>
+                                            <span t-if="session_data['is_ongoing']"
+                                                  class="badge bg-success">
+                                                <i class="fa fa-circle me-1"/> جارية الآن
+                                            </span>
+                                            <span t-elif="session_data['is_today']"
+                                                  class="badge bg-primary">اليوم</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <p class="mb-2">
+                                                    <i class="fa fa-user-circle-o me-2"/>
+                                                    <strong>المعلم:</strong>
+                                                    <t t-esc="session_data['session'].teacher_id.name"/>
+                                                    <t t-if="session_data['session'].teacher_id2">
+                                                        و <t t-esc="session_data['session'].teacher_id2.name"/>
+                                                    </t>
+                                                </p>
+
+                                                <p class="mb-2">
+                                                    <i class="fa fa-calendar me-2"/>
+                                                    <strong>التاريخ:</strong>
+                                                    <t t-esc="session_data['session'].session_date"
+                                                       t-options='{"widget": "date"}'/>
+                                                </p>
+
+                                                <p class="mb-2">
+                                                    <i class="fa fa-clock-o me-2"/>
+                                                    <strong>الوقت:</strong>
+                                                    <t t-esc="session_data['session'].start_datetime"
+                                                       t-options='{"widget": "datetime", "format": "HH:mm"}'/>
+                                                    -
+                                                    <t t-esc="session_data['session'].end_datetime"
+                                                       t-options='{"widget": "datetime", "format": "HH:mm"}'/>
+                                                </p>
+
+                                                <p class="mb-0">
+                                                    <i class="fa fa-tag me-2"/>
+                                                    <strong>النوع:</strong>
+                                                    <span t-if="session_data['session'].class_session_type == 'Online'"
+                                                          class="badge bg-info">أونلاين</span>
+                                                    <span t-else="" class="badge bg-secondary">حضوري</span>
+                                                </p>
+                                            </div>
+
+                                            <div class="col-md-4 text-center">
+                                                <!-- عداد الوقت المتبقي -->
+                                                <t t-if="not session_data['is_ongoing'] and session_data['time_until_start'].total_seconds() > 0">
+                                                    <div class="mb-3">
+                                                        <small class="text-muted">يبدأ بعد</small>
+                                                        <div class="h4 text-primary mb-0">
+                                                            <t t-set="hours" t-value="int(session_data['time_until_start'].total_seconds() // 3600)"/>
+                                                            <t t-set="minutes" t-value="int((session_data['time_until_start'].total_seconds() % 3600) // 60)"/>
+
+                                                            <t t-if="hours > 0">
+                                                                <t t-esc="hours"/> ساعة
+                                                            </t>
+                                                            <t t-if="minutes > 0">
+                                                                <t t-esc="minutes"/> دقيقة
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </t>
+
+                                                <!-- أزرار الإجراءات -->
+                                                <div class="d-grid gap-2">
+                                                    <!-- زر الانضمام للاجتماع -->
+                                                    <t t-if="session_data['session'].class_session_type == 'Online'">
+                                                        <t t-if="session_data['can_join_now']">
+                                                            <a t-attf-href="/my/session/#{session_data['session'].id}/join"
+                                                               class="btn btn-success btn-lg">
+                                                                <i class="fa fa-sign-in me-2"/> دخول الاجتماع
+                                                            </a>
+                                                            <small class="text-success">
+                                                                <i class="fa fa-info-circle"/> الاجتماع متاح الآن
+                                                            </small>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <button class="btn btn-secondary btn-lg" disabled="">
+                                                                <i class="fa fa-clock-o me-2"/>
+                                                                الاجتماع غير متاح بعد
+                                                            </button>
+                                                            <small class="text-muted">
+                                                                يمكنك الدخول قبل 15 دقيقة من البداية
+                                                            </small>
+                                                        </t>
+                                                    </t>
+
+                                                    <!-- زر عرض التفاصيل -->
+                                                    <a t-attf-href="/my/session/#{session_data['session'].id}"
+                                                       class="btn btn-outline-primary">
+                                                        <i class="fa fa-eye me-2"/> عرض التفاصيل
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div t-if="pager['page_count'] > 1" class="o_portal_pager text-center mt-4">
+                        <t t-call="website.pager"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- صفحة تفاصيل الجلسة -->
+    <template id="portal_session_details" name="Session Details">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i t-if="session.class_session_type == 'Online'"
+                               class="fa fa-video-camera text-info me-2"/>
+                            <t t-esc="session.name"/>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- معلومات الجلسة -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>معلومات الجلسة</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>الصف:</th>
+                                        <td><t t-esc="session.class_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>المعلم:</th>
+                                        <td>
+                                            <t t-esc="session.teacher_id.name"/>
+                                            <t t-if="session.teacher_id2">
+                                                و <t t-esc="session.teacher_id2.name"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>التاريخ:</th>
+                                        <td><t t-esc="session.session_date" t-options='{"widget": "date"}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>الوقت:</th>
+                                        <td>
+                                            <t t-esc="session.start_datetime" t-options='{"widget": "datetime", "format": "HH:mm"}'/>
+                                            -
+                                            <t t-esc="session.end_datetime" t-options='{"widget": "datetime", "format": "HH:mm"}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>النوع:</th>
+                                        <td>
+                                            <span t-if="session.class_session_type == 'Online'"
+                                                  class="badge bg-info">أونلاين</span>
+                                            <span t-else="" class="badge bg-secondary">حضوري</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- سجل الحضور -->
+                            <div class="col-md-6" t-if="attendance">
+                                <h5>سجل الحضور</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>الحالة:</th>
+                                        <td>
+                                            <span t-if="attendance.status == 'present'"
+                                                  class="badge bg-success">حاضر</span>
+                                            <span t-elif="attendance.status == 'absent'"
+                                                  class="badge bg-danger">غائب</span>
+                                            <span t-elif="attendance.status == 'late'"
+                                                  class="badge bg-warning">متأخر</span>
+                                            <span t-elif="attendance.status == 'excused'"
+                                                  class="badge bg-info">غياب بعذر</span>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="attendance.daily_memorization_surah">
+                                        <th>الحفظ اليومي:</th>
+                                        <td>
+                                            <t t-esc="dict(attendance._fields['daily_memorization_surah'].selection).get(attendance.daily_memorization_surah)"/>
+                                            <t t-if="attendance.verse_from and attendance.verse_to">
+                                                (آية <t t-esc="attendance.verse_from"/> - <t t-esc="attendance.verse_to"/>)
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="attendance.behavior_score">
+                                        <th>السلوك:</th>
+                                        <td><t t-esc="attendance.behavior_score"/>/2</td>
+                                    </tr>
+                                    <tr t-if="attendance.memorization_score">
+                                        <th>الحفظ:</th>
+                                        <td><t t-esc="attendance.memorization_score"/>/2</td>
+                                    </tr>
+                                    <tr t-if="attendance.revision_score">
+                                        <th>المراجعة:</th>
+                                        <td><t t-esc="attendance.revision_score"/>/2</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- زر الرجوع -->
+                        <div class="text-center">
+                            <a href="/my/sessions" class="btn btn-secondary">
+                                <i class="fa fa-arrow-right me-2"/> رجوع للجلسات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- صفحة عدم وجود صلاحية طالب -->
+    <template id="portal_no_student_access" name="No Student Access">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5">
+                <div class="alert alert-warning text-center">
+                    <h4 class="alert-heading">
+                        <i class="fa fa-exclamation-triangle"/> عذراً
+                    </h4>
+                    <p>حسابك غير مرتبط بسجل طالب. يرجى التواصل مع الإدارة.</p>
+                    <hr/>
+                    <a href="/my" class="btn btn-primary">
+                        <i class="fa fa-home me-2"/> العودة للرئيسية
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- صفحة منع الوصول -->
+    <template id="portal_access_denied" name="Access Denied">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5">
+                <div class="alert alert-danger text-center">
+                    <h4 class="alert-heading">
+                        <i class="fa fa-ban"/> غير مصرح
+                    </h4>
+                    <p>ليس لديك صلاحية لعرض هذه الجلسة.</p>
+                    <hr/>
+                    <a href="/my/sessions" class="btn btn-primary">
+                        <i class="fa fa-arrow-right me-2"/> العودة للجلسات
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
