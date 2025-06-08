@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_generate_sessions_wizard_form" model="ir.ui.view">
+        <field name="name">quran.class.generate.sessions.wizard.form</field>
+        <field name="model">quran.class.generate.sessions.wizard</field>
+        <field name="arch" type="xml">
+            <form string="توليد الجلسات">
+                <div class="alert alert-warning" role="alert">
+                    <p>يوجد <field name="existing_sessions_count" readonly="1" class="o_field_integer"/> جلسة موجودة مسبقاً لهذا الصف.</p>
+                    <p>ماذا تريد أن تفعل؟</p>
+                </div>
+                <group>
+                    <field name="action" widget="radio"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="تأكيد" type="object" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
