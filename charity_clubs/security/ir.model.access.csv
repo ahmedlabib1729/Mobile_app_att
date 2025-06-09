@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_charity_club_user,charity.club.user,model_charity_club,base.group_user,1,0,0,0
+access_charity_club_manager,charity.club.manager,model_charity_club,base.group_system,1,1,1,1
+access_club_program_user,club.program.user,model_club_program,base.group_user,1,0,0,0
+access_club_program_manager,club.program.manager,model_club_program,base.group_system,1,1,1,1
+access_program_registration_user,program.registration.user,model_program_registration,base.group_user,1,1,1,0
+access_program_registration_manager,program.registration.manager,model_program_registration,base.group_system,1,1,1,1
+access_charity_club_public,charity.club.public,model_charity_club,base.group_public,1,0,0,0
+access_club_program_public,club.program.public,model_club_program,base.group_public,1,0,0,0
+access_program_registration_public,program.registration.public,model_program_registration,base.group_public,0,0,1,0
