@@ -1,0 +1,917 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal Dashboard Template - Modern Design -->
+    <template id="portal_student_dashboard" name="Student Dashboard">
+        <t t-call="website.layout">
+            <t t-set="title">لوحة التحكم - مركز تحفيظ القرآن</t>
+
+            <!-- Custom CSS for this page -->
+            <style>
+                .dashboard-hero {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 60px 0;
+                    margin-bottom: 40px;
+                    border-radius: 0 0 50px 50px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                }
+
+                .student-avatar {
+                    width: 120px;
+                    height: 120px;
+                    background: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 48px;
+                    color: #667eea;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                    margin: 0 auto 20px;
+                }
+
+                .stat-card {
+                    background: white;
+                    border-radius: 20px;
+                    padding: 30px;
+                    text-align: center;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                    transition: all 0.3s ease;
+                    border: none;
+                    margin-bottom: 30px;
+                }
+
+                .stat-card:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+                }
+
+                .stat-icon {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 15px;
+                    font-size: 24px;
+                }
+
+                .stat-number {
+                    font-size: 36px;
+                    font-weight: bold;
+                    margin: 10px 0;
+                }
+
+                .stat-label {
+                    color: #6c757d;
+                    font-size: 14px;
+                }
+
+                .action-card {
+                    background: white;
+                    border-radius: 20px;
+                    padding: 20px;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                    margin-bottom: 20px;
+                    transition: all 0.3s ease;
+                }
+
+                .action-card:hover {
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+                }
+
+                .btn-gradient {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 12px 30px;
+                    border-radius: 30px;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-gradient:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+                    color: white;
+                }
+
+                .progress-ring {
+                    width: 120px;
+                    height: 120px;
+                    margin: 0 auto;
+                }
+
+                .progress-ring-circle {
+                    stroke: #e9ecef;
+                    stroke-width: 8;
+                    fill: transparent;
+                }
+
+                .progress-ring-path {
+                    stroke: #667eea;
+                    stroke-width: 8;
+                    fill: transparent;
+                    stroke-linecap: round;
+                    transition: stroke-dashoffset 0.5s ease;
+                }
+
+                .welcome-message {
+                    font-size: 32px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+
+                .student-info {
+                    font-size: 18px;
+                    opacity: 0.9;
+                }
+
+                .quick-actions {
+                    background: #f8f9fa;
+                    border-radius: 20px;
+                    padding: 30px;
+                    margin-top: 40px;
+                }
+
+                .activity-timeline {
+                    position: relative;
+                    padding-left: 40px;
+                }
+
+                .activity-item {
+                    position: relative;
+                    margin-bottom: 25px;
+                }
+
+                .activity-item::before {
+                    content: '';
+                    position: absolute;
+                    left: -30px;
+                    top: 8px;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    background: #667eea;
+                }
+
+                .activity-item::after {
+                    content: '';
+                    position: absolute;
+                    left: -24px;
+                    top: 20px;
+                    width: 1px;
+                    height: calc(100% + 15px);
+                    background: #e9ecef;
+                }
+
+                .activity-item:last-child::after {
+                    display: none;
+                }
+            </style>
+
+            <!-- Hero Section -->
+            <div class="dashboard-hero">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="student-avatar">
+                                <i class="fa fa-user"></i>
+                            </div>
+                            <h1 class="welcome-message text-center text-lg-start">
+                                مرحباً، <t t-esc="student.name_ar"/>
+                            </h1>
+                            <p class="student-info text-center text-lg-start mb-0">
+                                <i class="fa fa-id-badge me-2"></i>
+                                رقم الطالب: <strong><t t-esc="student.student_code"/></strong>
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                            <div class="d-inline-block">
+                                <div class="progress-ring">
+                                    <svg width="120" height="120">
+                                        <circle class="progress-ring-circle" cx="60" cy="60" r="52"/>
+                                        <circle class="progress-ring-path" cx="60" cy="60" r="52"
+                                                stroke-dasharray="326.73"
+                                                t-att-stroke-dashoffset="326.73 - (326.73 * attendance_rate / 100)"/>
+                                    </svg>
+                                    <div style="margin-top: -90px;">
+                                        <div class="stat-number"><t t-esc="attendance_rate"/>%</div>
+                                        <div class="stat-label">نسبة الحضور</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="container" style="margin-top: -40px;">
+                <!-- Statistics Cards -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #e3f2fd;">
+                                <i class="fa fa-graduation-cap" style="color: #1976d2;"></i>
+                            </div>
+                            <div class="stat-number" style="color: #1976d2;">
+                                <t t-esc="len(student.class_ids)"/>
+                            </div>
+                            <div class="stat-label">الصفوف المسجلة</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f3e5f5;">
+                                <i class="fa fa-calendar-check-o" style="color: #7b1fa2;"></i>
+                            </div>
+                            <div class="stat-number" style="color: #7b1fa2;">
+                                <t t-esc="total_sessions"/>
+                            </div>
+                            <div class="stat-label">إجمالي الجلسات</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #e8f5e9;">
+                                <i class="fa fa-book" style="color: #388e3c;"></i>
+                            </div>
+                            <div class="stat-number" style="color: #388e3c;">
+                                <t t-esc="student.current_memorized_pages"/>
+                            </div>
+                            <div class="stat-label">الصفحات المحفوظة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3 class="mb-4">
+                        <i class="fa fa-bolt me-2" style="color: #667eea;"></i>
+                        إجراءات سريعة
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a href="/my/sessions" class="text-decoration-none">
+                                <div class="action-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3" style="background: #e3f2fd; width: 50px; height: 50px;">
+                                            <i class="fa fa-calendar" style="color: #1976d2; font-size: 20px;"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">الجلسات</h5>
+                                            <p class="text-muted mb-0 small">عرض جدول الجلسات</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <a href="/my/classes" class="text-decoration-none">
+                                <div class="action-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3" style="background: #f3e5f5; width: 50px; height: 50px;">
+                                            <i class="fa fa-graduation-cap" style="color: #7b1fa2; font-size: 20px;"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">الصفوف</h5>
+                                            <p class="text-muted mb-0 small">الصفوف المسجل بها</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <a href="/my/profile" class="text-decoration-none">
+                                <div class="action-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3" style="background: #e8f5e9; width: 50px; height: 50px;">
+                                            <i class="fa fa-user" style="color: #388e3c; font-size: 20px;"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">الملف الشخصي</h5>
+                                            <p class="text-muted mb-0 small">تحديث البيانات</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card border-0" style="border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                            <div class="card-body p-4">
+                                <h4 class="mb-4">
+                                    <i class="fa fa-clock-o me-2" style="color: #667eea;"></i>
+                                    النشاطات الأخيرة
+                                </h4>
+                                <div class="activity-timeline">
+                                    <div class="activity-item">
+                                        <h6 class="mb-1">جلسة قادمة</h6>
+                                        <p class="text-muted small mb-0">لديك جلسة غداً الساعة 10:00 صباحاً</p>
+                                    </div>
+                                    <div class="activity-item">
+                                        <h6 class="mb-1">إنجاز جديد</h6>
+                                        <p class="text-muted small mb-0">أكملت حفظ 50 صفحة من القرآن الكريم</p>
+                                    </div>
+                                    <div class="activity-item">
+                                        <h6 class="mb-1">تذكير</h6>
+                                        <p class="text-muted small mb-0">موعد المراجعة الشهرية الأسبوع القادم</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal Student Sessions Template - Modern Design FIXED -->
+<!-- Portal Student Sessions Template - Updated Tabs -->
+<template id="portal_student_sessions" name="Student Sessions">
+    <t t-call="website.layout">
+        <t t-set="title">الجلسات - مركز تحفيظ القرآن</t>
+
+        <style>
+            .page-hero {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 40px 0;
+                margin-bottom: 40px;
+                border-radius: 0 0 50px 50px;
+            }
+
+            .filter-tabs {
+                background: white;
+                border-radius: 50px;
+                padding: 5px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                margin-bottom: 30px;
+            }
+
+            .filter-tabs .nav-link {
+                border-radius: 50px;
+                padding: 10px 25px;
+                color: #6c757d;
+                border: none;
+                transition: all 0.3s ease;
+            }
+
+            .filter-tabs .nav-link:hover {
+                background: #f8f9fa;
+            }
+
+            .filter-tabs .nav-link.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .session-card {
+                background: white;
+                border-radius: 20px;
+                padding: 25px;
+                margin-bottom: 20px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                transition: all 0.3s ease;
+                border-left: 4px solid #667eea;
+            }
+
+            .session-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            }
+
+            .session-online {
+                border-left-color: #4caf50;
+            }
+
+            .session-active {
+                background: #f0fff4;
+                border-left-color: #4caf50;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% { box-shadow: 0 5px 20px rgba(76, 175, 80, 0.2); }
+                50% { box-shadow: 0 5px 30px rgba(76, 175, 80, 0.4); }
+                100% { box-shadow: 0 5px 20px rgba(76, 175, 80, 0.2); }
+            }
+
+            .session-completed {
+                opacity: 0.8;
+                border-left-color: #9e9e9e;
+            }
+
+            .btn-join {
+                background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+                color: white;
+                border: none;
+                padding: 10px 25px;
+                border-radius: 25px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .btn-join:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+                color: white;
+            }
+
+            .session-meta {
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
+                margin-top: 15px;
+            }
+
+            .meta-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #6c757d;
+                font-size: 14px;
+            }
+
+            .meta-item i {
+                color: #667eea;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+            }
+
+            .empty-state i {
+                font-size: 80px;
+                color: #e9ecef;
+                margin-bottom: 20px;
+            }
+
+            .live-badge {
+                display: inline-block;
+                padding: 5px 15px;
+                background: #4caf50;
+                color: white;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                animation: blink 1.5s infinite;
+            }
+
+            @keyframes blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.6; }
+            }
+        </style>
+
+        <!-- Page Hero -->
+        <div class="page-hero">
+            <div class="container">
+                <h1 class="mb-0">
+                    <i class="fa fa-calendar me-2"></i>
+                    الجلسات
+                </h1>
+            </div>
+        </div>
+
+        <div class="container" style="margin-top: -30px;">
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <ul class="nav nav-pills justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" t-attf-class="nav-link #{filter_type == 'active' and 'active' or ''}"
+                           href="/my/sessions/active">
+                            <i class="fa fa-video-camera me-2"></i>الجلسات النشطة
+                            <t t-if="filter_type == 'active' and sessions">
+                                <span class="badge bg-danger ms-2"><t t-esc="len(sessions)"/></span>
+                            </t>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-attf-class="nav-link #{filter_type == 'today' and 'active' or ''}"
+                           href="/my/sessions/today">
+                            <i class="fa fa-calendar-check-o me-2"></i>اليوم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-attf-class="nav-link #{filter_type == 'upcoming' and 'active' or ''}"
+                           href="/my/sessions/upcoming">
+                            <i class="fa fa-clock-o me-2"></i>القادمة
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-attf-class="nav-link #{filter_type == 'completed' and 'active' or ''}"
+                           href="/my/sessions/completed">
+                            <i class="fa fa-check-circle me-2"></i>المنتهية
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sessions List -->
+            <t t-if="sessions">
+                <t t-foreach="sessions" t-as="attendance">
+                    <div t-attf-class="session-card #{attendance.session_id.class_session_type == 'Online' and 'session-online' or ''} #{filter_type == 'active' and 'session-active' or ''} #{filter_type == 'completed' and 'session-completed' or ''}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <h5 class="mb-0">
+                                        <t t-esc="attendance.session_id.name"/>
+                                    </h5>
+                                    <t t-if="filter_type == 'active' and attendance.session_id.is_meeting_active">
+                                        <span class="live-badge">
+                                            <i class="fa fa-circle me-1"></i>مباشر الآن
+                                        </span>
+                                    </t>
+                                </div>
+                                <h6 class="text-muted mb-3">
+                                    <t t-esc="attendance.session_id.class_id.name"/>
+                                </h6>
+                                <div class="session-meta">
+                                    <div class="meta-item">
+                                        <i class="fa fa-calendar"></i>
+                                        <span><t t-esc="attendance.session_id.session_date"/></span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fa fa-clock-o"></i>
+                                        <span>
+                                            <t t-set="start_time" t-value="attendance.session_id.start_datetime"/>
+                                            <t t-if="start_time">
+                                                <t t-esc="'{:02d}:{:02d}'.format(int(start_time.hour), int(start_time.minute))"/>
+                                            </t>
+                                        </span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fa fa-user"></i>
+                                        <span><t t-esc="attendance.session_id.teacher_id.name"/></span>
+                                    </div>
+                                    <div class="meta-item" t-if="attendance.session_id.class_session_type == 'Online'">
+                                        <i class="fa fa-video-camera"></i>
+                                        <span>أونلاين</span>
+                                    </div>
+                                    <t t-if="filter_type == 'completed'">
+                                        <div class="meta-item">
+                                            <i class="fa fa-check-circle" style="color: #4caf50;"></i>
+                                            <span style="color: #4caf50;">
+                                                <t t-if="attendance.status == 'present'">حضرت</t>
+                                                <t t-else="">غائب</t>
+                                            </span>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                            <div>
+                                <t t-if="attendance.session_id.class_session_type == 'Online' and attendance.session_id.is_meeting_active and filter_type == 'active'">
+                                    <a t-attf-href="/my/session/#{attendance.id}/join" class="btn btn-join">
+                                        <i class="fa fa-sign-in me-2"></i>دخول الجلسة
+                                    </a>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+            <t t-else="">
+                <div class="empty-state">
+                    <t t-if="filter_type == 'active'">
+                        <i class="fa fa-video-camera"></i>
+                        <h4 class="text-muted">لا توجد جلسات نشطة حالياً</h4>
+                        <p class="text-muted">سيظهر هنا زر الدخول عندما يبدأ المعلم الجلسة</p>
+                    </t>
+                    <t t-elif="filter_type == 'today'">
+                        <i class="fa fa-calendar-o"></i>
+                        <h4 class="text-muted">لا توجد جلسات اليوم</h4>
+                    </t>
+                    <t t-elif="filter_type == 'upcoming'">
+                        <i class="fa fa-clock-o"></i>
+                        <h4 class="text-muted">لا توجد جلسات قادمة</h4>
+                    </t>
+                    <t t-elif="filter_type == 'completed'">
+                        <i class="fa fa-check-circle-o"></i>
+                        <h4 class="text-muted">لا توجد جلسات منتهية</h4>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</template>
+    <!-- Portal Student Classes Template - Modern Design -->
+    <template id="portal_student_classes" name="Student Classes">
+        <t t-call="website.layout">
+            <t t-set="title">الصفوف - مركز تحفيظ القرآن</t>
+
+            <style>
+                .class-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                    gap: 25px;
+                    margin-top: 30px;
+                }
+
+                .class-card {
+                    background: white;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                    transition: all 0.3s ease;
+                }
+
+                .class-card:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+                }
+
+                .class-header {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 25px;
+                    color: white;
+                }
+
+                .class-type-badge {
+                    display: inline-block;
+                    padding: 5px 15px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                }
+
+                .class-body {
+                    padding: 25px;
+                }
+
+                .class-info-item {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 15px;
+                    color: #6c757d;
+                }
+
+                .class-info-item i {
+                    width: 30px;
+                    color: #667eea;
+                }
+            </style>
+
+            <!-- Page Hero -->
+            <div class="page-hero">
+                <div class="container">
+                    <h1 class="mb-0">
+                        <i class="fa fa-graduation-cap me-2"></i>
+                        الصفوف المسجلة
+                    </h1>
+                </div>
+            </div>
+
+            <div class="container">
+                <t t-if="classes">
+                    <div class="class-grid">
+                        <t t-foreach="classes" t-as="class_item">
+                            <div class="class-card">
+                                <div class="class-header">
+                                    <h4 class="mb-2"><t t-esc="class_item.name"/></h4>
+                                    <p class="mb-3 opacity-75">كود: <t t-esc="class_item.code"/></p>
+                                    <span class="class-type-badge">
+                                        <t t-if="class_item.class_session_type == 'Online'">
+                                            <i class="fa fa-video-camera me-1"></i>أونلاين
+                                        </t>
+                                        <t t-else="">
+                                            <i class="fa fa-building me-1"></i>حضوري
+                                        </t>
+                                    </span>
+                                </div>
+                                <div class="class-body">
+                                    <div class="class-info-item">
+                                        <i class="fa fa-user"></i>
+                                        <span>المعلم: <strong><t t-esc="class_item.teacher_id.name"/></strong></span>
+                                    </div>
+                                    <div class="class-info-item" t-if="class_item.covenant_id">
+                                        <i class="fa fa-certificate"></i>
+                                        <span>الميثاق: <t t-esc="class_item.covenant_id.name"/></span>
+                                    </div>
+                                    <div class="class-info-item">
+                                        <i class="fa fa-calendar"></i>
+                                        <span>من <t t-esc="class_item.start_date"/> إلى <t t-esc="class_item.end_date"/></span>
+                                    </div>
+                                    <div class="class-info-item">
+                                        <i class="fa fa-users"></i>
+                                        <span><t t-esc="class_item.student_count"/> طالب</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="empty-state">
+                        <i class="fa fa-graduation-cap"></i>
+                        <h4 class="text-muted">لا توجد صفوف</h4>
+                        <p class="text-muted">لم يتم تسجيلك في أي صف بعد</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal Student Profile Template - Modern Design -->
+    <template id="portal_student_profile" name="Student Profile">
+        <t t-call="website.layout">
+            <t t-set="title">الملف الشخصي - مركز تحفيظ القرآن</t>
+
+            <style>
+                .profile-header {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 60px 0;
+                    margin-bottom: -50px;
+                    text-align: center;
+                }
+
+                .profile-avatar {
+                    width: 150px;
+                    height: 150px;
+                    background: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 60px;
+                    color: #667eea;
+                    margin: 0 auto 20px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                }
+
+                .profile-card {
+                    background: white;
+                    border-radius: 20px;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                    padding: 40px;
+                    margin-bottom: 30px;
+                }
+
+                .profile-section {
+                    margin-bottom: 40px;
+                }
+
+                .profile-section h4 {
+                    color: #667eea;
+                    margin-bottom: 25px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .profile-info-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 15px 0;
+                    border-bottom: 1px solid #f0f0f0;
+                }
+
+                .profile-info-row:last-child {
+                    border-bottom: none;
+                }
+
+                .profile-label {
+                    color: #6c757d;
+                    font-weight: 500;
+                }
+
+                .profile-value {
+                    color: #2d3436;
+                    font-weight: 600;
+                }
+
+                .progress-section {
+                    background: #f8f9fa;
+                    border-radius: 15px;
+                    padding: 25px;
+                }
+
+                .progress-bar-custom {
+                    height: 25px;
+                    border-radius: 15px;
+                    background: #e9ecef;
+                    overflow: hidden;
+                }
+
+                .progress-fill {
+                    height: 100%;
+                    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                    border-radius: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-weight: 600;
+                    transition: width 1s ease;
+                }
+            </style>
+
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="container">
+                    <div class="profile-avatar">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <h1 class="mb-2"><t t-esc="student.name_ar"/></h1>
+                    <p class="mb-0 opacity-75">
+                        <i class="fa fa-id-badge me-2"></i>
+                        <t t-esc="student.student_code"/>
+                    </p>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="profile-card" style="margin-top: 30px;">
+                    <!-- Personal Information -->
+                    <div class="profile-section">
+                        <h4>
+                            <i class="fa fa-user-circle"></i>
+                            المعلومات الشخصية
+                        </h4>
+                        <div class="profile-info-row">
+                            <span class="profile-label">الاسم بالعربية</span>
+                            <span class="profile-value"><t t-esc="student.name_ar"/></span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-label">الاسم بالإنجليزية</span>
+                            <span class="profile-value"><t t-esc="student.name_en"/></span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-label">البريد الإلكتروني</span>
+                            <span class="profile-value"><t t-esc="student.email"/></span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-label">تاريخ الميلاد</span>
+                            <span class="profile-value"><t t-esc="student.birth_date"/></span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-label">العمر</span>
+                            <span class="profile-value"><t t-esc="student.age"/> سنة</span>
+                        </div>
+                    </div>
+
+                    <!-- Memorization Progress -->
+                    <div class="profile-section">
+                        <h4>
+                            <i class="fa fa-book"></i>
+                            التقدم في الحفظ
+                        </h4>
+                        <div class="progress-section">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>الصفحات المحفوظة</span>
+                                <span class="fw-bold"><t t-esc="student.current_memorized_pages"/> / 604</span>
+                            </div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" t-attf-style="width: #{(student.current_memorized_pages / 604.0 * 100)}%">
+                                    <t t-esc="round(student.current_memorized_pages / 604.0 * 100, 1)"/>%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Academic Information -->
+                    <div class="profile-section">
+                        <h4>
+                            <i class="fa fa-graduation-cap"></i>
+                            المعلومات الأكاديمية
+                        </h4>
+                        <div class="profile-info-row">
+                            <span class="profile-label">المستوى التعليمي</span>
+                            <span class="profile-value">
+                                <t t-if="student.education_level == 'primary'">ابتدائي</t>
+                                <t t-elif="student.education_level == 'intermediate'">إعدادي</t>
+                                <t t-elif="student.education_level == 'secondary'">ثانوي</t>
+                                <t t-elif="student.education_level == 'university'">جامعي</t>
+                                <t t-else=""><t t-esc="student.education_level"/></t>
+                            </span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-label">مستوى الحفظ</span>
+                            <span class="profile-value">
+                                <t t-if="student.memorization_level == 'intermediate'">حفظ</t>
+                                <t t-elif="student.memorization_level == 'advanced'">خاتم للقرآن</t>
+                                <t t-else=""><t t-esc="student.memorization_level"/></t>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
