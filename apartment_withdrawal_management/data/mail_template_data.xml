@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Warning Email Template -->
+        <record id="email_template_withdrawal_warning" model="mail.template">
+            <field name="name">Apartment Withdrawal Warning</field>
+            <field name="model_id" ref="model_withdrawal_monitor"/>
+            <field name="subject">Warning: Payment Overdue - Contract ${object.contract_id.name}</field>
+            <field name="email_from">${(object.company_id.email or user.email) | safe}</field>
+            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<div style="margin: 0px; padding: 0px;">
+    <div style="margin: 0px; padding: 0px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 20px;">
+        <h2 style="color: #856404;">⚠️ Payment Overdue Warning</h2>
+
+        <p>Dear ${object.partner_id.name},</p>
+
+        <p>We would like to inform you that your payment for the property contract is significantly overdue.</p>
+
+        <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="color: #d63384;">Contract Details:</h3>
+            <ul>
+                <li><strong>Contract:</strong> ${object.contract_id.name}</li>
+                <li><strong>Property:</strong> ${object.building_unit_id.name}</li>
+                <li><strong>Building:</strong> ${object.building_id.name or 'N/A'}</li>
+                <li><strong>Original Due Date:</strong> ${object.due_date}</li>
+                <li><strong>Overdue Amount:</strong> ${object.overdue_amount} ${object.company_id.currency_id.symbol}</li>
+                <li><strong>Months Overdue:</strong> ${object.overdue_months} months</li>
+            </ul>
+        </div>
+
+        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="color: #721c24;">⚠️ Important Notice:</h3>
+            <p>If payment is not received within the next 30 days, your apartment may be automatically withdrawn from your contract according to our terms and conditions.</p>
+        </div>
+
+        <p><strong>What you need to do:</strong></p>
+        <ol>
+            <li>Make the overdue payment immediately</li>
+            <li>Contact our office to discuss payment arrangements</li>
+            <li>Ensure all future payments are made on time</li>
+        </ol>
+
+        <p>For any questions or to arrange payment, please contact us immediately.</p>
+
+        <p>Best regards,<br/>
+        ${object.company_id.name}<br/>
+        Phone: ${object.company_id.phone or 'N/A'}<br/>
+        Email: ${object.company_id.email or 'N/A'}</p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Withdrawal Notification Template -->
+        <record id="email_template_withdrawal_notification" model="mail.template">
+            <field name="name">Apartment Withdrawal Notification</field>
+            <field name="model_id" ref="model_withdrawal_monitor"/>
+            <field name="subject">Apartment Withdrawn - Contract ${object.contract_id.name}</field>
+            <field name="email_from">${(object.company_id.email or user.email) | safe}</field>
+            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<div style="margin: 0px; padding: 0px;">
+    <div style="margin: 0px; padding: 0px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 20px;">
+        <h2 style="color: #721c24;">🚨 Apartment Withdrawal Notice</h2>
+
+        <p>Dear ${object.partner_id.name},</p>
+
+        <p>We regret to inform you that due to prolonged non-payment, your apartment has been withdrawn from your contract effective immediately.</p>
+
+        <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="color: #d63384;">Withdrawal Details:</h3>
+            <ul>
+                <li><strong>Contract:</strong> ${object.contract_id.name}</li>
+                <li><strong>Property:</strong> ${object.building_unit_id.name}</li>
+                <li><strong>Building:</strong> ${object.building_id.name or 'N/A'}</li>
+                <li><strong>Original Due Date:</strong> ${object.due_date}</li>
+                <li><strong>Withdrawal Date:</strong> ${object.withdrawal_date}</li>
+                <li><strong>Outstanding Amount:</strong> ${object.overdue_amount} ${object.company_id.currency_id.symbol}</li>
+                <li><strong>Months Overdue:</strong> ${object.overdue_months} months</li>
+                <li><strong>Reason:</strong> ${object.withdrawal_reason or 'Payment overdue'}</li>
+            </ul>
+        </div>
+
+        <div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="color: #0c5460;">💡 Restoration Option:</h3>
+            <p>You can still restore your apartment by:</p>
+            <ol>
+                <li>Paying the full outstanding amount</li>
+                <li>Contacting our office immediately to discuss restoration</li>
+                <li>Ensuring all future payments are made on time</li>
+            </ol>
+        </div>
+
+        <p><strong>Next Steps:</strong></p>
+        <ul>
+            <li>Your apartment is now marked as "Withdrawn"</li>
+            <li>The contract is suspended until payment is made</li>
+            <li>Contact our office within 30 days to restore the apartment</li>
+            <li>Restoration will be automatic upon full payment of overdue amount</li>
+        </ul>
+
+        <p>We understand this may be a difficult situation. Please contact us immediately to discuss resolution options.</p>
+
+        <p>Best regards,<br/>
+        ${object.company_id.name}<br/>
+        Phone: ${object.company_id.phone or 'N/A'}<br/>
+        Email: ${object.company_id.email or 'N/A'}</p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Restoration Notification Template -->
+        <record id="email_template_restoration_notification" model="mail.template">
+            <field name="name">Apartment Restoration Notification</field>
+            <field name="model_id" ref="model_withdrawal_monitor"/>
+            <field name="subject">Apartment Restored - Contract ${object.contract_id.name}</field>
+            <field name="email_from">${(object.company_id.email or user.email) | safe}</field>
+            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+<div style="margin: 0px; padding: 0px;">
+    <div style="margin: 0px; padding: 0px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 20px;">
+        <h2 style="color: #155724;">✅ Apartment Successfully Restored</h2>
+
+        <p>Dear ${object.partner_id.name},</p>
+
+        <p>We are pleased to inform you that your apartment has been successfully restored to your contract!</p>
+
+        <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="color: #28a745;">Restoration Details:</h3>
+            <ul>
+                <li><strong>Contract:</strong> ${object.contract_id.name}</li>
+                <li><strong>Property:</strong> ${object.building_unit_id.name}</li>
+                <li><strong>Building:</strong> ${object.building_id.name or 'N/A'}</li>
+                <li><strong>Restoration Date:</strong> ${object.restoration_date}</li>
+                <li><strong>Contract Status:</strong> Active</li>
+                <li><strong>Property Status:</strong> Sold</li>
+            </ul>
+        </div>
+
+        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <h3 style="color: #856404;">📋 Important Reminders:</h3>
+            <ul>
+                <li>Your contract is now fully active again</li>
+                <li>Please ensure all future payments are made on time</li>
+                <li>Keep track of your payment schedule to avoid future issues</li>
+                <li>Contact us if you need assistance with payment arrangements</li>
+            </ul>
+        </div>
+
+        <p>Thank you for resolving the payment issue promptly. We look forward to continuing our business relationship with you.</p>
+
+        <p>If you have any questions about your contract or payment schedule, please don't hesitate to contact us.</p>
+
+        <p>Best regards,<br/>
+        ${object.company_id.name}<br/>
+        Phone: ${object.company_id.phone or 'N/A'}<br/>
+        Email: ${object.company_id.email or 'N/A'}</p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Withdrawal Monitor Form View with Header Buttons -->
+        <record id="withdrawal_monitor_form_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.form</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <form string="Withdrawal Monitor">
+                    <!-- Buttons in Header -->
+                    <header>
+                        <button name="action_withdraw_apartment" string="Withdraw Apartment"
+                                type="object" class="btn-danger"
+                                attrs="{'invisible': [('status', '!=', 'restored')]}"
+                                confirm="Are you sure you want to withdraw this apartment again?"/>
+
+                        <button name="action_restore_apartment" string="Restore Apartment"
+                                type="object" class="btn-success"
+                                attrs="{'invisible': [('status', '!=', 'withdrawn')]}"
+                                confirm="Are you sure you want to restore this apartment?"/>
+
+                        <!-- Status bar - Only withdrawn/restored -->
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="withdrawn,restored"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="contract_id" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="partner_id" readonly="1"/>
+                            </h3>
+                        </div>
+
+                        <group>
+                            <group string="Contract Details">
+                                <field name="building_id" readonly="1"/>
+                                <field name="building_unit_id" readonly="1"/>
+                                <field name="installment_id" readonly="1"/>
+                                <field name="installment_number" readonly="1"/>
+                            </group>
+                            <group string="Overdue Information">
+                                <field name="due_date" readonly="1"/>
+                                <field name="overdue_months" readonly="1"/>
+                                <field name="overdue_amount" readonly="1"/>
+                                <field name="status" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Important Dates">
+                                <field name="withdrawal_date" readonly="1"/>
+                                <field name="restoration_date" readonly="1"/>
+                            </group>
+                            <group string="Notes">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+
+                    <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Withdrawal Monitor Tree View -->
+        <record id="withdrawal_monitor_tree_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.tree</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="status == 'withdrawn'"
+                      decoration-success="status == 'restored'">
+                    <field name="contract_id"/>
+                    <field name="installment_number"/>
+                    <field name="partner_id"/>
+                    <field name="building_id"/>
+                    <field name="building_unit_id"/>
+                    <field name="installment_id"/>
+                    <field name="due_date"/>
+                    <field name="overdue_months"/>
+                    <field name="overdue_amount" sum="Total Overdue"/>
+                    <field name="status" widget="badge"/>
+                    <field name="withdrawal_date"/>
+                    <field name="restoration_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Withdrawal Monitor Search View -->
+        <record id="withdrawal_monitor_search_view" model="ir.ui.view">
+            <field name="name">withdrawal.monitor.search</field>
+            <field name="model">withdrawal.monitor</field>
+            <field name="arch" type="xml">
+                <search string="Withdrawal Monitors">
+                    <field name="contract_id"/>
+                    <field name="partner_id"/>
+                    <field name="building_id"/>
+                    <field name="building_unit_id"/>
+                    <field name="status"/>
+
+                    <!-- Only withdrawn and restored filters -->
+                    <filter string="Withdrawn" name="withdrawn" domain="[('status', '=', 'withdrawn')]"/>
+                    <filter string="Restored" name="restored" domain="[('status', '=', 'restored')]"/>
+
+                    <separator/>
+                    <filter string="Overdue > 3 Months" name="overdue_3" domain="[('overdue_months', '>', 3)]"/>
+                    <filter string="Overdue > 6 Months" name="overdue_6" domain="[('overdue_months', '>', 6)]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                        <filter string="Building" name="group_by_building" context="{'group_by': 'building_id'}"/>
+                        <filter string="Partner" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Overdue Months" name="group_by_overdue_months" context="{'group_by': 'overdue_months'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>
