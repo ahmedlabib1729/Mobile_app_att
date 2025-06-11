@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_study_covenant_form" model="ir.ui.view">
+        <field name="name">quran.study.covenant.form</field>
+        <field name="model">quran.study.covenant</field>
+        <field name="arch" type="xml">
+            <form string="الميثاق الدراسي">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="program_type"/>
+
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_study_covenant_list" model="ir.ui.view">
+        <field name="name">quran.study.covenant.list</field>
+        <field name="model">quran.study.covenant</field>
+        <field name="arch" type="xml">
+            <list string="المواثيق الدراسية">
+                <field name="name"/>
+                <field name="program_type"/>
+
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_study_covenant_search" model="ir.ui.view">
+        <field name="name">quran.study.covenant.search</field>
+        <field name="model">quran.study.covenant</field>
+        <field name="arch" type="xml">
+            <search string="بحث المواثيق">
+                <field name="name"/>
+
+                <filter string="نشط" name="active" domain="[('active', '=', True)]"/>
+                <filter string="غير نشط" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="برامج النوادي" name="clubs_program"
+                        domain="[('program_type', '=', 'clubs')]"/>
+                <filter string="برامج السيدات" name="ladies_program"
+                        domain="[('program_type', '=', 'ladies')]"/>
+                <separator/>
+                <filter string="مؤرشف" name="archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="تجميع حسب">
+
+                    <filter string="نوع البرنامج" name="group_program"
+                                                 context="{'group_by': 'program_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_study_covenant" model="ir.actions.act_window">
+        <field name="name">المواثيق الدراسية</field>
+        <field name="res_model">quran.study.covenant</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء ميثاق دراسي جديد
+            </p>
+        </field>
+    </record>
+</odoo>

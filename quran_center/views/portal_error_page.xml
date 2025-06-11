@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal Error Page Template -->
+    <template id="portal_error_page" name="Portal Error Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="title" t-value="error_title or 'خطأ'"/>
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <div class="alert alert-danger text-center">
+                            <h3 class="alert-heading">
+                                <i class="fa fa-exclamation-triangle"></i>
+                                <t t-esc="error_title"/>
+                            </h3>
+                            <p class="mb-0">
+                                <t t-esc="error_message"/>
+                            </p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a t-att-href="return_url or '/my'" class="btn btn-primary">
+                                <i class="fa fa-arrow-right"></i> العودة
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
