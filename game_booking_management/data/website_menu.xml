@@ -1,0 +1,18 @@
+<odoo>
+    <data>
+ <record id="menu_game_booking_home" model="website.menu">
+            <field name="name">الرئيسية الرياضية</field>
+            <field name="url">/sports-home</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- Booking Menu -->
+        <record id="menu_game_booking_website" model="website.menu">
+            <field name="name">حجز الألعاب</field>
+            <field name="url">/game-booking</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">20</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_game_game_user,game.game user,model_game_game,base.group_user,1,1,1,1
+access_game_schedule_user,game.schedule user,model_game_schedule,base.group_user,1,1,1,1
+access_game_booking_user,game.booking user,model_game_booking,base.group_user,1,1,1,1
+access_game_game_public,game.game public,model_game_game,base.group_public,1,0,0,0
+access_game_schedule_public,game.schedule public,model_game_schedule,base.group_public,1,0,0,0
+access_game_booking_public,game.booking public,model_game_booking,base.group_public,1,0,1,0

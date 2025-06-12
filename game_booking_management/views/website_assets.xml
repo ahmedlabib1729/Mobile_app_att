@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="game_booking_assets_frontend" name="Game Booking Assets" inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/game_booking_management/static/src/css/game_booking.css"/>
+            <script type="text/javascript" src="/game_booking_management/static/src/js/game_booking.js"></script>
+        </xpath>
+    </template>
+</odoo>

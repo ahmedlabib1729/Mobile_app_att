@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Game Booking Tree View -->
+    <record id="view_game_booking_list" model="ir.ui.view">
+        <field name="name">game.booking.list</field>
+        <field name="model">game.booking</field>
+        <field name="arch" type="xml">
+            <list string="الحجوزات">
+                <field name="player_name"/>
+                <field name="mobile"/>
+                <field name="game_id"/>
+                <field name="schedule_id"/>
+                <field name="booking_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Game Booking Form View -->
+    <record id="view_game_booking_form" model="ir.ui.view">
+        <field name="name">game.booking.form</field>
+        <field name="model">game.booking</field>
+        <field name="arch" type="xml">
+            <form string="حجز اللعبة">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="confirmed,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="player_name" placeholder="اسم اللاعب"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="mobile" placeholder="+966XXXXXXXXX"/>
+                            <field name="schedule_id" options="{'no_create': True}"/>
+                            <field name="game_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="booking_date" readonly="1"/>
+                            <field name="state"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Game Booking Search View -->
+    <record id="view_game_booking_search" model="ir.ui.view">
+        <field name="name">game.booking.search</field>
+        <field name="model">game.booking</field>
+        <field name="arch" type="xml">
+            <search string="البحث في الحجوزات">
+                <field name="player_name"/>
+                <field name="mobile"/>
+                <field name="game_id"/>
+                <filter string="مؤكد" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="ملغي" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="حجوزات اليوم" name="today" domain="[('booking_date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time.min)), ('booking_date', '&lt;=', datetime.datetime.combine(context_today(), datetime.time.max))]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="اللعبة" name="group_game" context="{'group_by': 'game_id'}"/>
+                    <filter string="موعد اللعبة" name="group_schedule" context="{'group_by': 'schedule_id'}"/>
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="تاريخ الحجز" name="group_booking_date" context="{'group_by': 'booking_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Game Booking Action -->
+    <record id="action_game_booking" model="ir.actions.act_window">
+        <field name="name">الحجوزات</field>
+        <field name="res_model">game.booking</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_game_booking_search"/>
+    </record>
+</odoo>

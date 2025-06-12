@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="game_booking_page" name="Game Booking Page">
+        <t t-call="website.layout">
+            <t t-set="title">حجز الألعاب</t>
+
+            <!-- Hero Section -->
+            <section class="booking-hero-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h1 class="hero-title animate-fade-in">احجز لعبتك المفضلة</h1>
+                            <p class="hero-subtitle animate-fade-in-delay">اختر اللعبة والموعد المناسب لك وسجل بياناتك</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Booking Form Section -->
+            <section class="booking-form-section py-5">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 col-md-10">
+                            <div class="booking-card animate-slide-up">
+                                <div class="booking-progress">
+                                    <div class="progress-step active" id="step1-indicator">
+                                        <span class="step-number">1</span>
+                                        <span class="step-text">اختر اللعبة</span>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                    <div class="progress-step" id="step2-indicator">
+                                        <span class="step-number">2</span>
+                                        <span class="step-text">اختر الموعد</span>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                    <div class="progress-step" id="step3-indicator">
+                                        <span class="step-number">3</span>
+                                        <span class="step-text">بياناتك</span>
+                                    </div>
+                                </div>
+
+                                <form id="gameBookingForm">
+                                    <!-- Step 1: Select Game -->
+                                    <div class="form-step active" id="step1">
+                                        <h3 class="step-title">اختر اللعبة</h3>
+                                        <div class="games-grid">
+                                            <t t-foreach="games" t-as="game">
+                                                <div class="game-card" t-att-data-game-id="game.id" role="button" tabindex="0">
+                                                    <div class="game-icon">
+                                                        <i class="fa fa-gamepad"></i>
+                                                    </div>
+                                                    <h4 t-esc="game.name"/>
+                                                    <p t-esc="game.description" class="game-description"/>
+                                                </div>
+                                            </t>
+                                        </div>
+                                        <input type="hidden" name="game_id" id="selected_game_id" required="required"/>
+                                    </div>
+
+                                    <!-- Step 2: Select Schedule -->
+                                    <div class="form-step" id="step2">
+                                        <h3 class="step-title">اختر الموعد</h3>
+                                        <div id="schedules-container" class="schedules-grid">
+                                            <!-- سيتم ملؤها بواسطة JavaScript -->
+                                        </div>
+                                        <input type="hidden" name="schedule_id" id="selected_schedule_id" required="required"/>
+                                    </div>
+
+                                    <!-- Step 3: Player Information -->
+                                    <div class="form-step" id="step3">
+                                        <h3 class="step-title">بياناتك الشخصية</h3>
+                                        <div class="form-group">
+                                            <label for="player_name">
+                                                <i class="fa fa-user"></i> اسمك الكامل
+                                            </label>
+                                            <input type="text" class="form-control" id="player_name" name="player_name"
+                                                   placeholder="أدخل اسمك الكامل" required="required"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mobile">
+                                                <i class="fa fa-phone"></i> رقم الجوال
+                                            </label>
+                                            <input type="tel" class="form-control" id="mobile" name="mobile"
+                                                   placeholder="+966XXXXXXXXX" required="required" dir="ltr"/>
+                                            <small class="form-text text-muted">يجب أن يبدأ الرقم بـ +966</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Navigation Buttons -->
+                                    <div class="form-navigation">
+                                        <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                            <i class="fa fa-arrow-right"></i> السابق
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="nextBtn">
+                                            التالي <i class="fa fa-arrow-left"></i>
+                                        </button>
+                                        <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                                            <i class="fa fa-check"></i> تأكيد الحجز
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Success Modal -->
+            <div class="modal fade" id="successModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body text-center">
+                            <div class="success-icon">
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                            <h3>تم الحجز بنجاح!</h3>
+                            <p>شكراً لك، سيتم التواصل معك قريباً لتأكيد الحجز.</p>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">حسناً</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Modal -->
+            <div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body text-center">
+                            <div class="error-icon">
+                                <i class="fa fa-times-circle"></i>
+                            </div>
+                            <h3>حدث خطأ!</h3>
+                            <p id="errorMessage">عذراً، حدث خطأ أثناء معالجة طلبك.</p>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">حسناً</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Add Menu Item -->
+    <record id="menu_game_booking_website" model="website.menu">
+        <field name="name">حجز الألعاب</field>
+        <field name="url">/game-booking</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">50</field>
+    </record>
+</odoo>

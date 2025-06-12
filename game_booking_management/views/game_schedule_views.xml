@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Game Schedule Tree View -->
+    <record id="view_game_schedule_list" model="ir.ui.view">
+        <field name="name">game.schedule.list</field>
+        <field name="model">game.schedule</field>
+        <field name="arch" type="xml">
+            <list string="مواعيد الألعاب">
+                <field name="game_id"/>
+                <field name="date"/>
+                <field name="time" widget="float_time"/>
+                <field name="max_players"/>
+                <field name="current_players"/>
+                <field name="available_slots"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Game Schedule Form View -->
+    <record id="view_game_schedule_form" model="ir.ui.view">
+        <field name="name">game.schedule.form</field>
+        <field name="model">game.schedule</field>
+        <field name="arch" type="xml">
+            <form string="موعد اللعبة">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="game_id"/>
+                            <field name="date"/>
+                            <field name="time" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="max_players"/>
+                            <field name="current_players" readonly="1"/>
+                            <field name="available_slots" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="الحجوزات">
+                            <field name="booking_ids">
+                                <list>
+                                    <field name="player_name"/>
+                                    <field name="mobile"/>
+                                    <field name="booking_date"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Game Schedule Calendar View -->
+    <record id="view_game_schedule_calendar" model="ir.ui.view">
+        <field name="name">game.schedule.calendar</field>
+        <field name="model">game.schedule</field>
+        <field name="arch" type="xml">
+            <calendar string="مواعيد الألعاب" date_start="date" color="game_id">
+                <field name="game_id"/>
+                <field name="time" widget="float_time"/>
+                <field name="available_slots"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Game Schedule Search View -->
+    <record id="view_game_schedule_search" model="ir.ui.view">
+        <field name="name">game.schedule.search</field>
+        <field name="model">game.schedule</field>
+        <field name="arch" type="xml">
+            <search string="البحث في المواعيد">
+                <field name="game_id"/>
+                <field name="date"/>
+                <filter string="مواعيد اليوم" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="مواعيد هذا الأسبوع" name="this_week" domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="يوجد أماكن متاحة" name="available" domain="[('available_slots', '&gt;', 0)]"/>
+                <filter string="مكتمل" name="full" domain="[('available_slots', '=', 0)]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="اللعبة" name="group_game" context="{'group_by': 'game_id'}"/>
+                    <filter string="التاريخ" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Game Schedule Action -->
+    <record id="action_game_schedule" model="ir.actions.act_window">
+        <field name="name">مواعيد الألعاب</field>
+        <field name="res_model">game.schedule</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_game_schedule_search"/>
+    </record>
+</odoo>

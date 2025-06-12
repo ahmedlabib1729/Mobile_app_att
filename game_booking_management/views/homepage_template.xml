@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Custom Header/Navbar -->
+        <template id="custom_header" inherit_id="website.layout" name="Swimming Club Header">
+            <xpath expr="//header" position="replace">
+                <header class="swimming-header">
+                    <nav class="navbar navbar-expand-lg swimming-navbar">
+                        <div class="container">
+                            <!-- Logo -->
+                            <a class="navbar-brand swimming-logo" href="/">
+                                <i class="fa fa-swimmer"></i>
+                                <span class="logo-text">نادي السباحة</span>
+                            </a>
+
+                            <!-- Mobile Toggle -->
+                            <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            <!-- Navigation Items -->
+                            <div class="collapse navbar-collapse" id="navbarContent">
+                                <ul class="navbar-nav mx-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link swimming-nav-link" href="/">
+                                            <i class="fa fa-home"></i> الرئيسية
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link swimming-nav-link" href="/game-booking">
+                                            <i class="fa fa-calendar-check"></i> احجز الآن
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link swimming-nav-link" href="#features">
+                                            <i class="fa fa-star"></i> مميزاتنا
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link swimming-nav-link" href="#contact">
+                                            <i class="fa fa-phone"></i> اتصل بنا
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                <!-- CTA Button -->
+                                <div class="navbar-cta">
+                                    <a href="/game-booking" class="btn btn-swimming-cta">
+                                        <i class="fa fa-swimmer"></i> ابدأ رحلتك
+                                    </a>
+                                </div>
+
+                                <!-- Login/User Menu -->
+                                <div class="navbar-user ml-3">
+                                    <t t-if="not request.env.user._is_public()">
+                                        <!-- Logged in user -->
+                                        <div class="dropdown">
+                                            <a class="btn btn-user-menu dropdown-toggle" href="#" data-toggle="dropdown">
+                                                <i class="fa fa-user-circle"></i>
+                                                <span t-esc="request.env.user.name"/>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="/my">
+                                                    <i class="fa fa-user"></i> حسابي
+                                                </a>
+                                                <a class="dropdown-item" href="/my/home">
+                                                    <i class="fa fa-dashboard"></i> لوحة التحكم
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="/web/session/logout">
+                                                    <i class="fa fa-sign-out-alt"></i> تسجيل الخروج
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <!-- Not logged in -->
+                                        <a href="/web/login" class="btn btn-login">
+                                            <i class="fa fa-sign-in-alt"></i> تسجيل الدخول
+                                        </a>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- Animated Wave Effect -->
+                    <div class="header-wave">
+                        <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+                            <path d="M0,20 C150,60 350,0 600,30 C850,60 1050,0 1200,20 C1350,40 1440,30 1440,30 L1440,60 L0,60 Z" fill="rgba(255,255,255,0.1)"></path>
+                        </svg>
+                    </div>
+                </header>
+            </xpath>
+        </template>
+
+        <!-- Homepage Template -->
+        <template id="game_booking_homepage" name="Sports Booking Homepage">
+            <t t-call="website.layout">
+                <t t-set="title">نادي السباحة - احجز الآن</t>
+
+                <!-- Hero Section -->
+                <section class="sport-hero-section">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h1 class="hero-main-title animate-title">
+                                        <span class="highlight">اسبح</span> في عالم من المتعة
+                                    </h1>
+                                    <p class="hero-description animate-subtitle">
+                                        احجز مكانك في أفضل حمامات السباحة واستمتع بتجربة لا تُنسى
+                                    </p>
+                                    <div class="hero-buttons animate-buttons">
+                                        <a href="/game-booking" class="btn btn-hero-primary">
+                                            <i class="fa fa-calendar-check"></i> احجز الآن
+                                        </a>
+                                        <a href="#features" class="btn btn-hero-secondary">
+                                            <i class="fa fa-info-circle"></i> اعرف المزيد
+                                        </a>
+                                    </div>
+                                    <div class="hero-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-number" data-count="1500">0</span>+
+                                            <span class="stat-label">سباح مسجل</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-number" data-count="100">0</span>+
+                                            <span class="stat-label">حصة يومياً</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-number" data-count="8">0</span>
+                                            <span class="stat-label">حمام سباحة</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-shape">
+                        <svg viewBox="0 0 1440 320">
+                            <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                        </svg>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section id="features" class="features-section py-5">
+                    <div class="container">
+                        <div class="section-header text-center mb-5">
+                            <h2 class="section-title">لماذا تختار نادينا؟</h2>
+                            <p class="section-subtitle">نوفر لك أفضل تجربة سباحة في المنطقة</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-swimmer"></i>
+                                    </div>
+                                    <h3>مدربون محترفون</h3>
+                                    <p>فريق من المدربين المعتمدين لجميع المستويات</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-water"></i>
+                                    </div>
+                                    <h3>مياه نظيفة ومعقمة</h3>
+                                    <p>نظام تنقية متطور يضمن نظافة المياه على مدار الساعة</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-temperature-low"></i>
+                                    </div>
+                                    <h3>درجة حرارة مثالية</h3>
+                                    <p>أحواض مدفأة للراحة التامة في جميع الفصول</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sports Section -->
+                <section class="sports-section py-5">
+                    <div class="container">
+                        <div class="section-header text-center mb-5">
+                            <h2 class="section-title">برامجنا وخدماتنا</h2>
+                            <p class="section-subtitle">اختر البرنامج المناسب لك ولعائلتك</p>
+                        </div>
+                        <div class="sports-grid">
+                            <div class="sport-item" data-sport="swimming">
+                                <div class="sport-icon">
+                                    <i class="fa fa-swimmer"></i>
+                                </div>
+                                <h4>السباحة الحرة</h4>
+                                <p>أوقات مفتوحة للسباحة والاسترخاء</p>
+                            </div>
+                            <div class="sport-item" data-sport="training">
+                                <div class="sport-icon">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <h4>دروس السباحة</h4>
+                                <p>تعلم السباحة مع مدربين محترفين</p>
+                            </div>
+                            <div class="sport-item" data-sport="aqua">
+                                <div class="sport-icon">
+                                    <i class="fa fa-heartbeat"></i>
+                                </div>
+                                <h4>الأيروبكس المائي</h4>
+                                <p>تمارين لياقة في الماء</p>
+                            </div>
+                            <div class="sport-item" data-sport="kids">
+                                <div class="sport-icon">
+                                    <i class="fa fa-child"></i>
+                                </div>
+                                <h4>برامج الأطفال</h4>
+                                <p>أنشطة ممتعة وآمنة للصغار</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="cta-section">
+                    <div class="container">
+                        <div class="cta-content text-center">
+                            <h2>جاهز للغطس؟</h2>
+                            <p>احجز مكانك الآن واستمتع بتجربة سباحة لا تُنسى</p>
+                            <a href="/game-booking" class="btn btn-cta">
+                                <i class="fa fa-play-circle"></i> ابدأ الحجز
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contact Section -->
+                <section id="contact" class="contact-section py-5">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-4 mb-4">
+                                <div class="contact-item">
+                                    <i class="fa fa-map-marker-alt"></i>
+                                    <h4>موقعنا</h4>
+                                    <p>الشارقة، الإمارات العربية المتحدة</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <div class="contact-item">
+                                    <i class="fa fa-phone"></i>
+                                    <h4>اتصل بنا</h4>
+                                    <p dir="ltr">+971 50 123 4567</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <div class="contact-item">
+                                    <i class="fa fa-envelope"></i>
+                                    <h4>راسلنا</h4>
+                                    <p>info@sportscenter.ae</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </t>
+        </template>
+
+        <!-- Custom Footer -->
+        <template id="custom_footer" inherit_id="website.layout" name="Swimming Club Footer">
+            <xpath expr="//footer" position="replace">
+                <footer class="swimming-footer">
+                    <div class="footer-wave">
+                        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                            <path d="M0,60 C150,20 350,80 600,50 C850,20 1050,80 1200,60 C1350,40 1440,50 1440,50 L1440,0 L0,0 Z" fill="white"></path>
+                        </svg>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-4 mb-4">
+                                <div class="footer-brand">
+                                    <i class="fa fa-swimmer"></i>
+                                    <h3>نادي السباحة</h3>
+                                    <p>نسعى لتوفير أفضل تجربة سباحة في المنطقة مع الحفاظ على أعلى معايير الجودة والسلامة.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <h4>روابط سريعة</h4>
+                                <ul class="footer-links">
+                                    <li><a href="/"><i class="fa fa-angle-left"></i> الرئيسية</a></li>
+                                    <li><a href="/game-booking"><i class="fa fa-angle-left"></i> احجز الآن</a></li>
+                                    <li><a href="#features"><i class="fa fa-angle-left"></i> مميزاتنا</a></li>
+                                    <li><a href="#contact"><i class="fa fa-angle-left"></i> اتصل بنا</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <h4>تابعنا</h4>
+                                <div class="social-links">
+                                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                                </div>
+                                <div class="footer-contact mt-3">
+                                    <p><i class="fa fa-phone"></i> +971 50 123 4567</p>
+                                    <p><i class="fa fa-envelope"></i> info@swimmingclub.ae</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="footer-divider"/>
+                        <div class="footer-bottom">
+                            <p>© 2025 نادي السباحة. جميع الحقوق محفوظة.</p>
+                        </div>
+                    </div>
+                </footer>
+            </xpath>
+        </template>
+    </data>
+</odoo>
