@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Club Form View -->
+        <record id="view_charity_clubs_form" model="ir.ui.view">
+            <field name="name">charity.clubs.form</field>
+            <field name="model">charity.clubs</field>
+            <field name="arch" type="xml">
+                <form string="النادي">
+                    <sheet>
+                        <widget name="web_ribbon" title="مؤرشف" bg_color="text-bg-danger" invisible="active"/>
+                        <div class="oe_button_box" name="button_box">
+                            <!-- زر الترمات -->
+                            <button name="action_view_terms"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-calendar">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="active_terms_count" class="me-1"/>
+                                        <span class="text-muted">/</span>
+                                        <field name="terms_count" class="ms-1"/>
+                                    </span>
+                                    <span class="o_stat_text">الترمات</span>
+                                </div>
+                            </button>
+
+                            <!-- زر التسجيلات -->
+                            <button name="action_view_registrations"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-pencil-square-o">
+                                <field name="registrations_count" widget="statinfo" string="التسجيلات"/>
+                            </button>
+
+                            <!-- الإيرادات -->
+                            <button class="oe_stat_button" icon="fa-money" disabled="1">
+                                <field name="total_revenue" widget="statinfo" string="الإيرادات"/>
+                            </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="name" string="اسم النادي"/>
+                            <h1>
+                                <field name="name" placeholder="أدخل اسم النادي..." class="text-break"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات أساسية">
+                                <field name="department_id" options="{'no_create': True}"/>
+                                <field name="gender_type" widget="radio" options="{'horizontal': true}"/>
+                                <field name="is_active" widget="boolean_toggle"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group string="الأوقات والأعمار">
+                                <label for="time_from" string="أوقات النادي"/>
+                                <div class="o_row">
+                                    <field name="time_from" widget="float_time" nolabel="1"/>
+                                    <span class="mx-2">إلى</span>
+                                    <field name="time_to" widget="float_time" nolabel="1"/>
+                                </div>
+                                <label for="age_from" string="الفئة العمرية"/>
+                                <div class="o_row">
+                                    <span>من</span>
+                                    <field name="age_from" nolabel="1" class="mx-2" style="width: 60px;"/>
+                                    <span>إلى</span>
+                                    <field name="age_to" nolabel="1" class="mx-2" style="width: 60px;"/>
+                                    <span>سنة</span>
+                                </div>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="الهدف والمحتوى" name="content">
+                                <group string="الهدف من النادي">
+                                    <field name="goal" nolabel="1" placeholder="أدخل الهدف من النادي..."/>
+                                </group>
+                                <separator string="محتوى النادي"/>
+                                <field name="content"
+                                       nolabel="1"
+                                       placeholder="أدخل تفاصيل المحتوى والأنشطة..."
+                                       options="{'collaborative': true, 'resizable': true}"/>
+                            </page>
+
+                            <page string="الترمات" name="terms">
+                                <field name="term_ids" nolabel="1"/>
+                            </page>
+
+                            <page string="معلومات إضافية" name="info">
+                                <group>
+                                    <group string="معلومات النادي">
+                                        <field name="time_display" readonly="1"/>
+                                        <field name="age_range_display" readonly="1"/>
+                                    </group>
+                                    <group string="بيانات النظام">
+                                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                                        <field name="active" invisible="1"/>
+                                        <field name="create_date" readonly="1" string="تاريخ الإنشاء"/>
+                                        <field name="write_date" readonly="1" string="آخر تعديل"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <!-- Chatter -->
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Club Tree View -->
+        <record id="view_charity_clubs_list" model="ir.ui.view">
+            <field name="name">charity.clubs.list</field>
+            <field name="model">charity.clubs</field>
+            <field name="arch" type="xml">
+                <list string="النوادي" multi_edit="1">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name" string="اسم النادي"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="time_display" string="الأوقات"/>
+                    <field name="age_range_display" string="الفئة العمرية"/>
+                    <field name="gender_type" string="النوع" widget="badge"
+                           decoration-info="gender_type == 'male'"
+                           decoration-danger="gender_type == 'female'"
+                           decoration-success="gender_type == 'both'"/>
+                    <field name="terms_count" string="الترمات" sum="Total"/>
+                    <field name="registrations_count" string="التسجيلات" sum="Total" optional="show"/>
+                    <field name="is_active" string="مفعل" widget="boolean_toggle"/>
+                    <field name="active" invisible="1"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Club Search View -->
+        <record id="view_charity_clubs_search" model="ir.ui.view">
+            <field name="name">charity.clubs.search</field>
+            <field name="model">charity.clubs</field>
+            <field name="arch" type="xml">
+                <search string="البحث في النوادي">
+                    <field name="name" string="اسم النادي"/>
+                    <field name="department_id" string="القسم"/>
+
+                    <filter string="ذكور" name="male" domain="[('gender_type', '=', 'male')]"/>
+                    <filter string="إناث" name="female" domain="[('gender_type', '=', 'female')]"/>
+                    <filter string="مختلط" name="both" domain="[('gender_type', '=', 'both')]"/>
+
+                    <separator/>
+
+                    <filter string="مفعل للتسجيل" name="is_active" domain="[('is_active', '=', True)]"/>
+                    <filter string="موقف عن التسجيل" name="not_active" domain="[('is_active', '=', False)]"/>
+
+                    <separator/>
+
+                    <filter string="النوادي النشطة" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="النوادي المؤرشفة" name="archived" domain="[('active', '=', False)]"/>
+
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="القسم" name="group_department" context="{'group_by': 'department_id'}"/>
+                        <filter string="النوع" name="group_gender" context="{'group_by': 'gender_type'}"/>
+                        <filter string="الحالة" name="group_active" context="{'group_by': 'is_active'}"/>
+                    </group>
+
+                    <searchpanel>
+                        <field name="department_id" string="القسم" enable_counters="1" icon="fa-sitemap"/>
+                        <field name="gender_type" string="النوع" enable_counters="1" icon="fa-venus-mars"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+
+
+        <!-- Terms Tree View -->
+        <record id="view_charity_club_terms_list" model="ir.ui.view">
+            <field name="name">charity.club.terms.list</field>
+            <field name="model">charity.club.terms</field>
+            <field name="arch" type="xml">
+                <list string="الترمات" multi_edit="1">
+                    <field name="name" string="اسم الترم"/>
+                    <field name="club_id" string="النادي"/>
+                    <field name="date_from" string="من تاريخ"/>
+                    <field name="date_to" string="إلى تاريخ"/>
+                    <field name="price" string="السعر" widget="monetary" sum="Total"/>
+                    <field name="max_capacity" string="السعة"/>
+                    <field name="registrations_count" string="المسجلين"/>
+                    <field name="available_seats" string="المتاح"/>
+                    <field name="state" string="الحالة" widget="badge"
+                           decoration-success="state == 'ongoing'"
+                           decoration-warning="state == 'upcoming'"
+                           decoration-muted="state == 'finished'"/>
+                    <field name="is_active" string="مفتوح" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+
+
+
+        <!-- Terms Form View -->
+        <record id="view_charity_club_terms_form" model="ir.ui.view">
+            <field name="name">charity.club.terms.form</field>
+            <field name="model">charity.club.terms</field>
+            <field name="arch" type="xml">
+                <form string="الترم">
+                    <sheet>
+                        <widget name="web_ribbon" title="قادم" bg_color="text-bg-warning" invisible="state != 'upcoming'"/>
+                        <widget name="web_ribbon" title="جاري" bg_color="text-bg-success" invisible="state != 'ongoing'"/>
+                        <widget name="web_ribbon" title="منتهي" bg_color="text-bg-secondary" invisible="state != 'finished'"/>
+
+                        <div class="oe_title">
+                            <label for="name" string="اسم الترم"/>
+                            <h1>
+                                <field name="name" placeholder="مثال: الترم الأول 2024"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات الترم">
+                                <field name="club_id" readonly="context.get('default_club_id', False)"/>
+                                <field name="price" widget="monetary"/>
+                                <field name="max_capacity"/>
+                                <field name="is_active" widget="boolean_toggle"/>
+                            </group>
+                            <group string="التواريخ">
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="state" widget="badge" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group string="الإحصائيات">
+                            <field name="registrations_count" readonly="1"/>
+                            <field name="available_seats" readonly="1"/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Club Action -->
+        <record id="action_charity_clubs" model="ir.actions.act_window">
+            <field name="name">النوادي</field>
+            <field name="res_model">charity.clubs</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_charity_clubs_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء أول نادي
+                </p>
+                <p>
+                    يمكنك إنشاء النوادي وتحديد الأوقات والفئات العمرية والترمات
+                </p>
+            </field>
+        </record>
+
+        <!-- Terms Action -->
+        <record id="action_charity_club_terms" model="ir.actions.act_window">
+            <field name="name">ترمات النوادي</field>
+            <field name="res_model">charity.club.terms</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء ترم جديد
+                </p>
+                <p>
+                    يمكنك إنشاء ترمات للنوادي مع تحديد التواريخ والأسعار
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

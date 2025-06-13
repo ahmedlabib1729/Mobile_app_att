@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Club Registration Form View -->
+        <record id="view_charity_club_registration_form" model="ir.ui.view">
+            <field name="name">charity.registrations.club.form</field>
+            <field name="model">charity.registrations</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <form string="تسجيل في النوادي">
+                    <header>
+                        <button name="action_confirm" string="تأكيد" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="اعتماد" type="object" class="oe_highlight" invisible="state != 'confirmed'" groups="base.group_system"/>
+                        <button name="action_reject" string="رفض" type="object" invisible="state not in ('draft', 'confirmed')" groups="base.group_system"/>
+                        <button name="action_cancel" string="إلغاء" type="object" invisible="state == 'approved'"/>
+                        <button name="action_reset_draft" string="إعادة للمسودة" type="object" invisible="state == 'draft'" groups="base.group_system"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved"/>
+                    </header>
+                    <sheet>
+                        <!-- إخفاء نوع التسجيل -->
+                        <field name="registration_type" invisible="1"/>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="full_name" placeholder="الاسم الثلاثي كما في الهوية..." readonly="state != 'draft'"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات الطالب">
+                                <field name="birth_date" readonly="state != 'draft'"/>
+                                <field name="age" readonly="1"/>
+                                <field name="gender" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
+                                <field name="nationality" options="{'no_create': True, 'no_open': True}" readonly="state != 'draft'"/>
+                                <field name="student_grade" readonly="state != 'draft'"/>
+                                <field name="arabic_education_type" widget="radio" readonly="state != 'draft'"/>
+                            </group>
+                            <group string="معلومات الهوية">
+                                <field name="id_type" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
+                                <field name="id_number" placeholder="أدخل رقم الهوية أو الجواز..." readonly="state != 'draft'"/>
+                                <field name="registration_date" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group string="اختيار النادي">
+                            <field name="headquarters_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                            <field name="department_id"
+                                   options="{'no_create': True}"
+                                   domain="[('headquarters_id', '=', headquarters_id), ('type', '=', 'clubs')]"
+                                   readonly="state != 'draft'"
+                                   required="1"/>
+                            <field name="club_id"
+                                   options="{'no_create': True}"
+                                   domain="[('department_id', '=', department_id)]"
+                                   readonly="state != 'draft'"
+                                   required="1"/>
+                            <field name="term_id"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   domain="[('club_id', '=', club_id), ('is_active', '=', True)]"
+                                   readonly="state != 'draft'"
+                                   required="1"/>
+                        </group>
+
+                        <notebook>
+                            <page string="الخبرات السابقة" name="previous_experience">
+                                <group>
+                                    <field name="previous_roayati_member" readonly="state != 'draft'"/>
+                                    <field name="previous_arabic_club" readonly="state != 'draft'"/>
+                                    <field name="previous_qaida_noorania" readonly="state != 'draft'"/>
+                                </group>
+                                <group string="حفظ القرآن الكريم">
+                                    <field name="quran_memorization" nolabel="1" placeholder="اكتب مقدار حفظ الطالب من القرآن الكريم..." readonly="state != 'draft'"/>
+                                </group>
+                            </page>
+
+                            <page string="معلومات الوالدين" name="parents_info">
+                                <group>
+                                    <group string="معلومات الأم">
+                                        <field name="mother_name" readonly="state != 'draft'"/>
+                                        <field name="mother_mobile" widget="phone" readonly="state != 'draft'"/>
+                                        <field name="mother_whatsapp" widget="phone" readonly="state != 'draft'"/>
+                                    </group>
+                                    <group string="معلومات الأب">
+                                        <field name="father_name" readonly="state != 'draft'"/>
+                                        <field name="father_mobile" widget="phone" readonly="state != 'draft'"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="المتطلبات الصحية" name="health_requirements">
+                                <group>
+                                    <field name="has_health_requirements" readonly="state != 'draft'"/>
+                                    <field name="health_requirements"
+                                           nolabel="1"
+                                           placeholder="يرجى كتابة تفاصيل المتطلبات الصحية أو الاحتياجات الخاصة أو الحساسيات..."
+                                           invisible="not has_health_requirements"
+                                           required="has_health_requirements"
+                                           readonly="state != 'draft'"/>
+                                </group>
+                            </page>
+
+                            <page string="المستندات والموافقات" name="documents">
+                                <group>
+                                    <group string="صور الهوية">
+                                        <field name="id_front_file" filename="id_front_filename" readonly="state != 'draft'"/>
+                                        <field name="id_front_filename" invisible="1"/>
+                                        <field name="id_back_file" filename="id_back_filename" readonly="state != 'draft'"/>
+                                        <field name="id_back_filename" invisible="1"/>
+                                    </group>
+                                    <group string="الموافقات">
+                                        <field name="photo_consent" readonly="state != 'draft'"/>
+                                        <div class="text-muted" colspan="2">
+                                            <i class="fa fa-camera"/> ملاحظة: يتم تصوير الطلاب خلال فعاليات النوادي وتوضع في مواقع التواصل الاجتماعي للجمعية
+                                        </div>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Club Registrations List View -->
+        <record id="view_charity_club_registrations_list" model="ir.ui.view">
+            <field name="name">charity.registrations.club.list</field>
+            <field name="model">charity.registrations</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <list string="تسجيلات النوادي">
+                    <field name="full_name" string="اسم الطالب"/>
+                    <field name="id_number" string="رقم الهوية/الجواز"/>
+                    <field name="age" string="العمر"/>
+                    <field name="gender" string="الجنس"/>
+                    <field name="student_grade" string="الصف"/>
+                    <field name="headquarters_id" string="المقر"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="club_id" string="النادي"/>
+                    <field name="term_id" string="الترم"/>
+                    <field name="state" string="الحالة" widget="badge"
+                           decoration-success="state == 'approved'"
+                           decoration-info="state == 'confirmed'"
+                           decoration-warning="state == 'draft'"
+                           decoration-danger="state == 'rejected'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Club Registrations Action -->
+        <record id="action_charity_club_registrations" model="ir.actions.act_window">
+            <field name="name">تسجيلات النوادي</field>
+            <field name="res_model">charity.registrations</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('registration_type', '=', 'club')]</field>
+            <field name="context">{'default_registration_type': 'club'}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('view_charity_club_registrations_list')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_charity_club_registration_form')})]"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    تسجيل طالب جديد في النوادي
+                </p>
+                <p>
+                    يمكنك تسجيل الطلاب في النوادي المختلفة حسب العمر والجنس
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
