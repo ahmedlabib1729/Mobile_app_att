@@ -1,0 +1,1121 @@
+/* ===== CSS Variables ===== */
+:root {
+    /* ألوان بسيطة وهادئة */
+    --primary: #FF6B9D;  /* وردي ناعم */
+    --secondary: #67D3CC; /* تركوازي هادئ */
+    --accent: #FFE66D;    /* أصفر فاتح */
+    --success: #95E1D3;   /* أخضر باستيل */
+    --bg-color: #FAFAFA;  /* خلفية فاتحة جداً */
+    --text-dark: #2D3436; /* رمادي داكن للنص */
+    --text-light: #636E72; /* رمادي فاتح */
+    --white: #FFFFFF;
+    --border-color: #F0F0F0;
+
+    /* ظلال بسيطة */
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    /* زوايا مستديرة */
+    --radius: 16px;
+    --radius-small: 8px;
+    --radius-full: 100px;
+}
+
+/* ===== Reset & Base ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+/* إزالة التأثيرات الزائدة من Odoo */
+.o_header_affixed {
+    background: var(--white) !important;
+    box-shadow: var(--shadow) !important;
+}
+
+/* ===== صفحة النوادي ===== */
+.charity-clubs-page {
+    background: var(--bg-color);
+    min-height: 100vh;
+}
+
+/* Header بسيط */
+.page-header {
+    background: var(--white);
+    padding: 60px 0;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.page-header h1 i {
+    color: var(--primary);
+    margin-left: 10px;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+}
+
+/* إزالة كل الأشكال والديكورات المعقدة */
+.floating-shapes,
+.shape,
+.hero-decoration,
+.wave-bottom,
+.floating-elements,
+.floating-emoji,
+.club-card-decorations,
+.program-decoration {
+    display: none !important;
+}
+
+/* ===== بطاقات النوادي البسيطة ===== */
+.clubs-section {
+    padding: 40px 0;
+}
+
+.club-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.club-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary);
+}
+
+.club-image-wrapper {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.club-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.default-club-bg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.default-club-bg i {
+    font-size: 60px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* محتوى البطاقة */
+.club-card .card-body {
+    padding: 20px;
+}
+
+.programs-badge {
+    background: var(--accent);
+    color: var(--text-dark);
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+.club-title {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.club-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.club-description {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+
+.club-features {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.feature-tag {
+    background: var(--bg-color);
+    padding: 4px 10px;
+    border-radius: var(--radius-small);
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.feature-tag i {
+    color: var(--secondary);
+    margin-left: 4px;
+}
+
+/* زر بسيط */
+.btn-view-programs {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.btn-view-programs:hover {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+/* ===== صفحة البرامج ===== */
+.programs-page {
+    background: var(--bg-color);
+}
+
+.club-header {
+    background: var(--white);
+    padding: 40px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.club-header-content {
+    text-align: center;
+}
+
+.club-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+}
+
+.club-name-title {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.club-vision {
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+/* بطاقات البرامج */
+.programs-section {
+    padding: 40px 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    color: var(--text-dark);
+}
+
+.program-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease;
+    height: 100%;
+}
+
+.program-card:hover {
+    transform: translateY(-4px);
+}
+
+.program-card-header {
+    background: var(--bg-color);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.program-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.program-name {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.program-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-available {
+    background: var(--success);
+    color: var(--text-dark);
+}
+
+.badge-full {
+    background: #FFB8B8;
+    color: var(--text-dark);
+}
+
+.program-card-body {
+    padding: 20px;
+}
+
+.program-description {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+.program-details {
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.detail-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary);
+    font-size: 0.85rem;
+}
+
+/* الأسعار */
+.price-section {
+    background: var(--accent);
+    border-radius: var(--radius-small);
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.price-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.price-amount {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* أزرار البرامج */
+.program-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-details,
+.btn-register {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-details {
+    background: var(--bg-color);
+    color: var(--text-dark);
+}
+
+.btn-details:hover {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+.btn-register {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-register:hover {
+    background: var(--secondary);
+}
+
+/* ===== صفحة تفاصيل البرنامج ===== */
+.program-details-page {
+    background: var(--bg-color);
+}
+
+.breadcrumb-section {
+    background: var(--white);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breadcrumb {
+    margin: 0;
+    background: transparent;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.program-header-section {
+    background: var(--white);
+    padding: 40px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.program-title {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.program-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-light);
+}
+
+.meta-item i {
+    color: var(--secondary);
+}
+
+/* محتوى البرنامج */
+.program-content-section {
+    padding: 40px 0;
+}
+
+.content-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.card-text {
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+/* جدول الأسعار */
+.pricing-table {
+    margin-top: 20px;
+}
+
+.pricing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: var(--radius-small);
+    margin-bottom: 8px;
+    background: var(--bg-color);
+}
+
+.pricing-row:hover {
+    background: var(--accent);
+}
+
+.pricing-term {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.pricing-amount {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.total-row {
+    background: var(--accent);
+    font-weight: 600;
+}
+
+/* Sidebar */
+.sidebar-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+}
+
+.info-list {
+    margin-bottom: 24px;
+}
+
+.info-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
+.info-item i {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary);
+    flex-shrink: 0;
+}
+
+/* زر التسجيل */
+.btn-register-now {
+    width: 100%;
+    padding: 14px 24px;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-register-now:hover {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+.btn-disabled {
+    width: 100%;
+    padding: 14px 24px;
+    background: var(--bg-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    cursor: not-allowed;
+}
+
+.register-note {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-align: center;
+}
+
+/* ===== فورم التسجيل ===== */
+.registration-form-page {
+    background: var(--bg-color);
+    padding: 40px 0;
+}
+
+.form-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.form-card .card-header {
+    background: var(--primary);
+    padding: 20px 24px;
+}
+
+.form-card .card-header h3 {
+    color: var(--white);
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.form-card .card-body {
+    padding: 24px;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background-color: var(--white);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(103, 211, 204, 0.1);
+}
+
+label {
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+label.required::after {
+    content: ' *';
+    color: var(--primary);
+}
+
+/* أزرار الفورم */
+.btn-submit {
+    background: var(--primary);
+    border: none;
+    padding: 12px 40px;
+    border-radius: var(--radius-full);
+    color: var(--white);
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-submit:hover {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+/* ===== صفحة النجاح ===== */
+.success-box {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 40px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.success-icon::before {
+    content: '✓';
+    color: var(--text-dark);
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.registration-number {
+    background: var(--bg-color);
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 16px 0;
+}
+
+/* ===== معلومات الاتصال ===== */
+.contact-section {
+    padding: 40px 0;
+    background: var(--white);
+    border-top: 1px solid var(--border-color);
+}
+
+.contact-box {
+    text-align: center;
+}
+
+.contact-title {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-bottom: 24px;
+}
+
+.contact-items {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.contact-item i {
+    color: var(--primary);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .club-title {
+        font-size: 1.2rem;
+    }
+
+    .program-title {
+        font-size: 1.5rem;
+    }
+
+    .clubs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .program-actions {
+        flex-direction: column;
+    }
+
+    .contact-items {
+        flex-direction: column;
+        gap: 16px;
+    }
+}
+
+/* ===== تحسينات إضافية ===== */
+/* إزالة الأنيميشن الزائد */
+.animate__animated,
+.animate__fadeInUp,
+.animate__fadeInDown,
+.animate__zoomIn {
+    animation: none !important;
+}
+
+/* تبسيط الانتقالات */
+* {
+    transition-duration: 0.2s !important;
+}
+
+/* إزالة الظلال الثقيلة */
+.card,
+.btn {
+    box-shadow: var(--shadow) !important;
+}
+
+/* تحسين قابلية القراءة */
+p, li {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* الأقسام الفارغة */
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-state h3 {
+    color: var(--text-light);
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+}
+
+/* أيقونات بسيطة للزينة */
+.simple-icon {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    font-size: 1.2rem;
+    margin: 0 4px;
+}
+
+/* شريط التقدم البسيط */
+.progress {
+    height: 6px;
+    background: var(--bg-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: var(--secondary);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* رسائل التنبيه البسيطة */
+.alert {
+    border-radius: var(--radius-small);
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.alert-info {
+    background: #E3F2FD;
+    color: #1976D2;
+    border: none;
+}
+
+.alert-success {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: none;
+}
+
+.alert-danger {
+    background: #FFEBEE;
+    color: #C62828;
+    border: none;
+}
+
+/* ===== فورم التسجيل الملونة ===== */
+.registration-form-page {
+    background: linear-gradient(180deg, #FFF5E6 0%, #FFF 100%);
+    min-height: 100vh;
+}
+
+/* Form Cards with Colors */
+.form-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.form-card-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 20px 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-card-header::before {
+    content: '✨';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+.form-card-header h3 {
+    color: var(--white);
+    font-size: 1.4rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.form-card-body {
+    padding: 30px;
+    background: var(--white);
+}
+
+/* Questions Section */
+.simple-questions {
+    background: linear-gradient(135deg, #FFF5E6 0%, #FFE5F1 100%);
+    padding: 20px;
+    border-radius: var(--radius);
+    margin-top: 20px;
+}
+
+.simple-questions h5 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.question-box {
+    background: var(--white);
+    padding: 15px;
+    border-radius: var(--radius-small);
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Radio Options */
+.radio-group {
+    display: flex;
+    gap: 15px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    background: var(--bg-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.radio-option:hover {
+    background: var(--accent);
+    transform: scale(1.05);
+}
+
+.radio-option:has(input:checked) {
+    background: var(--accent);
+    border-color: var(--primary);
+}
+
+/* Terms Selection */
+.terms-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.term-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.term-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.term-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: var(--bg-color);
+    border: 2px solid #E0E0E0;
+    border-radius: var(--radius);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.term-option:hover .term-content {
+    border-color: var(--secondary);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.term-option input:checked ~ .term-content {
+    background: linear-gradient(135deg, #E8F5FE 0%, #F0FFFE 100%);
+    border-color: var(--secondary);
+    transform: scale(1.02);
+}
+
+.term-name {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.term-price {
+    font-size: 1.3rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.term-option.recommended .term-content {
+    background: linear-gradient(135deg, var(--accent) 0%, #FFE5B4 100%);
+    border-color: var(--primary);
+    position: relative;
+}
+
+.badge-save {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: var(--primary);
+    color: var(--white);
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Checkbox Options */
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: var(--bg-color);
+    border-radius: var(--radius-small);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox-option:hover {
+    background: #E8F5FE;
+    transform: translateX(5px);
+}
+
+.checkbox-option input[type="checkbox"] {
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--secondary);
+}
+
+/* Success & Alert Messages */
+.success-message {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 50px;
+    box-shadow: var(--shadow);
+}
+
+.success-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--success) 0%, var(--secondary) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+}
+
+.success-icon i {
+    font-size: 50px;
+    color: var(--white);
+}
+
+.alert-message {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 40px;
+    box-shadow: var(--shadow);
+}
+
+.alert-message.warning {
+    border-top: 4px solid var(--accent);
+}
+
+.alert-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.alert-icon i {
+    font-size: 40px;
+    color: var(--text-dark);
+}
+
+/* نهاية CSS */

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Main Menu -->
+        <menuitem id="menu_charity_root"
+                  name="جمعية رؤيتى  للأسرة "
+                  sequence="10"
+                  web_icon="charity_clubs,static/description/icon.png"/>
+
+        <!-- Headquarters Menu -->
+        <menuitem id="menu_charity_headquarters"
+                  name="المقرات"
+                  parent="menu_charity_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_charity_headquarters_list"
+                  name="كل المقرات"
+                  parent="menu_charity_headquarters"
+                  action="action_charity_headquarters"
+                  sequence="10"/>
+
+        <!-- Departments Menu -->
+        <menuitem id="menu_charity_departments"
+                  name="الأقسام"
+                  parent="menu_charity_root"
+                  sequence="20"/>
+
+        <menuitem id="menu_charity_departments_list"
+                  name="كل الأقسام"
+                  parent="menu_charity_departments"
+                  action="action_charity_departments"
+                  sequence="10"/>
+
+        <!-- Clubs Menu -->
+        <menuitem id="menu_charity_clubs"
+                  name="النوادي"
+                  parent="menu_charity_root"
+                  sequence="30"/>
+
+        <menuitem id="menu_charity_clubs_list"
+                  name="كل النوادي"
+                  parent="menu_charity_clubs"
+                  action="action_charity_clubs"
+                  sequence="10"/>
+
+        <menuitem id="menu_charity_club_terms"
+                  name="ترمات النوادي"
+                  parent="menu_charity_clubs"
+                  action="action_charity_club_terms"
+                  sequence="20"/>
+
+        <!-- Registrations Menu -->
+        <menuitem id="menu_charity_registrations"
+                  name="التسجيلات"
+                  parent="menu_charity_root"
+                  sequence="40"/>
+
+        <menuitem id="menu_charity_club_registrations"
+                  name="تسجيلات النوادي"
+                  parent="menu_charity_registrations"
+                  action="action_charity_club_registrations"
+                  sequence="10"/>
+
+        <menuitem id="menu_charity_ladies_booking"
+                  name="حجوزات السيدات"
+                  parent="menu_charity_registrations"
+                  action="action_charity_ladies_booking"
+                  sequence="20"/>
+
+        <!-- Configuration Menu -->
+        <menuitem id="menu_charity_configuration"
+                  name="الإعدادات"
+                  parent="menu_charity_root"
+                  sequence="100"
+                  groups="base.group_system"/>
+
+    </data>
+</odoo>

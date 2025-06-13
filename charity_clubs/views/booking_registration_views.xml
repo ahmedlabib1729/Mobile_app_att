@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Ladies Booking Registration Form View -->
+        <record id="view_charity_ladies_booking_form" model="ir.ui.view">
+            <field name="name">charity.booking.registrations.ladies.form</field>
+            <field name="model">charity.booking.registrations</field>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                <form string="حجز قسم السيدات">
+                    <header>
+                        <button name="action_confirm" string="تأكيد الحجز" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="اعتماد الحجز" type="object" class="oe_highlight" invisible="state != 'confirmed'" groups="base.group_system"/>
+                        <button name="action_reject" string="رفض الحجز" type="object" invisible="state not in ('draft', 'confirmed')" groups="base.group_system"/>
+                        <button name="action_cancel" string="إلغاء الحجز" type="object" invisible="state == 'approved'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>حجز قسم السيدات</h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات السيدة">
+                                <field name="full_name" placeholder="الاسم الثلاثي..." readonly="state != 'draft'"/>
+                                <field name="mother_mobile" string="رقم الهاتف" widget="phone" readonly="state != 'draft'"/>
+                                <field name="mother_whatsapp" string="رقم الواتساب" widget="phone" readonly="state != 'draft'"/>
+                                <field name="birth_date" readonly="state != 'draft'"/>
+                                <field name="age" readonly="1"/>
+                                <field name="email" placeholder="example@email.com" readonly="state != 'draft'"/>
+                            </group>
+                            <group string="تفاصيل الحجز">
+                                <field name="headquarters_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                                <field name="department_id"
+                                       options="{'no_create': True}"
+                                       domain="[('headquarters_id', '=', headquarters_id), ('type', '=', 'ladies')]"
+                                       readonly="state != 'draft'"/>
+                                <label for="department_booking_price" string="سعر القسم"/>
+                                <div class="o_row">
+                                    <field name="department_booking_price" widget="monetary" nolabel="1" readonly="1"/>
+                                </div>
+                            </group>
+                        </group>
+
+                        <group string="معلومات الحجز" invisible="state == 'draft'">
+                            <field name="registration_date" readonly="1"/>
+                            <field name="create_uid" readonly="1" string="تم الحجز بواسطة"/>
+                        </group>
+                    </sheet>
+
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Ladies Booking List View -->
+        <record id="view_charity_ladies_booking_list" model="ir.ui.view">
+            <field name="name">charity.booking.registrations.ladies.list</field>
+            <field name="model">charity.booking.registrations</field>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                <list string="حجوزات السيدات">
+                    <field name="full_name" string="اسم السيدة"/>
+                    <field name="mother_mobile" string="رقم الهاتف" widget="phone"/>
+                    <field name="mother_whatsapp" string="رقم الواتساب" widget="phone"/>
+                    <field name="email" string="البريد الإلكتروني"/>
+                    <field name="headquarters_id" string="المقر"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="department_booking_price" string="سعر القسم" widget="monetary"/>
+                    <field name="age" string="العمر"/>
+                    <field name="state" string="الحالة" widget="badge"
+                           decoration-success="state == 'approved'"
+                           decoration-info="state == 'confirmed'"
+                           decoration-warning="state == 'draft'"
+                           decoration-danger="state == 'rejected'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Ladies Booking Action -->
+        <record id="action_charity_ladies_booking" model="ir.actions.act_window">
+            <field name="name">حجوزات أقسام السيدات</field>
+            <field name="res_model">charity.booking.registrations</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('department_id.type', '=', 'ladies')]</field>
+            <field name="context">{'default_department_type': 'ladies'}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('view_charity_ladies_booking_list')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_charity_ladies_booking_form')})]"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء حجز جديد - قسم السيدات
+                </p>
+                <p>
+                    يمكنك حجز أقسام السيدات
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
