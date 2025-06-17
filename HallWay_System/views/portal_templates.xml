@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add menu items to portal -->
+        <template id="portal_my_home_student" name="Student Portal" inherit_id="portal.portal_my_home">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-if="enrollment_count" t-call="portal.portal_docs_entry">
+                    <t t-set="title">Enrollments</t>
+                    <t t-set="url" t-value="'/my/enrollments'"/>
+                    <t t-set="count" t-value="enrollment_count"/>
+                </t>
+                <t t-if="session_count" t-call="portal.portal_docs_entry">
+                    <t t-set="title">Upcoming Classes</t>
+                    <t t-set="url" t-value="'/my/schedule'"/>
+                    <t t-set="count" t-value="session_count"/>
+                </t>
+                <t t-if="payment_count" t-call="portal.portal_docs_entry">
+                    <t t-set="title">Pending Payments</t>
+                    <t t-set="url" t-value="'/my/payments'"/>
+                    <t t-set="count" t-value="payment_count"/>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- Portal Layout -->
+        <template id="portal_layout_student" name="Portal Layout Student" inherit_id="portal.portal_breadcrumbs">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'profile'" class="breadcrumb-item active">My Profile</li>
+                <li t-if="page_name == 'enrollment'" t-attf-class="breadcrumb-item #{'active' if not enrollment else ''}">
+                    <a t-attf-href="/my/enrollments?{{ keep_query() }}" t-unless="enrollment">Enrollments</a>
+                    <t t-else="">Enrollments</t>
+                </li>
+                <li t-if="enrollment" class="breadcrumb-item active">
+                    <t t-esc="enrollment.enrollment_number"/>
+                </li>
+                <li t-if="page_name == 'schedule'" class="breadcrumb-item active">My Schedule</li>
+                <li t-if="page_name == 'payment'" class="breadcrumb-item active">My Payments</li>
+                <li t-if="page_name == 'attendance'" class="breadcrumb-item active">My Attendance</li>
+            </xpath>
+        </template>
+
+        <!-- Profile Page -->
+        <template id="portal_my_profile" name="My Profile">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <div class="container mt-3">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3>My Profile</h3>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 text-center">
+                                            <img t-if="student.image_1920"
+                                                 t-att-src="image_data_uri(student.image_1920)"
+                                                 class="img-fluid rounded-circle"
+                                                 style="max-width: 200px;"/>
+                                            <div t-else="" class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                 style="width: 200px; height: 200px;">
+                                                <i class="fa fa-user fa-3x text-white"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <h4><t t-esc="student.full_name"/></h4>
+                                            <p class="text-muted">Student ID: <t t-esc="student.student_id"/></p>
+
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <strong>Personal Information</strong>
+                                                    <table class="table table-sm">
+                                                        <tr>
+                                                            <td>Gender:</td>
+                                                            <td><t t-esc="student.gender"/></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Date of Birth:</td>
+                                                            <td><t t-esc="student.date_of_birth"/></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Nationality:</td>
+                                                            <td><t t-esc="student.nationality"/></td>
+                                                        </tr>
+                                                        <tr t-if="student.passport_no">
+                                                            <td>Passport:</td>
+                                                            <td><t t-esc="student.passport_no"/></td>
+                                                        </tr>
+                                                        <tr t-if="student.emirates_id">
+                                                            <td>Emirates ID:</td>
+                                                            <td><t t-esc="student.emirates_id"/></td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Contact Information</strong>
+                                                    <table class="table table-sm">
+                                                        <tr>
+                                                            <td>Email:</td>
+                                                            <td><t t-esc="student.email_id"/></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Mobile 1:</td>
+                                                            <td><t t-esc="student.mobile_no_1"/></td>
+                                                        </tr>
+                                                        <tr t-if="student.mobile_no_2">
+                                                            <td>Mobile 2:</td>
+                                                            <td><t t-esc="student.mobile_no_2"/></td>
+                                                        </tr>
+                                                        <tr t-if="student.address">
+                                                            <td>Address:</td>
+                                                            <td><t t-esc="student.address"/></td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Enrollments List -->
+        <template id="portal_my_enrollments" name="My Enrollments">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <div class="container mt-3">
+                    <h3>My Enrollments</h3>
+
+                    <t t-if="not enrollments">
+                        <p>You have no enrollments.</p>
+                    </t>
+                    <t t-else="">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Enrollment #</th>
+                                        <th>Course</th>
+                                        <th>Department</th>
+                                        <th>Start Date</th>
+                                        <th>Status</th>
+                                        <th>Payment</th>
+                                        <th>Attendance</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="enrollments" t-as="enrollment">
+                                        <tr>
+                                            <td><t t-esc="enrollment.enrollment_number"/></td>
+                                            <td><t t-esc="enrollment.course_id.name"/></td>
+                                            <td><t t-esc="enrollment.department_id.name"/></td>
+                                            <td><t t-esc="enrollment.course_id.start_date"/></td>
+                                            <td>
+                                                <span t-attf-class="badge badge-#{enrollment.state == 'completed' and 'success' or enrollment.state == 'in_progress' and 'info' or enrollment.state == 'enrolled' and 'primary' or 'secondary'}">
+                                                    <t t-esc="enrollment.state"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span t-attf-class="badge badge-#{enrollment.payment_state == 'paid' and 'success' or enrollment.payment_state == 'partial' and 'warning' or 'danger'}">
+                                                    <t t-esc="enrollment.payment_state"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <t t-esc="enrollment.attendance_rate"/>%
+                                            </td>
+                                            <td>
+                                                <a t-attf-href="/my/enrollment/#{enrollment.id}" class="btn btn-sm btn-primary">
+                                                    <i class="fa fa-eye"/> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div t-if="pager" class="o_portal_pager text-center">
+                            <t t-call="website.pager"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </template>
+
+        <!-- Schedule Page -->
+        <template id="portal_my_schedule" name="My Schedule">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <div class="container mt-3">
+                    <h3>My Class Schedule</h3>
+
+                    <t t-if="not sessions">
+                        <p>No upcoming classes in the next 30 days.</p>
+                    </t>
+                    <t t-else="">
+                        <!-- Calendar View -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Upcoming Classes</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <t t-foreach="sessions_by_date" t-as="date_str">
+                                            <t t-set="date_obj" t-value="datetime.datetime.strptime(date_str, '%Y-%m-%d').date()"/>
+                                            <div class="mb-4">
+                                                <h6 class="border-bottom pb-2">
+                                                    <t t-esc="date_obj.strftime('%A, %B %d, %Y')"/>
+                                                    <t t-if="date_obj == today">
+                                                        <span class="badge badge-success ml-2">Today</span>
+                                                    </t>
+                                                </h6>
+                                                <t t-foreach="sessions_by_date[date_str]" t-as="session">
+                                                    <div class="row session-item py-2">
+                                                        <div class="col-md-2">
+                                                            <strong>
+                                                                <t t-esc="'{:02d}:{:02d}'.format(int(session.start_time), int((session.start_time % 1) * 60))"/> -
+                                                                <t t-esc="'{:02d}:{:02d}'.format(int(session.end_time), int((session.end_time % 1) * 60))"/>
+                                                            </strong>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <strong><t t-esc="session.course_id.name"/></strong><br/>
+                                                            <small class="text-muted"><t t-esc="session.name"/></small>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <t t-if="session.classroom">
+                                                                <i class="fa fa-map-marker"/> <t t-esc="session.classroom"/>
+                                                            </t>
+                                                            <t t-if="session.online_link">
+                                                                <br/><a t-att-href="session.online_link" target="_blank">
+                                                                    <i class="fa fa-video-camera"/> Join Online
+                                                                </a>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <t t-if="session.instructor_id">
+                                                                <i class="fa fa-user"/> <t t-esc="session.instructor_id.name"/>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                    <hr class="my-1"/>
+                                                </t>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </template>
+
+        <!-- Payments Page -->
+        <template id="portal_my_payments" name="My Payments">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <div class="container mt-3">
+                    <h3>My Payments</h3>
+
+                    <!-- Overdue Payments Alert -->
+                    <t t-if="overdue_payments">
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-triangle"/> You have <strong><t t-esc="len(overdue_payments)"/></strong> overdue payment(s).
+                        </div>
+                    </t>
+
+                    <!-- Payment Summary Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-white bg-danger">
+                                <div class="card-body">
+                                    <h5 class="card-title">Overdue</h5>
+                                    <h3><t t-esc="sum(overdue_payments.mapped('final_amount'))"/> AED</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-warning">
+                                <div class="card-body">
+                                    <h5 class="card-title">Pending</h5>
+                                    <h3><t t-esc="sum(pending_payments.mapped('final_amount'))"/> AED</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-success">
+                                <div class="card-body">
+                                    <h5 class="card-title">Paid</h5>
+                                    <h3><t t-esc="sum(paid_payments.mapped('final_amount'))"/> AED</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Course</th>
+                                        <th>Due Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Invoice</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="payment_lines" t-as="payment">
+                                        <tr t-attf-class="#{payment.state == 'overdue' and 'table-danger' or payment.state == 'paid' and 'table-success' or ''}">
+                                            <td><t t-esc="payment.description"/></td>
+                                            <td><t t-esc="payment.course_id.name"/></td>
+                                            <td><t t-esc="payment.due_date"/></td>
+                                            <td><t t-esc="payment.final_amount"/> AED</td>
+                                            <td>
+                                                <span t-attf-class="badge badge-#{payment.state == 'paid' and 'success' or payment.state == 'overdue' and 'danger' or 'warning'}">
+                                                    <t t-esc="payment.state"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <t t-if="payment.invoice_id">
+                                                    <a t-attf-href="/my/invoices/#{payment.invoice_id.id}" target="_blank">
+                                                        <i class="fa fa-file-pdf-o"/> View
+                                                    </a>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Attendance Page -->
+        <template id="portal_my_attendance" name="My Attendance">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <div class="container mt-3">
+                    <h3>My Attendance</h3>
+
+                    <t t-if="not enrollments">
+                        <p>You have no enrollments to show attendance for.</p>
+                    </t>
+                    <t t-else="">
+                        <t t-foreach="enrollments" t-as="enrollment">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h5>
+                                        <t t-esc="enrollment.course_id.name"/>
+                                        <span class="float-right">
+                                            Attendance Rate: <strong><t t-esc="enrollment.attendance_rate"/>%</strong>
+                                        </span>
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="progress mb-3" style="height: 25px;">
+                                        <div t-attf-class="progress-bar #{enrollment.attendance_rate >= 80 and 'bg-success' or enrollment.attendance_rate >= 60 and 'bg-warning' or 'bg-danger'}"
+                                             role="progressbar"
+                                             t-attf-style="width: #{enrollment.attendance_rate}%;">
+                                            <t t-esc="enrollment.attendance_rate"/>%
+                                        </div>
+                                    </div>
+
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Session</th>
+                                                <th>Status</th>
+                                                <th>Check In</th>
+                                                <th>Check Out</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="enrollment.attendance_ids" t-as="attendance">
+                                                <tr>
+                                                    <td><t t-esc="attendance.session_date"/></td>
+                                                    <td><t t-esc="attendance.session_id.name"/></td>
+                                                    <td>
+                                                        <span t-attf-class="badge badge-#{attendance.status == 'present' and 'success' or attendance.status == 'absent' and 'danger' or attendance.status == 'late' and 'warning' or 'info'}">
+                                                            <t t-esc="attendance.status"/>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <t t-if="attendance.check_in_time">
+                                                            <t t-esc="'{:02d}:{:02d}'.format(int(attendance.check_in_time), int((attendance.check_in_time % 1) * 60))"/>
+                                                        </t>
+                                                    </td>
+                                                    <td>
+                                                        <t t-if="attendance.check_out_time">
+                                                            <t t-esc="'{:02d}:{:02d}'.format(int(attendance.check_out_time), int((attendance.check_out_time % 1) * 60))"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+                    </t>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
