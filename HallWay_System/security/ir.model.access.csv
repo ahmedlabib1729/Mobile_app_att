@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_student_application,Student Application Access,model_student_application,,1,1,1,1
-access_week_days,Week Days Access,model_week_days,,1,1,1,1
-
