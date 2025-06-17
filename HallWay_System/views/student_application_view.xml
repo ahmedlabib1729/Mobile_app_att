@@ -1,0 +1,199 @@
+<odoo>
+    <record id="view_student_application_tree" model="ir.ui.view">
+        <field name="name">student.application.tree</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" string="Application NO"/>
+                <field name="application_date"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="passport_no"/>
+                <field name="emirates_id"/>
+                <field name="student_id"/>
+                <field name="status" widget="badge"
+                       decoration-success="status in ['linked', 'student_created']"
+                       decoration-info="status == 'confirm'"
+                       decoration-muted="status == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_student_application_form" model="ir.ui.view">
+        <field name="name">student.application.form</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <form string="Student Application Form">
+
+                <header>
+                        <button name="action_confirm" type="object" string="Confirm" class="btn-primary"
+                                invisible="status != 'draft'"/>
+
+                        <button name="action_create_student" type="object" string="Create Student" class="btn-success"
+                                invisible="status != 'confirm' or student_id != False"
+                                confirm="Are you sure you want to create a new student from this application?"/>
+
+                        <button name="reset_to_draft" type="object" string="Reset To Draft"
+                                invisible="status == 'draft'"/>
+
+                        <field name="status" widget="statusbar" statusbar_visible="draft,confirm,linked,student_created"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_student"
+                                icon="fa-graduation-cap" invisible="not student_id">
+                            <field name="student_id" widget="statinfo" string="Student"/>
+                        </button>
+                    </div>
+
+                    <div invisible="status != 'linked'" class="alert alert-info" role="alert">
+                        <strong>Note:</strong> This application has been linked to an existing student based on passport/ID match.
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="name" style="font-size: 20px; font-weight: bold;"/>
+                        </group>
+                        <group>
+                            <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_1920'}" nolabel="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Personal Information / بيانات شخصية">
+                            <field name="application_date"/>
+                            <field name="first_name"/>
+                            <field name="middle_name"/>
+                            <field name="last_name"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="gender"/>
+                            <field name="date_of_birth"/>
+                        </group>
+                        <group string="Contact Details  / بيانات الإتصال">
+                            <field name="mobile_no_1"/>
+                            <field name="mobile_no_2"/>
+                            <field name="email_id"/>
+                            <field name="passport_no" required="1"/>
+                            <field name="emirates_id" required="1"/>
+                            <field name="address"/>
+                            <field name="emirate"/>
+                            <field name="nationality"/>
+                            <field name="last_graduation"/>
+                        </group>
+                    </group>
+
+                    <group string="VOCATIONAL QUALIFIACTION  / مؤهلات مهنية">
+                        <group >
+                            <group>
+                                <field name="levl1"/>
+                                <field name="levl2"/>
+                            </group>
+                            <group>
+                                <field name="levl3"/>
+                                <field name="levl4"/>
+                            </group>
+                            <group>
+                                <field name="levl5"/>
+                                <field name="levl6"/>
+                            </group>
+                            <group>
+                                <field name="levl7"/>
+                                <field name="other"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group >
+                                <field name="accounting_and_finance"/>
+                                <field name="business_mangement"/>
+                            </group>
+                            <group >
+                                <field name="commercial_law"/>
+                                <field name="enterpreneurship_and_small"/>
+                            </group>
+                            <group >
+                                <field name="humen"/>
+                                <field name="market"/>
+                            </group>
+                            <group >
+                                <field name="others"/>
+                            </group>
+                        </group>
+                    </group>
+
+                    <group string="Courses For NON Speakers   / دورات باللغتين " >
+                        <div style="display: flex; gap: 150px">
+                        <group string="Arabic Course   / دورة اللغة العربية">
+                                 <field name="beginnera"/>
+                                 <field name="Pre_Intermediatea"/>
+                                 <field name="Intermediatea"/>
+                                 <field name="Advanceda"/>
+                                 <field name="Proficienta"/>
+                        </group>
+                         <group string="English Course   / دورة اللغة الإنجليزية">
+                                <field name="beginnere"/>
+                                 <field name="Pre_Intermediatee"/>
+                                 <field name="Intermediatee"/>
+                                 <field name="Advancede"/>
+                                 <field name="Proficiente"/>
+                        </group>
+                         <group string="English Course For Kids  / دورة اللغة الإنجليزية للأطفال">
+                                <field name="Early"/>
+                                 <field name="Starters"/>
+                                 <field name="Movers"/>
+                                 <field name="Flyers"/>
+                                 <field name="Otherk"/>
+                        </group>
+                        </div>
+                        <field name="other_Course" class="oe_editable oe_bold"/>
+
+                        <field name="schedule"/>
+                        <field name="schedule_day_ids" widget="many2many_tags"/>
+                        <field name="start_date"/>
+
+                        <field name="Declaration" class="oe_editable oe_bold"/>
+                    </group>
+
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_student_application_search" model="ir.ui.view">
+        <field name="name">student.application.search</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="passport_no"/>
+                <field name="emirates_id"/>
+                <field name="student_id"/>
+                <filter string="Draft" name="draft" domain="[('status', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('status', '=', 'confirm')]"/>
+                <filter string="Has Student" name="has_student" domain="[('student_id', '!=', False)]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('application_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="this_week" domain="[('application_date', '>=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="status" context="{'group_by': 'status'}"/>
+                    <filter string="Application Date" name="application_date" context="{'group_by': 'application_date'}"/>
+                    <filter string="Student" name="student" context="{'group_by': 'student_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_student_application" model="ir.actions.act_window">
+        <field name="name">Student Applications</field>
+        <field name="res_model">student.application</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_student_application_search"/>
+    </record>
+
+    <menuitem id="menu_student_application_root" name="HallWay System" sequence="10" web_icon="HallWay_System,static/description/form_7501046.png"/>
+    <menuitem id="menu_student_application" parent="menu_student_application_root" name="Applications" action="action_student_application"/>
+</odoo>

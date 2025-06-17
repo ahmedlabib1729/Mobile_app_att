@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <record id="action_report_application" model="ir.actions.report">
+       <field name="name">Application Print</field>
+       <field name="model">student.application</field>
+       <field name="report_type">qweb-pdf</field>
+       <field name="report_name">HallWay_System.application_print</field>
+       <field name="report_file">HallWay_System.application_print</field>
+       <field name="print_report_name">'Application - %s' % (object.name)</field>
+       <field name="binding_model_id" ref="model_student_application"/>
+       <field name="binding_type">report</field>
+   </record>
+</odoo>
