@@ -1,0 +1,192 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_hallway_enrollment_tree" model="ir.ui.view">
+        <field name="name">hallway.enrollment.tree</field>
+        <field name="model">hallway.enrollment</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'completed'" decoration-info="state == 'in_progress'"
+                  decoration-warning="payment_state != 'paid'" decoration-danger="state == 'dropped'">
+                <field name="enrollment_number"/>
+                <field name="enrollment_date"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="department_id"/>
+                <field name="subject_id"/>
+                <field name="level_id"/>
+                <field name="final_price" widget="monetary" sum="Total"/>
+                <field name="payment_state" widget="badge"/>
+                <field name="attendance_rate" widget="percentage"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_hallway_enrollment_form" model="ir.ui.view">
+        <field name="name">hallway.enrollment.form</field>
+        <field name="model">hallway.enrollment</field>
+        <field name="arch" type="xml">
+            <form string="Enrollment">
+                <header>
+                    <button name="action_enroll" type="object" string="Confirm Enrollment"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_start" type="object" string="Start Course"
+                            class="btn-success" invisible="state != 'enrolled'"/>
+                    <button name="action_complete" type="object" string="Complete Course"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_drop" type="object" string="Drop Course"
+                            invisible="state in ['completed', 'dropped', 'cancelled']"
+                            confirm="Are you sure you want to drop from this course?"/>
+                    <button name="action_cancel" type="object" string="Cancel Enrollment"
+                            invisible="state in ['completed', 'cancelled']"/>
+                    <button name="action_issue_certificate" type="object" string="Issue Certificate"
+                            class="btn-success" invisible="state != 'completed' or certificate_issued"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,enrolled,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_attendance"
+                                icon="fa-check-square-o">
+                            <field name="attendance_rate" widget="statinfo" string="Attendance %"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Dropped" bg_color="bg-danger" invisible="state != 'dropped'"/>
+                    <widget name="web_ribbon" title="Certificate Issued" bg_color="bg-success"
+                            invisible="not certificate_issued"/>
+
+                    <div class="oe_title">
+                        <label for="enrollment_number" string="Enrollment Number"/>
+                        <h1>
+                            <field name="enrollment_number" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Student and Course">
+                            <field name="enrollment_date" required="state == 'draft'"/>
+                            <field name="student_id" options="{'no_create': True}"
+                                   required="state == 'draft'"/>
+                            <field name="course_id" options="{'no_create': True}" required="state == 'draft'"
+                                                domain="[('state', '=', 'open')]"/>
+                            <field name="application_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Course Details">
+                            <field name="department_id" readonly="1"/>
+                            <field name="subject_id" readonly="1"/>
+                            <field name="level_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Financial">
+                            <field name="course_price" readonly="1" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="discount_percent"/>
+                            <field name="discount_amount" readonly="1" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="final_price" readonly="1" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="payment_state"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Performance">
+                            <field name="attendance_rate" readonly="1"/>
+                            <field name="grade" invisible="state != 'completed'"/>
+                        </group>
+                    </group>
+
+                    <group string="Certificate" invisible="not certificate_issued">
+                        <group>
+                            <field name="certificate_number" readonly="1"/>
+                            <field name="certificate_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Attendance">
+                            <field name="attendance_ids" readonly="1">
+                                <list>
+                                    <field name="session_date"/>
+                                    <field name="session_id"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="check_in_time" widget="float_time"/>
+                                    <field name="check_out_time" widget="float_time"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="notes" nolabel="1" placeholder="Additional notes..."/>
+                                <field name="drop_reason" nolabel="1" placeholder="Reason for dropping..."
+                                       invisible="state != 'dropped'"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_hallway_enrollment_search" model="ir.ui.view">
+        <field name="name">hallway.enrollment.search</field>
+        <field name="model">hallway.enrollment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="enrollment_number"/>
+                <field name="student_id"/>
+                <field name="course_id"/>
+                <field name="department_id"/>
+                <field name="subject_id"/>
+
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Enrolled" name="enrolled" domain="[('state', '=', 'enrolled')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <filter string="Unpaid" name="unpaid" domain="[('payment_state', '=', 'unpaid')]"/>
+                <filter string="Certificate Issued" name="certificate" domain="[('certificate_issued', '=', True)]"/>
+                <separator/>
+                <filter string="Today" name="today"
+                        domain="[('enrollment_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+
+
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                    <filter string="Course" name="group_course" context="{'group_by': 'course_id'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Payment Status" name="group_payment" context="{'group_by': 'payment_state'}"/>
+                    <filter string="Enrollment Date" name="group_date" context="{'group_by': 'enrollment_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hallway_enrollment" model="ir.actions.act_window">
+        <field name="name">Enrollments</field>
+        <field name="res_model">hallway.enrollment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hallway_enrollment_search"/>
+        <field name="context">{'search_default_in_progress': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first enrollment!
+            </p>
+            <p>
+                Enrollments link students to courses and track their progress.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_hallway_enrollment"
+              parent="menu_hallway_education"
+              name="Enrollments"
+              action="action_hallway_enrollment"
+              sequence="40"/>
+</odoo>
