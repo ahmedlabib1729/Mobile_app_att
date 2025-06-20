@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hallway_student_user,hallway.student.user,model_hallway_student,group_hallway_user,1,1,1,0
-access_hallway_student_manager,hallway.student.manager,model_hallway_student,group_hallway_manager,1,1,1,1
-access_student_application_user,student.application.user,model_student_application,group_hallway_user,1,1,1,0
-access_student_application_manager,student.application.manager,model_student_application,group_hallway_manager,1,1,1,1
-access_week_days_user,week.days.user,model_week_days,group_hallway_user,1,0,0,0
-access_week_days_manager,week.days.manager,model_week_days,group_hallway_manager,1,1,1,1
