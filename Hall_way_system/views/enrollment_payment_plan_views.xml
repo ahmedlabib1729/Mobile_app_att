@@ -1,0 +1,145 @@
+<odoo>
+    <!-- Payment Plan Tree View -->
+    <record id="view_enrollment_payment_plan_tree" model="ir.ui.view">
+        <field name="name">enrollment.payment.plan.tree</field>
+        <field name="model">enrollment.payment.plan</field>
+        <field name="arch" type="xml">
+            <list string="Payment Plans" create="0" edit="1"
+                  decoration-success="state == 'completed'"
+                  decoration-info="state == 'active'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="enrollment_id" string="Enrollment"/>
+                <field name="student_id" string="Student"/>
+                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="installment_count" string="Installments"/>
+                <field name="payment_frequency" string="Frequency"/>
+                <field name="installment_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Payment Plan Form View -->
+    <record id="view_enrollment_payment_plan_form" model="ir.ui.view">
+        <field name="name">enrollment.payment.plan.form</field>
+        <field name="model">enrollment.payment.plan</field>
+        <field name="arch" type="xml">
+            <form string="Payment Plan">
+                <header>
+                    <button name="action_activate"
+                            string="Activate"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_complete"
+                            string="Mark as Complete"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'active'"/>
+                    <button name="action_cancel"
+                            string="Cancel"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ['completed', 'cancelled']"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,completed"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Enrollment Information">
+                            <field name="enrollment_id" readonly="1"/>
+                            <field name="student_id" readonly="1"/>
+                        </group>
+                        <group string="Payment Summary">
+                            <field name="installment_count" string="Number of Installments"/>
+                            <field name="installment_amount" widget="monetary" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Plan Details">
+                            <field name="total_amount" widget="monetary" readonly="state != 'draft'"/>
+                            <field name="installment_count" readonly="state != 'draft'"/>
+                            <field name="payment_frequency" readonly="state != 'draft'"/>
+                            <field name="first_payment_date" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Calculation">
+                            <field name="installment_amount" widget="monetary" readonly="1"/>
+                            <field name="currency_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1" placeholder="Add notes about this payment plan..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Payment Plan Search View -->
+    <record id="view_enrollment_payment_plan_search" model="ir.ui.view">
+        <field name="name">enrollment.payment.plan.search</field>
+        <field name="model">enrollment.payment.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="enrollment_id"/>
+                <field name="student_id"/>
+
+                <separator/>
+
+                <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+
+                <separator/>
+
+                <filter string="Monthly" name="monthly"
+                        domain="[('payment_frequency', '=', 'monthly')]"/>
+                <filter string="Quarterly" name="quarterly"
+                        domain="[('payment_frequency', '=', 'quarterly')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Frequency" name="group_frequency" context="{'group_by': 'payment_frequency'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Payment Plan Action -->
+    <record id="action_enrollment_payment_plan" model="ir.actions.act_window">
+        <field name="name">Payment Plans</field>
+        <field name="res_model">enrollment.payment.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_enrollment_payment_plan_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payment plans found
+            </p>
+            <p>
+                Payment plans are created automatically when enrollments use installment payment method.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_enrollment_payment_plan"
+              parent="menu_hallway_enrollment"
+              name="Payment Plans"
+              action="action_enrollment_payment_plan"
+              sequence="20"/>
+
+</odoo>

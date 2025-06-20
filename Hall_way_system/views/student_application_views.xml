@@ -1,0 +1,323 @@
+<odoo>
+    <!-- Tree View with Enhanced Styling -->
+    <record id="view_student_application_tree" model="ir.ui.view">
+        <field name="name">student.application.tree</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <list string="Student Applications"
+                  decoration-info="status == 'draft'"
+                  decoration-success="status in ['linked', 'student_created']"
+                  decoration-warning="status == 'confirm'"
+                  create="1" edit="1" delete="1" export_xlsx="1">
+                <field name="name" string="Application NO"/>
+                <field name="application_date" string="Date"/>
+                <field name="first_name" string="First Name"/>
+                <field name="last_name" string="Last Name"/>
+                <field name="passport_no" string="Passport"/>
+                <field name="emirates_id" string="Emirates ID"/>
+                <field name="student_id" string="Student" optional="hide"/>
+                <field name="status" widget="badge"
+                       decoration-success="status in ['linked', 'student_created']"
+                       decoration-info="status == 'confirm'"
+                       decoration-muted="status == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View with Enhanced Design -->
+    <record id="view_student_application_form" model="ir.ui.view">
+        <field name="name">student.application.form</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <form string="Student Application Form">
+                <header>
+                    <!-- Action Buttons -->
+                    <button name="action_confirm" string="Confirm" type="object"
+                            class="btn-primary" invisible="status != 'draft'"/>
+                    <button name="action_create_student" string="Create Student" type="object"
+                            class="btn-success" invisible="status not in ['draft', 'confirm'] or student_id != False"/>
+                    <button name="action_link_to_student" string="Link to Existing Student" type="object"
+                            class="btn-warning" invisible="status != 'confirm' or not student_exists or student_id != False"/>
+
+                    <field name="status" widget="statusbar" statusbar_visible="draft,confirm,student_created,linked" nolabel="1"/>
+                </header>
+
+                <sheet>
+                    <!-- Header Section -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_student" type="object"
+                                class="oe_stat_button" icon="fa-graduation-cap"
+                                invisible="not student_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">View</span>
+                                <span class="o_stat_text">Student</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="1"/>
+
+                    <div class="oe_title mb24">
+                        <h1>
+                            <field name="name" readonly="1" placeholder="Application Number"/>
+                        </h1>
+                    </div>
+
+
+
+                    <group>
+                        <group>
+                            <field name="application_date"/>
+                            <field name="existing_student_id"
+                                   options="{'no_create': True}"
+                                   invisible="status != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}" nolabel="1"/>
+                            <field name="student_id" readonly="1" invisible="not student_id"/>
+                            <field name="student_exists" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- Personal Information Tab -->
+                        <page string="Personal Information / بيانات شخصية" name="personal_info">
+                            <group string="Basic Information">
+                                <group>
+                                    <field name="first_name" placeholder="Enter first name..." required="1"/>
+                                    <field name="middle_name" placeholder="Enter middle name..."/>
+                                    <field name="last_name" placeholder="Enter last name..." required="1"/>
+                                </group>
+                                <group>
+                                    <field name="gender" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="date_of_birth"/>
+                                    <field name="last_graduation"/>
+                                </group>
+                            </group>
+
+                            <group string="Contact Details / بيانات الإتصال">
+                                <group>
+                                    <field name="mobile_no_1" widget="phone" placeholder="+971 XX XXX XXXX"/>
+                                    <field name="mobile_no_2" widget="phone" placeholder="+971 XX XXX XXXX"/>
+                                    <field name="email_id" widget="email" placeholder="email@example.com"/>
+                                </group>
+                                <group>
+                                    <field name="passport_no" required="1" placeholder="Passport Number"/>
+                                    <field name="emirates_id" required="1" placeholder="784-XXXX-XXXXXXX-X"/>
+                                    <field name="nationality_id" options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                            </group>
+
+                            <group string="Address Information">
+                                <field name="address" placeholder="Enter full address..."/>
+                                <field name="emirate" placeholder="Select emirate..."/>
+                            </group>
+                        </page>
+
+                        <!-- Vocational Qualification Tab -->
+                        <page string="Qualifications / مؤهلات" name="qualifications">
+                            <group string="VOCATIONAL QUALIFICATION / مؤهلات مهنية">
+                                <separator string="Select Your Level" colspan="2"/>
+                                <group col="4">
+                                    <field name="levl1"/>
+                                    <field name="levl2"/>
+                                    <field name="levl3"/>
+                                    <field name="levl4"/>
+                                    <field name="levl5"/>
+                                    <field name="levl6"/>
+                                    <field name="levl7"/>
+                                    <field name="extend_level"/>
+                                </group>
+                                <field name="other" placeholder="Other qualifications..." colspan="2"/>
+                            </group>
+
+                            <group string="Specialization Areas / مجالات التخصص">
+                                <group>
+                                    <field name="accounting_and_finance"/>
+                                    <field name="business_mangement"/>
+                                    <field name="commercial_law"/>
+                                    <field name="enterpreneurship_and_small"/>
+                                </group>
+                                <group>
+                                    <field name="humen"/>
+                                    <field name="market"/>
+                                    <field name="others" placeholder="Other specializations..." colspan="2"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Language Courses Tab -->
+                        <page string="Language Courses / دورات اللغة" name="language_courses">
+                            <group col="3" string="Courses For NON Speakers / دورات باللغتين">
+                                <group string="Arabic Course / دورة اللغة العربية">
+                                    <field name="beginnera"/>
+                                    <field name="Pre_Intermediatea"/>
+                                    <field name="Intermediatea"/>
+                                    <field name="Advanceda"/>
+                                    <field name="Proficienta"/>
+                                </group>
+
+                                <group string="English Course / دورة اللغة الإنجليزية">
+                                    <field name="beginnere"/>
+                                    <field name="Pre_Intermediatee"/>
+                                    <field name="Intermediatee"/>
+                                    <field name="Advancede"/>
+                                    <field name="Proficiente"/>
+                                </group>
+
+                                <group string="English For Kids / للأطفال">
+                                    <field name="Early"/>
+                                    <field name="Starters"/>
+                                    <field name="Movers"/>
+                                    <field name="Flyers"/>
+                                    <field name="Otherk"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Schedule Tab -->
+                        <page string="Schedule / الجدول" name="schedule">
+                            <group>
+                                <group string="Course Selection">
+                                    <field name="other_Course" placeholder="Specify other courses..."/>
+                                    <field name="schedule" placeholder="Preferred schedule time..."/>
+                                </group>
+                                <group string="Timing Preferences">
+                                    <field name="schedule_day_ids" widget="many2many_tags"
+                                           placeholder="Select preferred days..."
+                                           options="{'no_create_edit': True}"/>
+                                    <field name="start_date"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Declaration Tab -->
+                        <page string="Declaration / إقرار" name="declaration">
+                            <group>
+                                <field name="Declaration" widget="html" nolabel="1"
+                                       placeholder="Enter declaration text..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Enhanced Search View -->
+    <record id="view_student_application_search" model="ir.ui.view">
+        <field name="name">student.application.search</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Application No"/>
+                <field name="first_name" string="First Name"/>
+                <field name="last_name" string="Last Name"/>
+                <field name="passport_no" string="Passport"/>
+                <field name="emirates_id" string="Emirates ID"/>
+                <field name="student_id"/>
+
+                <separator/>
+
+                <filter string="Draft" name="draft" domain="[('status', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('status', '=', 'confirm')]"/>
+                <filter string="Has Student" name="has_student" domain="[('student_id', '!=', False)]"/>
+
+                <separator/>
+
+                <filter string="Today" name="today"
+                        domain="[('application_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="this_week"
+                        domain="[('application_date', '>=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Month" name="this_month"
+                        domain="[('application_date', '>=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Application Date" name="group_date" context="{'group_by': 'application_date'}"/>
+                    <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                    <filter string="Nationality" name="group_nationality" context="{'group_by': 'nationality_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_student_application_kanban" model="ir.ui.view">
+        <field name="name">student.application.kanban</field>
+        <field name="model">student.application</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="application_date"/>
+                <field name="image_1920"/>
+                <field name="status"/>
+                <field name="student_id"/>
+                <field name="student_exists"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                            <div class="o_kanban_image_fill_left d-none d-md-block"
+                                 t-attf-style="background-image:url('#{kanban_image('student.application', 'image_128', record.id.raw_value)}')">
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <div class="o_kanban_record_subtitle">
+                                    <field name="first_name"/> <field name="last_name"/>
+                                </div>
+                                <div class="o_kanban_tags_section">
+                                    <field name="application_date"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="status" widget="badge"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right" t-if="record.student_id.raw_value">
+                                        <span class="badge badge-success">
+                                            <i class="fa fa-graduation-cap"/> Linked
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action with default filters -->
+    <record id="action_student_application" model="ir.actions.act_window">
+        <field name="name">Student Applications</field>
+        <field name="res_model">student.application</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_student_application_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first student application
+            </p>
+            <p>
+                Manage student applications and track their status through the admission process.
+            </p>
+        </field>
+    </record>
+
+
+    <!-- Menu Items -->
+    <menuitem id="menu_student_application_root"
+              name="HallWay System"
+              sequence="10"
+              web_icon="HallWay_System,static/description/form_7501046.png"/>
+
+    <menuitem id="menu_student_application"
+              parent="menu_student_application_root"
+              name="Applications"
+              action="action_student_application"
+              sequence="10"/>
+</odoo>
