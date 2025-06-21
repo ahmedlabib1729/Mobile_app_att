@@ -1,0 +1,215 @@
+<odoo>
+    <!-- Payment Tree View -->
+    <record id="view_enrollment_payment_tree" model="ir.ui.view">
+        <field name="name">enrollment.payment.tree</field>
+        <field name="model">enrollment.payment</field>
+        <field name="arch" type="xml">
+            <list string="Payments" create="1" edit="1"
+                  decoration-success="state == 'confirmed'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-info="state == 'draft'">
+                <field name="payment_date"/>
+                <field name="enrollment_id" string="Enrollment"/>
+                <field name="student_id" string="Student"/>
+                <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" sum="Total"/>
+                <field name="payment_method"/>
+                <field name="reference" optional="show"/>
+                <field name="receipt_number"/>
+                <field name="installment_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'confirmed'"
+                       decoration-info="state == 'draft'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Payment Form View -->
+    <record id="view_enrollment_payment_form" model="ir.ui.view">
+        <field name="name">enrollment.payment.form</field>
+        <field name="model">enrollment.payment</field>
+        <field name="arch" type="xml">
+            <form string="Payment">
+                <header>
+                    <button name="action_confirm"
+                            string="Confirm Payment"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_cancel"
+                            string="Cancel"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state == 'cancelled'"
+                            confirm="Are you sure you want to cancel this payment?"/>
+                    <button name="action_print_receipt"
+                            string="Print Receipt"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_send_receipt"
+                            string="Send Receipt"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-envelope"
+                            invisible="state != 'confirmed'"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <div class="alert alert-success" role="alert" invisible="state != 'confirmed'">
+                        <i class="fa fa-check-circle"/> Payment confirmed. Receipt Number: <field name="receipt_number" readonly="1" class="oe_inline"/>
+                    </div>
+
+                    <group>
+                        <group string="Payment Details">
+                            <field name="enrollment_id"
+                                   options="{'no_create': True}"
+                                   required="state == 'draft'"/>
+                            <field name="student_id" readonly="1"/>
+                            <field name="installment_id"
+                                   options="{'no_create': True}"
+                                   domain="[('enrollment_id', '=', enrollment_id), ('state', '=', 'pending')]"/>
+                            <field name="payment_date" required="1"/>
+                        </group>
+                        <group string="Amount">
+                            <field name="amount" widget="monetary" required="1"/>
+                            <field name="currency_id" readonly="1"/>
+                            <field name="remaining_amount" widget="monetary" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Payment Method">
+                            <field name="payment_method" widget="radio" options="{'horizontal': true}" required="1"/>
+                            <field name="reference"
+                                   placeholder="Payment reference..."
+                                   required="payment_method in ['transfer', 'card']"/>
+                        </group>
+                        <group string="Additional Information">
+                            <field name="check_number"
+                                   invisible="payment_method != 'check'"
+                                   required="payment_method == 'check'"/>
+                            <field name="bank_name"
+                                   invisible="payment_method != 'check'"/>
+                            <field name="transaction_id"
+                                   invisible="payment_method not in ['card', 'transfer']"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" placeholder="Add payment notes..."/>
+                    </group>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+   <record id="view_enrollment_payment_search" model="ir.ui.view">
+    <field name="name">enrollment.payment.search</field>
+    <field name="model">enrollment.payment</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="enrollment_id"/>
+            <field name="student_id"/>
+            <field name="receipt_number"/>
+            <field name="reference"/>
+
+            <separator/>
+
+            <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+            <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+            <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+
+            <separator/>
+
+            <filter string="Today" name="today"
+                    domain="[('payment_date', '=', context_today())]"/>
+            <filter string="This Week" name="this_week"
+                    domain="[('payment_date', '&gt;=', (context_today() - relativedelta(days=7)))]"/>
+            <filter string="This Month" name="this_month"
+                    domain="[('payment_date', '&gt;=', time.strftime('%Y-%m-01'))]"/>
+
+            <separator/>
+
+            <filter string="Cash" name="cash" domain="[('payment_method', '=', 'cash')]"/>
+            <filter string="Check" name="check" domain="[('payment_method', '=', 'check')]"/>
+            <filter string="Card" name="card" domain="[('payment_method', '=', 'card')]"/>
+            <filter string="Transfer" name="transfer" domain="[('payment_method', '=', 'transfer')]"/>
+
+            <group expand="0" string="Group By">
+                <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                <filter string="Enrollment" name="group_enrollment" context="{'group_by': 'enrollment_id'}"/>
+                <filter string="Payment Method" name="group_method" context="{'group_by': 'payment_method'}"/>
+                <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Payment Date" name="group_date" context="{'group_by': 'payment_date:day'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+    <!-- Payment Graph View -->
+    <record id="view_enrollment_payment_graph" model="ir.ui.view">
+        <field name="name">enrollment.payment.graph</field>
+        <field name="model">enrollment.payment</field>
+        <field name="arch" type="xml">
+            <graph string="Payment Analysis" type="bar" stacked="1">
+                <field name="payment_date" interval="month"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Payment Pivot View -->
+    <record id="view_enrollment_payment_pivot" model="ir.ui.view">
+        <field name="name">enrollment.payment.pivot</field>
+        <field name="model">enrollment.payment</field>
+        <field name="arch" type="xml">
+            <pivot string="Payment Analysis">
+                <field name="payment_date" interval="month" type="row"/>
+                <field name="payment_method" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+   <record id="action_enrollment_payment" model="ir.actions.act_window">
+    <field name="name">Payments</field>
+    <field name="res_model">enrollment.payment</field>
+    <field name="view_mode">list,form,graph,pivot</field>
+    <field name="search_view_id" ref="view_enrollment_payment_search"/>
+    <field name="context">{'search_default_confirmed': 1}</field>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Record a payment
+        </p>
+        <p>
+            Track all student payments and generate receipts.
+        </p>
+    </field>
+</record>
+
+<!-- Today's Payments Action -->
+<record id="action_enrollment_payment_today" model="ir.actions.act_window">
+    <field name="name">Today's Payments</field>
+    <field name="res_model">enrollment.payment</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('payment_date', '=', time.strftime('%Y-%m-%d'))]</field>
+    <field name="context">{'search_default_group_method': 1}</field>
+</record>
+
+
+
+
+
+</odoo>
