@@ -1,0 +1,26 @@
+<odoo>
+    <record id="view_non_citizen_commission_line_tree" model="ir.ui.view">
+        <field name="name">non.citizen.commission.line.tree</field>
+        <field name="model">non.citizen.commission.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="invoice_id"/>
+                <field name="invoice_date"/>
+                <field name="additional_commission"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_non_citizen_commission_line" model="ir.actions.act_window">
+        <field name="name">Non-Citizen Commission</field>
+        <field name="res_model">non.citizen.commission.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'group_by': ['employee_id', 'create_date']}</field>
+    </record>
+    <menuitem id="menu_employee_commission_root" name="Employee Commissions" sequence="10"/>
+    <menuitem id="menu_non_citizen_commission_line" name="Non-Citizen Commission"
+              parent="menu_employee_commission_root"
+              action="action_non_citizen_commission_line"/>
+</odoo>
