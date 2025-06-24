@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_non_citizen_commission_line,non_citizen_commission_line,model_non_citizen_commission_line,base.group_user,1,1,1,1
-access_invoice_commission_line,invoice_commission_line,model_invoice_commission_line,base.group_user,1,1,1,1
-access_citizen_commission_config,citizen_commission_config,model_citizen_commission_config,base.group_user,1,1,1,0
-access_non_citizen_commission_config_user,access.non.citizen.commission.config.user,model_non_citizen_commission_config,base.group_user,1,0,0,0
