@@ -1,0 +1,61 @@
+<odoo>
+    <record id="action_hr_employee_temp_location" model="ir.actions.act_window">
+        <field name="name">المواقع المؤقتة للموظفين</field>
+        <field name="res_model">hr.employee.temp.location</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hr_employee_temp_location_search"/>
+        <field name="context">{'search_default_active_now': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إضافة موقع مؤقت لموظف
+            </p>
+            <p>
+                يمكنك السماح للموظفين بتسجيل الحضور من مواقع مؤقتة لفترات محددة
+                (مثل زيارات العملاء، المهمات الخارجية، العمل من المنزل المؤقت).
+            </p>
+        </field>
+    </record>
+
+
+
+     <record id="action_hr_office_location" model="ir.actions.act_window">
+        <field name="name">مواقع المكاتب</field>
+        <field name="res_model">hr.office.location</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_hr_office_location_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إضافة موقع مكتب جديد
+            </p>
+            <p>
+                يمكنك إدارة جميع مواقع مكاتب الشركة وتحديد النطاق المسموح لتسجيل الحضور من كل موقع.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_hr_office_location_root"
+              name="مواقع المكاتب"
+              parent="hr.menu_human_resources_configuration"
+              sequence="30"/>
+
+    <menuitem id="menu_hr_office_location"
+              name="المواقع"
+              parent="menu_hr_office_location_root"
+              action="action_hr_office_location"
+              sequence="10"/>
+
+    <!-- إضافة في قائمة الحضور والانصراف -->
+   <menuitem id="menu_hr_attendance_office_location"
+          name="مواقع المكتب"
+          parent="menu_hr_office_location_root"
+          action="action_hr_office_location"
+          sequence="50"/>
+
+    <!-- قائمة المواقع المؤقتة -->
+    <menuitem id="menu_hr_employee_temp_location"
+              name="المواقع المؤقتة"
+              parent="hr_mobile_app.menu_hr_office_location_root"
+              action="action_hr_employee_temp_location"
+              sequence="20"/>
+</odoo>

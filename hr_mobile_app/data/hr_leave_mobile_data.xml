@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- أنواع الإجازات الأساسية مع إعدادات التطبيق المحمول -->
+
+    <!-- إجازة سنوية -->
+    <record id="hr_leave_type_annual_mobile" model="hr.leave.type">
+        <field name="name">إجازة سنوية</field>
+        <field name="color_name">#2196F3</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">both</field>
+        <field name="requires_allocation">yes</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">🏖️</field>
+        <field name="mobile_description">إجازة سنوية للراحة والاستجمام</field>
+        <field name="max_days_mobile">30</field>
+    </record>
+
+    <!-- إجازة مرضية -->
+    <record id="hr_leave_type_sick_mobile" model="hr.leave.type">
+        <field name="name">إجازة مرضية</field>
+        <field name="color_name">#F44336</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">hr</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">🏥</field>
+        <field name="mobile_description">إجازة مرضية مع تقرير طبي</field>
+        <field name="max_days_mobile">15</field>
+    </record>
+
+    <!-- إجازة طارئة -->
+    <record id="hr_leave_type_emergency_mobile" model="hr.leave.type">
+        <field name="name">إجازة طارئة</field>
+        <field name="color_name">#FF9800</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">manager</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">🚨</field>
+        <field name="mobile_description">إجازة طارئة للظروف الاستثنائية</field>
+        <field name="max_days_mobile">5</field>
+    </record>
+
+    <!-- إجازة أمومة -->
+    <record id="hr_leave_type_maternity_mobile" model="hr.leave.type">
+        <field name="name">إجازة أمومة</field>
+        <field name="color_name">#E91E63</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">hr</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">👶</field>
+        <field name="mobile_description">إجازة أمومة للوالدات الجدد</field>
+        <field name="max_days_mobile">90</field>
+    </record>
+
+    <!-- إجازة أبوة -->
+    <record id="hr_leave_type_paternity_mobile" model="hr.leave.type">
+        <field name="name">إجازة أبوة</field>
+        <field name="color_name">#3F51B5</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">manager</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">👨‍👶</field>
+        <field name="mobile_description">إجازة أبوة للآباء الجدد</field>
+        <field name="max_days_mobile">10</field>
+    </record>
+
+    <!-- إجازة حج وعمرة -->
+    <record id="hr_leave_type_pilgrimage_mobile" model="hr.leave.type">
+        <field name="name">إجازة حج وعمرة</field>
+        <field name="color_name">#9C27B0</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">hr</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">🕋</field>
+        <field name="mobile_description">إجازة لأداء فريضة الحج أو العمرة</field>
+        <field name="max_days_mobile">21</field>
+    </record>
+
+    <!-- إجازة زواج -->
+    <record id="hr_leave_type_marriage_mobile" model="hr.leave.type">
+        <field name="name">إجازة زواج</field>
+        <field name="color_name">#4CAF50</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">manager</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">💒</field>
+        <field name="mobile_description">إجازة زواج للموظف</field>
+        <field name="max_days_mobile">7</field>
+    </record>
+
+    <!-- إجازة وفاة -->
+    <record id="hr_leave_type_bereavement_mobile" model="hr.leave.type">
+        <field name="name">إجازة وفاة</field>
+        <field name="color_name">#607D8B</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">manager</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">🕊️</field>
+        <field name="mobile_description">إجازة وفاة أحد الأقارب</field>
+        <field name="max_days_mobile">3</field>
+    </record>
+
+    <!-- إجازة دراسية -->
+    <record id="hr_leave_type_study_mobile" model="hr.leave.type">
+        <field name="name">إجازة دراسية</field>
+        <field name="color_name">#009688</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">hr</field>
+        <field name="requires_allocation">yes</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">📚</field>
+        <field name="mobile_description">إجازة للدراسة والامتحانات</field>
+        <field name="max_days_mobile">10</field>
+    </record>
+
+    <!-- إجازة استراحة -->
+    <record id="hr_leave_type_personal_mobile" model="hr.leave.type">
+        <field name="name">إجازة شخصية</field>
+        <field name="color_name">#795548</field>
+        <field name="request_unit">day</field>
+        <field name="leave_validation_type">manager</field>
+        <field name="requires_allocation">no</field>
+        <field name="active">True</field>
+        <field name="mobile_visible">True</field>
+        <field name="mobile_icon">🏠</field>
+        <field name="mobile_description">إجازة شخصية للأمور الخاصة</field>
+        <field name="max_days_mobile">5</field>
+    </record>
+
+    <!-- تخصيصات الإجازات الافتراضية -->
+
+    <!-- تخصيص الإجازة السنوية (30 يوم سنوياً) -->
+    <record id="hr_leave_allocation_annual_default" model="hr.leave.allocation">
+        <field name="name">تخصيص الإجازة السنوية الافتراضي</field>
+        <field name="holiday_status_id" ref="hr_leave_type_annual_mobile"/>
+        <field name="number_of_days">30</field>
+        <field name="state">validate</field>
+        <field name="mode_company_id" eval="False"/>
+        <field name="date_from" eval="(DateTime.now() + relativedelta(day=1, month=1)).strftime('%Y-%m-%d')"/>
+        <field name="date_to" eval="(DateTime.now() + relativedelta(day=31, month=12)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <!-- تخصيص الإجازة الدراسية (10 أيام سنوياً) -->
+    <record id="hr_leave_allocation_study_default" model="hr.leave.allocation">
+        <field name="name">تخصيص الإجازة الدراسية الافتراضي</field>
+        <field name="holiday_status_id" ref="hr_leave_type_study_mobile"/>
+        <field name="number_of_days">10</field>
+        <field name="state">validate</field>
+        <field name="mode_company_id" eval="False"/>
+        <field name="date_from" eval="(DateTime.now() + relativedelta(day=1, month=1)).strftime('%Y-%m-%d')"/>
+        <field name="date_to" eval="(DateTime.now() + relativedelta(day=31, month=12)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <!-- إعدادات افتراضية للتطبيق المحمول -->
+    <record id="mobile_app_default_settings" model="ir.config_parameter">
+        <field name="key">hr_mobile_app.default_leave_validation</field>
+        <field name="value">manager</field>
+    </record>
+
+    <record id="mobile_app_max_days_setting" model="ir.config_parameter">
+        <field name="key">hr_mobile_app.max_leave_days_single_request</field>
+        <field name="value">30</field>
+    </record>
+
+    <record id="mobile_app_advance_booking_days" model="ir.config_parameter">
+        <field name="key">hr_mobile_app.advance_booking_days</field>
+        <field name="value">7</field>
+    </record>
+
+    <record id="mobile_app_enable_location_tracking" model="ir.config_parameter">
+        <field name="key">hr_mobile_app.enable_location_tracking</field>
+        <field name="value">True</field>
+    </record>
+
+    <!-- إضافة المستخدم المشترك للتطبيق المحمول إلى المجموعات المناسبة -->
+    <record id="mobile_service_user_groups" model="res.users">
+        <field name="login">mobile_app_service</field>
+        <field name="groups_id" eval="[(4, ref('hr_mobile_app.group_mobile_app_manager'))]"/>
+    </record>
+
+    <!-- بيانات تجريبية لتخصيص الإجازات للموظفين الموجودين -->
+    <function model="hr.employee" name="_create_default_leave_allocations">
+        <!-- هذه الدالة ستقوم بإنشاء تخصيصات افتراضية لجميع الموظفين الموجودين -->
+    </function>
+
+    <!-- قواعد تلقائية لإشعارات طلبات الإجازة -->
+    <record id="mail_template_leave_request_mobile" model="mail.template">
+        <field name="name">إشعار طلب إجازة من التطبيق المحمول</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="subject">طلب إجازة جديد من ${object.employee_id.name}</field>
+        <field name="email_from">${(object.employee_id.work_email or user.email)|safe}</field>
+        <field name="email_to">${object.employee_id.parent_id.work_email or object.employee_id.department_id.manager_id.work_email}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>مرحباً،</p>
+                <p>تم إنشاء طلب إجازة جديد من التطبيق المحمول:</p>
+                <ul>
+                    <li><strong>الموظف:</strong> ${object.employee_id.name}</li>
+                    <li><strong>نوع الإجازة:</strong> ${object.holiday_status_id.name}</li>
+                    <li><strong>من:</strong> ${object.date_from}</li>
+                    <li><strong>إلى:</strong> ${object.date_to}</li>
+                    <li><strong>عدد الأيام:</strong> ${object.number_of_days}</li>
+                    <li><strong>السبب:</strong> ${object.name}</li>
+                    % if object.mobile_location:
+                    <li><strong>الموقع:</strong> ${object.mobile_location}</li>
+                    % endif
+                </ul>
+                <p>يرجى مراجعة الطلب واتخاذ الإجراء المناسب.</p>
+                <p>شكراً لك</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- قالب إشعار الموافقة -->
+    <record id="mail_template_leave_approved_mobile" model="mail.template">
+        <field name="name">إشعار موافقة طلب الإجازة</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="subject">تمت الموافقة على طلب إجازتك</field>
+        <field name="email_from">${user.email}</field>
+        <field name="email_to">${object.employee_id.work_email}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>مرحباً ${object.employee_id.name}،</p>
+                <p>تمت الموافقة على طلب إجازتك:</p>
+                <ul>
+                    <li><strong>نوع الإجازة:</strong> ${object.holiday_status_id.name}</li>
+                    <li><strong>من:</strong> ${object.date_from}</li>
+                    <li><strong>إلى:</strong> ${object.date_to}</li>
+                    <li><strong>عدد الأيام:</strong> ${object.number_of_days}</li>
+                </ul>
+                % if object.approval_notes:
+                <p><strong>ملاحظات:</strong> ${object.approval_notes}</p>
+                % endif
+                <p>استمتع بإجازتك!</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- قالب إشعار الرفض -->
+    <record id="mail_template_leave_refused_mobile" model="mail.template">
+        <field name="name">إشعار رفض طلب الإجازة</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="subject">تم رفض طلب إجازتك</field>
+        <field name="email_from">${user.email}</field>
+        <field name="email_to">${object.employee_id.work_email}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>مرحباً ${object.employee_id.name}،</p>
+                <p>نأسف لإبلاغك بأنه تم رفض طلب إجازتك:</p>
+                <ul>
+                    <li><strong>نوع الإجازة:</strong> ${object.holiday_status_id.name}</li>
+                    <li><strong>من:</strong> ${object.date_from}</li>
+                    <li><strong>إلى:</strong> ${object.date_to}</li>
+                    <li><strong>عدد الأيام:</strong> ${object.number_of_days}</li>
+                </ul>
+                % if object.rejection_reason:
+                <p><strong>سبب الرفض:</strong> ${object.rejection_reason}</p>
+                % endif
+                <p>يمكنك التواصل مع مديرك المباشر لمزيد من التوضيح.</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- إعدادات الإشعارات التلقائية -->
+    <record id="leave_request_notification_rule" model="base.automation">
+        <field name="name">إشعار طلب إجازة جديد</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="trigger">on_create</field>
+        <field name="filter_pre_domain">[('mobile_created', '=', True), ('state', '=', 'confirm')]</field>
+        <field name="state">code</field>
+        <field name="code">
+# إرسال إشعار للمدير
+template = env.ref('hr_mobile_app.mail_template_leave_request_mobile')
+template.send_mail(record.id, force_send=True)
+        </field>
+    </record>
+
+    <record id="leave_approved_notification_rule" model="base.automation">
+        <field name="name">إشعار موافقة طلب الإجازة</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="trigger">on_write</field>
+        <field name="filter_pre_domain">[('mobile_created', '=', True)]</field>
+        <field name="filter_domain">[('state', '=', 'validate')]</field>
+        <field name="state">code</field>
+        <field name="code">
+# إرسال إشعار للموظف
+template = env.ref('hr_mobile_app.mail_template_leave_approved_mobile')
+template.send_mail(record.id, force_send=True)
+        </field>
+    </record>
+
+    <record id="leave_refused_notification_rule" model="base.automation">
+        <field name="name">إشعار رفض طلب الإجازة</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="trigger">on_write</field>
+        <field name="filter_pre_domain">[('mobile_created', '=', True)]</field>
+        <field name="filter_domain">[('state', '=', 'refuse')]</field>
+        <field name="state">code</field>
+        <field name="code">
+# إرسال إشعار للموظف
+template = env.ref('hr_mobile_app.mail_template_leave_refused_mobile')
+template.send_mail(record.id, force_send=True)
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- إعلان ترحيبي افتراضي -->
+        <record id="announcement_welcome" model="hr.announcement">
+            <field name="name">مرحباً بكم في نظام الإعلانات الجديد</field>
+            <field name="content"><![CDATA[
+                <h3>أهلاً وسهلاً بجميع الموظفين!</h3>
+                <p>يسعدنا أن نعلن عن إطلاق نظام الإعلانات الجديد الذي سيساعد في تحسين التواصل الداخلي.</p>
+                <p><strong>مميزات النظام:</strong></p>
+                <ul>
+                    <li>إعلانات مستهدفة حسب القسم أو الوظيفة</li>
+                    <li>تتبع من قرأ الإعلانات</li>
+                    <li>إمكانية إرفاق ملفات وصور</li>
+                    <li>إشعارات فورية للإعلانات المهمة</li>
+                </ul>
+                <p>نتطلع لاستخدامكم للنظام الجديد!</p>
+            ]]></field>
+            <field name="summary">نظام جديد لتحسين التواصل الداخلي بين الموظفين</field>
+            <field name="announcement_type">general</field>
+            <field name="priority">high</field>
+            <field name="state">published</field>
+            <field name="is_pinned">True</field>
+            <field name="start_date" eval="datetime.now()"/>
+        </record>
+
+        <!-- Cron Job للتحقق من الإعلانات المجدولة -->
+        <record id="ir_cron_check_scheduled_announcements" model="ir.cron">
+            <field name="name">التحقق من الإعلانات المجدولة</field>
+            <field name="model_id" ref="model_hr_announcement"/>
+            <field name="state">code</field>
+            <field name="code">model.check_scheduled_announcements()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

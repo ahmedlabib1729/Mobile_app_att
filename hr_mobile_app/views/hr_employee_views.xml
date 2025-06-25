@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add mobile app user fields to the employee form view -->
+    <record id="hr_employee_view_form_mobile" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.mobile</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Add a new notebook page for mobile app data -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Mobile App" name="mobile_app" groups="hr.group_hr_user">
+                    <group>
+                        <group string="Mobile App Login Data">
+                            <field name="mobile_username"/>
+                            <field name="mobile_pin" password="True"/>
+                            <field name="allow_mobile_access"/>
+                        </group>
+                        <group string="Mobile App Info">
+                            <field name="mobile_last_login" readonly="1"/>
+                            <field name="mobile_login_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <button name="reset_mobile_pin" string="Reset PIN" type="object" class="btn-primary"
+                                invisible_if="mobile_username == False"/>
+                        <button name="generate_demo_credentials" string="Generate Demo Credentials" type="object" class="btn-secondary" invisible="1"/>
+                    </group>
+                    <separator string="إعدادات الحضور بالموقع الجغرافي"/>
+<group>
+    <group string="الموقع المخصص">
+        <field name="office_location_id"/>
+        <field name="allow_remote_attendance"/>
+    </group>
+</group>
+                </page>
+
+            </xpath>
+
+            <!-- Add button to enable/disable app access in header -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="toggle_mobile_access" type="object" class="oe_stat_button" icon="fa-mobile">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Mobile App</span>
+                        <span class="o_stat_text" invisible_if="allow_mobile_access == False">Enabled</span>
+                        <span class="o_stat_text" invisible_if="allow_mobile_access == True">Disabled</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add filter for employees with app access -->
+    <record id="hr_employee_view_search_mobile" model="ir.ui.view">
+        <field name="name">hr.employee.view.search.mobile</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='group_job']" position="after">
+                <separator/>
+                <filter string="Mobile App Users" name="mobile_users" domain="[('allow_mobile_access', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add column in tree (list) view -->
+    <record id="hr_employee_view_tree_mobile" model="ir.ui.view">
+        <field name="name">hr.employee.view.tree.mobile</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_phone']" position="after">
+                <field name="mobile_username" optional="hide"/>
+                <field name="allow_mobile_access" widget="boolean_toggle" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- تحديث نموذج الموظف لإضافة صفحة المواقع المؤقتة -->
+    <record id="hr_employee_view_form_location_temp" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.location.temp</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_mobile_app.hr_employee_view_form_mobile"/>
+        <field name="arch" type="xml">
+            <!-- إضافة صفحة جديدة للمواقع المؤقتة بعد صفحة التطبيق المحمول -->
+            <xpath expr="//page[@name='mobile_app']" position="after">
+                <page string="المواقع المؤقتة" name="temporary_locations"
+                      invisible="not allow_remote_attendance and not temporary_location_ids">
+                    <field name="temporary_location_ids">
+                        <list editable="bottom">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="latitude"  options="{'precision': 6}"/>
+                            <field name="longitude"  options="{'precision': 6}"/>
+                            <field name="allowed_radius"/>
+                            <field name="reason"/>
+                            <field name="approved_by" readonly="1"/>
+                        </list>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <group string="الفترة">
+                                        <field name="date_from"/>
+                                        <field name="date_to"/>
+                                    </group>
+                                    <group string="الموقع">
+                                        <field name="latitude"  options="{'precision': 6}"/>
+                                        <field name="longitude"  options="{'precision': 6}"/>
+                                        <field name="allowed_radius"/>
+                                    </group>
+                                </group>
+                                <group string="التفاصيل">
+                                    <field name="reason" placeholder="سبب السماح بالحضور من هذا الموقع..."/>
+                                    <field name="approved_by" readonly="1"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- إضافة فلتر للموظفين حسب موقع المكتب -->
+    <record id="hr_employee_view_search_location" model="ir.ui.view">
+        <field name="name">hr.employee.view.search.location</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_mobile_app.hr_employee_view_search_mobile"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='mobile_users']" position="after">
+                <separator/>
+                <filter string="يعملون عن بُعد" name="remote_workers" domain="[('allow_remote_attendance','=',True)]"/>
+                <filter string="لديهم مواقع مؤقتة" name="has_temp_locations" domain="[('temporary_location_ids','!=',False)]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="موقع المكتب" name="group_office_location" context="{'group_by':'office_location_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- إضافة عمود موقع المكتب في قائمة الموظفين -->
+    <record id="hr_employee_view_tree_location" model="ir.ui.view">
+        <field name="name">hr.employee.view.tree.location</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_mobile_app.hr_employee_view_tree_mobile"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allow_mobile_access']" position="after">
+                <field name="office_location_id" optional="show"/>
+                <field name="allow_remote_attendance" widget="boolean_toggle" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- نموذج المواقع المؤقتة للموظف -->
+    <record id="view_hr_employee_temp_location_form" model="ir.ui.view">
+        <field name="name">hr.employee.temp.location.form</field>
+        <field name="model">hr.employee.temp.location</field>
+        <field name="arch" type="xml">
+            <form string="موقع مؤقت">
+                <sheet>
+                    <group>
+                        <group string="الموظف والفترة">
+                            <field name="employee_id" readonly="context.get('default_employee_id', False)"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="الموقع المسموح">
+                            <field name="latitude"  options="{'precision': 6}" placeholder="مثال: 30.044420"/>
+                            <field name="longitude"  options="{'precision': 6}" placeholder="مثال: 31.235712"/>
+                            <field name="allowed_radius" widget="integer"/>
+                        </group>
+                    </group>
+                    <group string="التفاصيل">
+                        <field name="reason" placeholder="اشرح سبب السماح بالحضور من هذا الموقع..."/>
+                        <field name="approved_by" readonly="1" invisible="not approved_by"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- قائمة المواقع المؤقتة -->
+    <record id="view_hr_employee_temp_location_list" model="ir.ui.view">
+        <field name="name">hr.employee.temp.location.list</field>
+        <field name="model">hr.employee.temp.location</field>
+        <field name="arch" type="xml">
+            <list string="المواقع المؤقتة">
+                <field name="employee_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="reason"/>
+                <field name="allowed_radius" string="النطاق (م)"/>
+                <field name="approved_by"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- بحث المواقع المؤقتة -->
+    <record id="view_hr_employee_temp_location_search" model="ir.ui.view">
+        <field name="name">hr.employee.temp.location.search</field>
+        <field name="model">hr.employee.temp.location</field>
+        <field name="arch" type="xml">
+            <search string="البحث في المواقع المؤقتة">
+                <field name="employee_id"/>
+                <field name="reason"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <separator/>
+                <filter string="نشط حالياً" name="active_now"
+                        domain="[('date_from','&lt;=',context_today()),('date_to','&gt;=',context_today())]"/>
+                <filter string="منتهية" name="expired"
+                        domain="[('date_to','&lt;',context_today())]"/>
+                <filter string="مستقبلية" name="future"
+                        domain="[('date_from','&gt;',context_today())]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الموظف" name="group_employee" context="{'group_by':'employee_id'}"/>
+                    <filter string="شهر البداية" name="group_month" context="{'group_by':'date_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- إجراء المواقع المؤقتة -->
+
+
+</odoo>
