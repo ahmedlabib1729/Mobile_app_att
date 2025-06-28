@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_hr_office_location_form" model="ir.ui.view">
+        <field name="name">hr.office.location.form</field>
+        <field name="model">hr.office.location</field>
+        <field name="arch" type="xml">
+            <form string="Office Location">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_employees"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-users">
+                            <field name="employee_count" widget="statinfo" string="Employees"/>
+                        </button>
+                        <button name="action_view_departments"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-sitemap">
+                            <field name="department_count" widget="statinfo" string="Departments"/>
+                        </button>
+                        <button name="action_open_map"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-map-marker"
+                                invisible="not google_maps_url">
+                            <span class="o_stat_text">View on Map</span>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" text="Archived" bg_color="bg-danger" invisible="active"/>
+
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Location name..."/>
+                        </h1>
+                        <label for="code" class="oe_edit_only"/>
+                        <h3>
+                            <field name="code" placeholder="Location code (optional)..."/>
+                        </h3>
+                    </div>
+
+                    <group>
+                        <group string="Location Information">
+                            <field name="location_type"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Coordinates">
+                            <field name="latitude"
+                                   options="{'precision': 6}"
+                                   placeholder="Example: 30.044420"/>
+                            <field name="longitude"
+                                   options="{'precision': 6}"
+                                   placeholder="Example: 31.235712"/>
+                            <field name="google_maps_url" widget="url" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Radius Settings">
+                            <field name="allowed_radius" widget="integer"/>
+                            <field name="allow_flexible_radius"/>
+                            <field name="flexible_radius"
+                                   widget="integer"
+                                   invisible="not allow_flexible_radius"
+                                   required="allow_flexible_radius"/>
+                        </group>
+                        <group string="WiFi Settings">
+                            <field name="require_wifi"/>
+                            <field name="wifi_name"
+                                   invisible="not require_wifi"
+                                   required="require_wifi"/>
+                        </group>
+                    </group>
+
+                    <group string="Address">
+                        <group>
+                            <field name="street" placeholder="Street..."/>
+                            <field name="street2" placeholder="Additional information..."/>
+                            <field name="city" placeholder="City..."/>
+                        </group>
+                        <group>
+                            <field name="state_id" options="{'no_create': True}" placeholder="State..."/>
+                            <field name="country_id" options="{'no_create': True}" placeholder="Country..."/>
+                            <field name="zip" placeholder="Zip code..."/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Add a detailed description of the location..."/>
+                        </page>
+                        <page string="Departments" name="departments">
+                            <field name="department_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="manager_id"/>
+                                    <field name="total_employee" string="Employee Count"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Employees" name="employees">
+                            <field name="employee_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="job_id"/>
+                                    <field name="department_id"/>
+                                    <field name="mobile_phone"/>
+                                    <field name="allow_remote_attendance" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_hr_office_location_list" model="ir.ui.view">
+        <field name="name">hr.office.location.list</field>
+        <field name="model">hr.office.location</field>
+        <field name="arch" type="xml">
+            <list string="Office Locations" sample="1">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="location_type" widget="badge"/>
+                <field name="city" optional="show"/>
+                <field name="allowed_radius" string="Radius (m)"/>
+                <field name="employee_count" string="Employees"/>
+                <field name="department_count" string="Departments" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_hr_office_location_search" model="ir.ui.view">
+        <field name="name">hr.office.location.search</field>
+        <field name="model">hr.office.location</field>
+        <field name="arch" type="xml">
+            <search string="Search Locations">
+                <field name="name" string="Location" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]"/>
+                <field name="city"/>
+                <field name="location_type"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active','=',True)]"/>
+                <filter string="Archived" name="archived" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter string="Main Office" name="main" domain="[('location_type','=','main')]"/>
+                <filter string="Branches" name="branch" domain="[('location_type','=','branch')]"/>
+                <filter string="Work Sites" name="site" domain="[('location_type','=','site')]"/>
+                <separator/>
+                <filter string="Requires WiFi" name="wifi_required" domain="[('require_wifi','=',True)]"/>
+                <filter string="Flexible Radius" name="flexible" domain="[('allow_flexible_radius','=',True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_type" context="{'group_by':'location_type'}"/>
+                    <filter string="City" name="group_city" context="{'group_by':'city'}"/>
+                    <filter string="Company" name="group_company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_hr_office_location_kanban" model="ir.ui.view">
+        <field name="name">hr.office.location.kanban</field>
+        <field name="model">hr.office.location</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="location_type"/>
+                <field name="city"/>
+                <field name="employee_count"/>
+                <field name="allowed_radius"/>
+                <field name="active"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click #{!record.active.raw_value ? 'text-muted' : ''}">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="text-muted">
+                                        <t t-if="record.code.raw_value">
+                                            <field name="code"/> •
+                                        </t>
+                                        <field name="location_type"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <i class="fa fa-map-marker" title="City"/>
+                                    <field name="city"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-circle-o" title="Allowed Radius"/>
+                                    <field name="allowed_radius"/> meters
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <button name="action_view_employees"
+                                            type="object"
+                                            class="btn btn-sm btn-link p-0">
+                                        <i class="fa fa-users"/>
+                                        <field name="employee_count"/> employees
+                                    </button>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <button name="action_open_map"
+                                            type="object"
+                                            class="btn btn-sm btn-primary"
+                                            title="View on Map">
+                                        <i class="fa fa-map-marker"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action -->
+
+</odoo>
