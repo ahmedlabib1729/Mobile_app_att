@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Program Form View -->
+        <record id="view_charity_ladies_program_form" model="ir.ui.view">
+            <field name="name">charity.ladies.program.form</field>
+            <field name="model">charity.ladies.program</field>
+            <field name="arch" type="xml">
+                <form string="برنامج السيدات">
+                    <sheet>
+                        <widget name="web_ribbon" title="مؤرشف" bg_color="text-bg-danger" invisible="active"/>
+                        <div class="oe_button_box" name="button_box">
+                            <!-- زر المشتركات -->
+                            <button name="action_view_enrollments"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-female">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="enrollments_count" class="me-1"/>
+                                        <span class="text-muted">/</span>
+                                        <field name="max_capacity" class="ms-1"/>
+                                    </span>
+                                    <span class="o_stat_text">المشتركات</span>
+                                </div>
+                            </button>
+
+                            <!-- المقاعد المتاحة -->
+                            <button class="oe_stat_button" icon="fa-chair" disabled="1">
+                                <field name="available_seats" widget="statinfo" string="مقاعد متاحة"/>
+                            </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="name" string="اسم البرنامج"/>
+                            <h1>
+                                <field name="name" placeholder="أدخل اسم البرنامج..." class="text-break"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات أساسية">
+                                <field name="department_id" options="{'no_create': True}"/>
+                                <field name="instructor_id" options="{'no_quick_create': True}"/>
+                                <field name="max_capacity"/>
+                            </group>
+                            <group string="الإعدادات">
+                                <field name="is_active" widget="boolean_toggle"/>
+                                <field name="sequence"/>
+                                <field name="active" invisible="1"/>
+                            </group>
+                        </group>
+
+                        <group string="موعد البرنامج">
+                            <field name="schedule" nolabel="1" placeholder="مثال: كل يوم أحد من 4-6 مساءً"/>
+                        </group>
+
+                        <notebook>
+                            <page string="وصف البرنامج" name="description">
+                                <field name="description" nolabel="1" placeholder="أدخل وصف تفصيلي للبرنامج..."/>
+                            </page>
+
+                            <page string="المشتركات" name="enrollments">
+                                <field name="enrollment_ids" nolabel="1" readonly="1">
+                                    <list>
+                                        <field name="member_name" string="اسم العضوة"/>
+                                        <field name="member_mobile" string="رقم الهاتف" widget="phone"/>
+                                        <field name="start_date" string="تاريخ البداية"/>
+                                        <field name="end_date" string="تاريخ النهاية"/>
+                                        <field name="state" string="الحالة" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="معلومات إضافية" name="info">
+                                <group>
+                                    <group>
+                                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="create_date" readonly="1" string="تاريخ الإنشاء"/>
+                                        <field name="write_date" readonly="1" string="آخر تعديل"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Program List View -->
+        <record id="view_charity_ladies_program_list" model="ir.ui.view">
+            <field name="name">charity.ladies.program.list</field>
+            <field name="model">charity.ladies.program</field>
+            <field name="arch" type="xml">
+                <list string="برامج السيدات" multi_edit="1">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name" string="اسم البرنامج"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="instructor_id" string="المحاضر"/>
+                    <field name="schedule" string="الموعد"/>
+                    <field name="enrollments_count" string="المشتركات"/>
+                    <field name="available_seats" string="المقاعد المتاحة"
+                           decoration-danger="available_seats == 0"
+                           decoration-warning="available_seats &lt;= 5"/>
+                    <field name="is_active" string="مفعل" widget="boolean_toggle"/>
+                    <field name="active" invisible="1"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Program Search View -->
+        <record id="view_charity_ladies_program_search" model="ir.ui.view">
+            <field name="name">charity.ladies.program.search</field>
+            <field name="model">charity.ladies.program</field>
+            <field name="arch" type="xml">
+                <search string="البحث في البرامج">
+                    <field name="name" string="اسم البرنامج"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="instructor_id" string="المحاضر"/>
+
+                    <filter string="مفعل للتسجيل" name="is_active" domain="[('is_active', '=', True)]"/>
+                    <filter string="موقف عن التسجيل" name="not_active" domain="[('is_active', '=', False)]"/>
+
+
+
+                    <filter string="البرامج النشطة" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="البرامج المؤرشفة" name="archived" domain="[('active', '=', False)]"/>
+
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="القسم" name="group_department" context="{'group_by': 'department_id'}"/>
+                        <filter string="المحاضر" name="group_instructor" context="{'group_by': 'instructor_id'}"/>
+                    </group>
+
+                    <searchpanel>
+                        <field name="department_id" string="القسم" enable_counters="1" icon="fa-building"/>
+                        <field name="instructor_id" string="المحاضر" enable_counters="1" icon="fa-user"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <!-- Program Kanban View -->
+        <record id="view_charity_ladies_program_kanban" model="ir.ui.view">
+            <field name="name">charity.ladies.program.kanban</field>
+            <field name="model">charity.ladies.program</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="department_id"/>
+                    <field name="instructor_id"/>
+                    <field name="schedule"/>
+                    <field name="enrollments_count"/>
+                    <field name="available_seats"/>
+                    <field name="is_active"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="o_kanban_tags_section">
+                                            <span t-if="record.is_active.raw_value" class="badge rounded-pill text-bg-success">
+                                                <i class="fa fa-check"/> مفعل
+                                            </span>
+                                            <span t-else="" class="badge rounded-pill text-bg-danger">
+                                                <i class="fa fa-times"/> موقف
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <i class="fa fa-user"/> <field name="instructor_id"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-clock-o"/> <field name="schedule"/>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge rounded-pill text-bg-info">
+                                            <i class="fa fa-female"/> <field name="enrollments_count"/> / <field name="max_capacity"/>
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <span t-if="record.available_seats.raw_value > 0" class="text-success">
+                                            <field name="available_seats"/> متاح
+                                        </span>
+                                        <span t-else="" class="text-danger">
+                                            ممتلئ
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Program Action -->
+        <record id="action_charity_ladies_programs" model="ir.actions.act_window">
+            <field name="name">برامج السيدات</field>
+            <field name="res_model">charity.ladies.program</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="search_view_id" ref="view_charity_ladies_program_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء أول برنامج للسيدات
+                </p>
+                <p>
+                    يمكنك إنشاء البرامج وتحديد المواعيد والمحاضرين
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
