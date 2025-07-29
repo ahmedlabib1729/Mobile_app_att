@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_porter_config_user,porter.config.user,model_porter_config,group_porter_user,1,0,0,0
+access_porter_config_manager,porter.config.manager,model_porter_config,group_porter_manager,1,1,1,1
+access_porter_shipment_user,porter.shipment.user,model_porter_shipment,group_porter_user,1,1,1,0
+access_porter_shipment_manager,porter.shipment.manager,model_porter_shipment,group_porter_manager,1,1,1,1
+access_porter_shipment_wizard,porter.shipment.wizard,model_porter_shipment_wizard,group_porter_user,1,1,1,1
+access_porter_shipment_wizard_package,porter.shipment.wizard.package,model_porter_shipment_wizard_package,group_porter_user,1,1,1,1
+access_porter_area_user,porter.area.user,model_porter_area,group_porter_user,1,0,0,0
+access_porter_area_manager,porter.area.manager,model_porter_area,group_porter_manager,1,1,1,1

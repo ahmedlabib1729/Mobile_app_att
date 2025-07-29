@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_porter_shipment_wizard_form" model="ir.ui.view">
+        <field name="name">porter.shipment.wizard.form</field>
+        <field name="model">porter.shipment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Porter Shipment">
+                <sheet>
+                    <group>
+                        <group string="Order Information">
+                            <field name="picking_id" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="partner_country_id" invisible="1"/>
+                            <field name="carrier_id" column_invisible="True"/>
+                        </group>
+                        <group string="Shipment Details">
+                            <field name="reference2"/>
+                            <field name="product_code"/>
+                            <field name="pickup_date"/>
+                        </group>
+                    </group>
+
+                    <!-- إضافة قسم المناطق -->
+                    <group string="Delivery Area">
+                        <group>
+                            <field name="consignee_area_id"
+                                   options="{'no_create': True, 'no_create_edit': True}"
+                                   context="{'default_country_id': partner_country_id}"/>
+                        </group>
+                        <group>
+                            <div class="text-muted">
+                                <i class="fa fa-info-circle"/> Select the delivery area based on customer's address
+                            </div>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Package Information">
+                            <group>
+                                <group>
+                                    <field name="pieces"/>
+                                    <field name="weight"/>
+                                    <field name="use_multi_package"/>
+                                </group>
+                                <group>
+                                    <field name="description1"/>
+                                    <field name="description2"/>
+                                </group>
+                            </group>
+
+                            <field name="package_line_ids" invisible="not use_multi_package">
+                                <tree editable="bottom">
+                                    <field name="description"/>
+                                    <field name="weight" sum="Total Weight"/>
+                                    <field name="length" optional="show"/>
+                                    <field name="width" optional="show"/>
+                                    <field name="height" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="COD">
+                            <group>
+                                <group>
+                                    <field name="is_cod"/>
+                                    <field name="cod_amount" required="is_cod" invisible="not is_cod"/>
+                                    <field name="cod_currency_id" required="is_cod" invisible="not is_cod"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Collection">
+                            <group>
+                                <field name="auto_create_pickup"/>
+                                <field name="use_warehouse_address"/>
+                                <field name="collection_country_id" invisible="1"/>
+                            </group>
+
+                            <!-- منطقة التجميع -->
+                            <group string="Collection Area" invisible="not auto_create_pickup">
+                                <field name="collection_area_id"
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       context="{'default_country_id': collection_country_id}"/>
+                            </group>
+
+                            <group invisible="use_warehouse_address">
+                                <group>
+                                    <field name="collection_name" required="not use_warehouse_address"/>
+                                    <field name="collection_phone" required="not use_warehouse_address"/>
+                                </group>
+                                <group>
+                                    <field name="collection_address" required="not use_warehouse_address"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Notes">
+                            <field name="notes" placeholder="Add any special instructions or notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_create_shipment"
+                            type="object"
+                            string="Create Shipment"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

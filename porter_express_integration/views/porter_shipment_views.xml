@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_porter_shipment_form" model="ir.ui.view">
+        <field name="name">porter.shipment.form</field>
+        <field name="model">porter.shipment</field>
+        <field name="arch" type="xml">
+            <form string="Porter Shipment">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_transit,delivered"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" invisible="not name"/>
+                            <span invisible="name">New Shipment</span>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="reference2"/>
+                            <field name="product_code"/>
+                            <field name="picking_id"/>
+                            <field name="sale_order_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
+                        </group>
+                        <group string="Package Details">
+                            <field name="pieces"/>
+                            <field name="weight"/>
+                            <field name="cod_amount" invisible="cod_amount == 0"/>
+                            <field name="cod_currency" invisible="cod_amount == 0"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Tracking">
+                            <field name="tracking_url" widget="url" invisible="not tracking_url"/>
+                            <field name="pickup_date"/>
+                            <field name="delivery_date" readonly="1"/>
+                        </group>
+                        <group string="Documents">
+                            <field name="label_pdf" filename="label_filename" invisible="not label_pdf"/>
+                            <field name="label_filename" column_invisible="True"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_porter_shipment_tree" model="ir.ui.view">
+        <field name="name">porter.shipment.tree</field>
+        <field name="model">porter.shipment</field>
+        <field name="arch" type="xml">
+            <tree string="Porter Shipments">
+                <field name="name"/>
+                <field name="reference2"/>
+                <field name="picking_id"/>
+                <field name="partner_id"/>
+                <field name="product_code"/>
+                <field name="state" widget="badge" decoration-success="state == 'delivered'" decoration-info="state == 'in_transit'" decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_porter_shipment_search" model="ir.ui.view">
+        <field name="name">porter.shipment.search</field>
+        <field name="model">porter.shipment</field>
+        <field name="arch" type="xml">
+            <search string="Search Shipments">
+                <field name="name"/>
+                <field name="reference2"/>
+                <field name="picking_id"/>
+                <field name="partner_id"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="In Transit" name="in_transit" domain="[('state','=','in_transit')]"/>
+                <filter string="Delivered" name="delivered" domain="[('state','=','delivered')]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('create_date','&gt;=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),('create_date','&lt;=', datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by':'state'}"/>
+                    <filter string="Customer" name="group_by_partner" context="{'group_by':'partner_id'}"/>
+                    <filter string="Service Type" name="group_by_product_code" context="{'group_by':'product_code'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_porter_shipment" model="ir.actions.act_window">
+        <field name="name">Porter Shipments</field>
+        <field name="res_model">porter.shipment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_porter_shipment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Porter shipments found
+            </p>
+            <p>
+                Create shipments from delivery orders.
+            </p>
+        </field>
+    </record>
+</odoo>

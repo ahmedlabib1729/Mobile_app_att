@@ -1,0 +1,15 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Porter Express Delivery Product -->
+        <record id="product_porter_delivery" model="product.product">
+            <field name="name">Porter Express Shipping</field>
+            <field name="default_code">PORTER_SHIP</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="delivery.product_category_deliveries"/>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="standard_price">0</field>
+        </record>
+    </data>
+</odoo>

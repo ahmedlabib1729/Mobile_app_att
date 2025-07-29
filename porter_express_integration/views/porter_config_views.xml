@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_porter_config_form" model="ir.ui.view">
+        <field name="name">porter.config.form</field>
+        <field name="model">porter.config</field>
+        <field name="arch" type="xml">
+            <form string="Porter Express Configuration">
+                <header>
+                    <button name="test_connection" type="object" string="Test Connection" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Porter Kuwait"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Country Settings">
+                            <field name="country_id" options="{'no_create': True}"/>
+                            <field name="is_default_for_country"/>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="API Settings">
+                            <field name="api_url"/>
+                            <field name="api_email"/>
+                            <field name="api_password" password="True"/>
+                            <field name="token_expiry" readonly="1" invisible="not token_expiry"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Default Settings">
+                            <field name="default_product_code"/>
+                            <field name="auto_create_pickup"/>
+                        </group>
+                        <group string="Options">
+                            <field name="debug_mode"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <separator string="Notes"/>
+                    <field name="note" nolabel="1" placeholder="Add any notes or special instructions..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_porter_config_tree" model="ir.ui.view">
+        <field name="name">porter.config.tree</field>
+        <field name="model">porter.config</field>
+        <field name="arch" type="xml">
+            <tree string="Porter Express Configurations">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="is_default_for_country" widget="boolean_toggle"/>
+                <field name="api_email"/>
+                <field name="currency_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_porter_config_search" model="ir.ui.view">
+        <field name="name">porter.config.search</field>
+        <field name="model">porter.config</field>
+        <field name="arch" type="xml">
+            <search string="Search Porter Configuration">
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="api_email"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Default for Country" name="is_default" domain="[('is_default_for_country', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_by_country" context="{'group_by': 'country_id'}"/>
+                    <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_porter_config" model="ir.actions.act_window">
+        <field name="name">Porter Express Configuration</field>
+        <field name="res_model">porter.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_porter_config_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure Porter Express Integration
+            </p>
+            <p>
+                Create configurations for each country where you use Porter Express services.
+            </p>
+        </field>
+    </record>
+</odoo>
