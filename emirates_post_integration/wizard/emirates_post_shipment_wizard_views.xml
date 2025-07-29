@@ -1,0 +1,70 @@
+<odoo>
+    <record id="view_emirates_post_shipment_wizard_form" model="ir.ui.view">
+        <field name="name">emirates.post.shipment.wizard.form</field>
+        <field name="model">emirates.post.shipment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Emirates Post Shipment">
+                <group>
+                    <group string="Order Information">
+                        <field name="picking_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="reference_no"/>
+                    </group>
+                    <group string="Shipment Details">
+                        <field name="cod_amount"/>
+                        <field name="pieces"/>
+                        <field name="weight"/>
+                        <field name="item_value"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Sender Information">
+                        <group>
+                            <field name="sender_name"/>
+                            <field name="sender_company"/>
+                            <field name="sender_address"/>
+                            <field name="sender_city" options="{'no_create': True}"/>
+                            <field name="sender_phone"/>
+                            <field name="sender_mobile"/>
+                            <field name="sender_email"/>
+                        </group>
+                    </page>
+                    <page string="Receiver Information">
+                        <group>
+                            <field name="receiver_name"/>
+                            <field name="receiver_company"/>
+                            <field name="receiver_address"/>
+                            <field name="receiver_city" options="{'no_create': True}"/>
+                            <field name="receiver_phone"/>
+                            <field name="receiver_mobile"/>
+                            <field name="receiver_email"/>
+                        </group>
+                    </page>
+                    <page string="Package Details">
+                        <group>
+                            <group>
+                                <field name="length"/>
+                                <field name="width"/>
+                                <field name="height"/>
+                            </group>
+                            <group>
+                                <field name="commodity_description"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Pickup">
+                        <group>
+                            <field name="pickup_date"/>
+                            <field name="pickup_time_from"/>
+                            <field name="pickup_time_to"/>
+                        </group>
+                    </page>
+                </notebook>
+                <footer>
+                    <button name="action_create_shipment" string="Create Shipment" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
