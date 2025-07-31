@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_m5_order_wizard_form" model="ir.ui.view">
+        <field name="name">m5.order.wizard.form</field>
+        <field name="model">m5.order.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create M5 Order">
+                <sheet>
+                    <group>
+                        <group string="Order Information">
+                            <field name="picking_id" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="warehouse_id"/>
+                        </group>
+                        <group string="Order Details">
+                            <field name="plat_order_id"/>
+                            <field name="order_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Customer Information">
+                        <group>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="mobile"/>
+                            <field name="city_name"/>
+                            <field name="city_id"/>
+                        </group>
+                    </group>
+
+                    <group string="Delivery Address">
+                        <field name="address" nolabel="1" widget="text"/>
+                    </group>
+
+                    <group>
+                        <group string="Financial">
+                            <field name="grand_total"/>
+                            <field name="is_cod"/>
+                            <field name="cod_amount" required="is_cod" invisible="not is_cod"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes" nolabel="1" widget="text" placeholder="Add any special instructions..."/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_create_order"
+                            type="object"
+                            string="Create &amp; Send Order"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

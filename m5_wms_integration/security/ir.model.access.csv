@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_m5_config_user,m5.config.user,model_m5_config,group_m5_user,1,0,0,0
+access_m5_config_manager,m5.config.manager,model_m5_config,group_m5_manager,1,1,1,1
+access_m5_order_user,m5.order.user,model_m5_order,group_m5_user,1,1,1,0
+access_m5_order_manager,m5.order.manager,model_m5_order,group_m5_manager,1,1,1,1
+access_m5_order_wizard,m5.order.wizard,model_m5_order_wizard,group_m5_user,1,1,1,1
+access_m5_order_stock_user,m5.order.stock.user,model_m5_order,stock.group_stock_user,1,0,0,0
