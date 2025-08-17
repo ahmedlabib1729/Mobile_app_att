@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- تعديل فورم Payment Provider -->
+    <record id="payment_provider_form_cod" model="ir.ui.view">
+        <field name="name">payment.provider.form.cod</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <!-- إضافة حقل الصورة -->
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="image_128" widget="image" class="oe_avatar" invisible="not is_cod_provider"/>
+            </xpath>
+            <!-- إضافة الحقل المحسوب -->
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="is_cod_provider" invisible="1"/>
+            </xpath>
+            <!-- إضافة صفحة COD Settings -->
+            <xpath expr="//notebook" position="inside">
+                <page string="COD Settings" name="cod_settings" invisible="not is_cod_provider">
+                    <group>
+                        <group string="Fee Configuration">
+                            <field name="cod_fee_active"/>
+                            <field name="cod_fee_type" invisible="not cod_fee_active" required="cod_fee_active"/>
+                            <field name="cod_fee_amount" invisible="not cod_fee_active" required="cod_fee_active"/>
+                            <field name="cod_fee_product_id" invisible="not cod_fee_active" required="cod_fee_active" context="{'default_type': 'service', 'default_name': 'COD Fee'}"/>
+                        </group>
+                        <group string="Order Limits">
+                            <field name="cod_minimum_amount"/>
+                            <field name="cod_maximum_amount"/>
+                        </group>
+                    </group>
+                    <group string="Information" invisible="not cod_fee_active">
+                        <div class="alert alert-info" role="alert">
+                            <p>
+                                <strong>Note:</strong> COD fees will be automatically added to sales orders when customers select Cash on Delivery as payment method.
+                            </p>
+                            <ul>
+                                <li>Fixed Amount: The exact amount will be added as fee</li>
+                                <li>Percentage: The percentage will be calculated from order subtotal</li>
+                            </ul>
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree view للـ Payment Providers مع عمود COD -->
+    <record id="payment_provider_tree_cod" model="ir.ui.view">
+        <field name="name">payment.provider.tree.cod</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="is_cod_provider" invisible="1"/>
+                <field name="cod_fee_active" string="COD Fee" optional="hide" column_invisible="not is_cod_provider"/>
+                <field name="cod_fee_amount" string="Fee Amount" optional="hide" column_invisible="not is_cod_provider"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
