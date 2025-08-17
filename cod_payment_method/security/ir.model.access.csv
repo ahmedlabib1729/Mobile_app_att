@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_method_country_fee_user,payment.method.country.fee.user,model_payment_method_country_fee,base.group_user,1,0,0,0
+access_payment_method_country_fee_manager,payment.method.country.fee.manager,model_payment_method_country_fee,base.group_system,1,1,1,1
+access_payment_method_country_fee_portal,payment.method.country.fee.portal,model_payment_method_country_fee,base.group_portal,1,0,0,0
+access_payment_method_country_fee_public,payment.method.country.fee.public,model_payment_method_country_fee,base.group_public,1,0,0,0
+access_payment_method_country_fee_sale_manager,payment.method.country.fee.sale.manager,model_payment_method_country_fee,sales_team.group_sale_manager,1,1,1,0
+access_payment_method_country_fee_account_manager,payment.method.country.fee.account.manager,model_payment_method_country_fee,account.group_account_manager,1,1,1,1
