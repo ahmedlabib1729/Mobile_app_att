@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_student_form" model="ir.ui.view">
+        <field name="name">quran.student.form</field>
+        <field name="model">quran.student</field>
+        <field name="arch" type="xml">
+            <form string="بطاقة الطالب">
+                <header>
+
+                    <button name="action_create_portal_user"
+                        string="إنشاء حساب بورتال"
+                        type="object"
+                        class="btn-primary"
+                        invisible="user_id"
+                        confirm="هل أنت متأكد من إنشاء حساب بورتال لهذا الطالب؟ سيتم إرسال بيانات الدخول على البريد الإلكتروني المسجل."
+                        icon="fa-user-plus"/>
+
+                    <button name="action_activate" string="تفعيل" type="object"
+                            class="btn-success" invisible="state == 'active'"/>
+                    <button name="action_deactivate" string="إيقاف" type="object"
+                            class="btn-warning" invisible="state != 'active'"/>
+
+                    <button name="action_suspend" string="إيقاف مؤقت" type="object"
+                            class="btn-danger" invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,inactive,graduated"/>
+                </header>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image'}"/>
+                    <div class="oe_title">
+                        <label for="student_code" string="رقم الطالب"/>
+                        <h1>
+                            <field name="student_code"/>
+                        </h1>
+                        <label for="name_ar" string="اسم الطالب"/>
+                        <h2>
+                            <field name="name_ar" class="oe_inline"/>
+                        </h2>
+                    </div>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_applications" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="application_count" widget="statinfo" string="طلبات الالتحاق"/>
+                        </button>
+
+                        <button name="action_view_classes" type="object" class="oe_stat_button" icon="fa-graduation-cap">
+                            <field name="class_count" widget="statinfo" string="الصفوف"/>
+                        </button>
+
+                        <button class="oe_stat_button" icon="fa-globe"
+                        invisible="not user_id"
+                        type="object"
+                        name="action_open_portal">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text text-success" invisible="not user_id">
+                            <i class="fa fa-check"/> بورتال نشط
+                        </span>
+                        <span class="o_stat_text text-danger" invisible="user_id">
+                            <i class="fa fa-times"/> لا يوجد بورتال
+                        </span>
+                    </div>
+                </button>
+
+                    </div>
+
+                    <group>
+                        <group string="البيانات الشخصية">
+                            <field name="name_en" string="Name in English"/>
+                            <field name="birth_date" string="تاريخ الميلاد"/>
+                            <field name="age" string="العمر"/>
+                            <field name="gender" string="الجنس"/>
+                            <field name="nationality" string="الجنسية"/>
+                            <field name="id_number" string="رقم الهوية/الجواز"/>
+                        </group>
+                        <group string="معلومات التواصل">
+                            <field name="phone" string="رقم الهاتف"/>
+                            <field name="email" string="البريد الإلكتروني" widget="email"/>
+                            <field name="address" string="العنوان"/>
+                            <field name="user_id" string="إسم المستخدم "/>
+
+                        </group>
+                    </group>
+
+                    <group string="البيانات التعليمية">
+                        <group>
+                            <field name="education_level" string="المرحلة الدراسية"/>
+                            <field name="registration_date" string="تاريخ التسجيل"/>
+                        </group>
+                        <group>
+                            <field name="memorization_level" string="مستوى الحفظ"/>
+                            <field name="total_memorization_pages" string="إجمالي صفحات الحفظ"/>
+                        </group>
+                    </group>
+
+                    <group string="تفاصيل الحفظ">
+                        <group>
+                            <field name="current_memorized_pages" string="الصفحات المحفوظة حالياً"/>
+                            <field name="memorization_start_page" string="بداية الحفظ"/>
+                            <field name="memorization_end_page" string="نهاية الحفظ"/>
+                        </group>
+                        <group>
+                            <field name="review_pages" string="صفحات المراجعة"/>
+                        </group>
+                    </group>
+
+                    <group string="معلومات ولي الأمر" invisible="age >= 18">
+                        <group>
+                            <field name="guardian_name" string="اسم ولي الأمر"/>
+                            <field name="guardian_phone" string="هاتف ولي الأمر"/>
+                        </group>
+                        <group>
+                            <field name="guardian_relation" string="صلة القرابة"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="طلبات الالتحاق">
+                            <field name="application_ids" readonly="1">
+                                <list>
+                                    <field name="name" string="رقم الطلب"/>
+                                    <field name="enrollment_date" string="تاريخ الطلب"/>
+                                    <field name="state" string="الحالة" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="الصفوف">
+                            <field name="class_ids" readonly="1">
+                                <list>
+                                    <field name="code" string="كود الصف"/>
+                                    <field name="name" string="اسم الصف"/>
+                                    <field name="covenant_id" string="الميثاق"/>
+                                    <field name="teacher_id" string="المدرس"/>
+                                    <field name="state" string="الحالة" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="جلسات النوادي" name="club_sessions" invisible="not show_club_notebook">
+                        <field name="club_session_ids" readonly="1">
+                            <list create="false" edit="false" delete="false">
+                                <field name="session_date" string="التاريخ"/>
+                                <field name="session_name" string="الجلسة"/>
+                                <field name="status" string="الحالة" widget="badge"/>
+                                <field name="behavior_score" string="السلوك" optional="show"/>
+                                <field name="memorization_score" string="الحفظ" optional="show"/>
+                                <field name="revision_score" string="المراجعة" optional="show"/>
+                                <field name="daily_memorization_surah" string="الحفظ اليومي" optional="show"/>
+                                <field name="verse_from" string="من آية" optional="show"/>
+                                <field name="verse_to" string="إلى آية" optional="show"/>
+                                <field name="revision_surah" string="سورة المراجعة" optional="hide"/>
+                                <field name="revision_verse_from" string="من آية" optional="hide"/>
+                                <field name="revision_verse_to" string="إلى آية" optional="hide"/>
+                                <field name="notes" string="ملاحظات" optional="hide"/>
+                            </list>
+                        </field>
+                    </page>
+
+                        <page string="جلسات السيدات" name="ladies_sessions" invisible="not show_ladies_notebook or age &lt; 18">
+                            <field name="ladies_session_ids" readonly="1">
+                                <list create="false" edit="false" delete="false">
+                                    <field name="session_date" string="التاريخ"/>
+                                    <field name="session_name" string="الجلسة"/>
+                                    <field name="status" string="الحالة" widget="badge"/>
+                                    <field name="daily_memorization_surah" string="المقرر اليومي"/>
+                                    <field name="verse_from" string="من آية"/>
+                                    <field name="verse_to" string="إلى آية"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="الجلسات النوادى المنتهية">
+                            <field name="completed_attendance_ids" readonly="1">
+                                <list>
+                                    <field name="session_id" string="اسم الجلسة"/>
+                                    <field name="session_date" string="التاريخ"/>
+                                    <field name="status" string="الحالة" widget="badge"
+                                           decoration-success="status == 'present'"
+                                           decoration-danger="status == 'absent'"
+                                           decoration-warning="status == 'late'"
+                                           decoration-info="status == 'excused'"/>
+                                    <field name="behavior_score" string="السلوك"/>
+                                    <field name="memorization_score" string="الحفظ"/>
+                                    <field name="revision_score" string="المراجعة"/>
+                                    <field name="daily_memorization_surah" string="الحفظ اليومي"/>
+                                    <field name="verse_from" string="من آية"/>
+                                    <field name="verse_to" string="إلى آية"/>
+                                    <field name="revision_surah" string="سورة المراجعة"/>
+                                    <field name="revision_verse_from" string="من آية"/>
+                                    <field name="revision_verse_to" string="إلى آية"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="جلسات السيدات المنتهية" invisible="not show_ladies_notebook or age &lt; 18">
+                            <field name="completed_ladies_attendance_ids" readonly="1">
+                                <list>
+                                    <field name="session_id" string="اسم الجلسة"/>
+                                    <field name="session_date" string="التاريخ"/>
+                                    <field name="status" string="الحالة" widget="badge"
+                                           decoration-success="status == 'present'"
+                                           decoration-danger="status == 'absent'"
+                                           decoration-warning="status == 'late'"
+                                           decoration-info="status == 'excused'"/>
+                                    <field name="daily_memorization_surah" string="المقرر اليومي"/>
+                                    <field name="verse_from" string="من آية"/>
+                                    <field name="verse_to" string="إلى آية"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="المستندات والوثائق" name="documents">
+                            <group string="الوثائق الرسمية">
+                                <group>
+                                    <field name="emirates_id_file" filename="emirates_id_filename" widget="binary"/>
+                                    <field name="emirates_id_filename" invisible="1"/>
+
+                                    <field name="passport_file" filename="passport_filename" widget="binary"/>
+                                    <field name="passport_filename" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="residence_file" filename="residence_filename" widget="binary"/>
+                                    <field name="residence_filename" invisible="1"/>
+
+                                    <field name="other_document_file" filename="other_document_filename" widget="binary"/>
+                                    <field name="other_document_filename" invisible="1"/>
+                                </group>
+                            </group>
+
+                            <separator string="مستندات إضافية"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+
+                        <page string="ملاحظات">
+                            <field name="notes" string="ملاحظات"/>
+                        </page>
+                    </notebook>
+
+                    <!-- الحقول المخفية للتحكم في إظهار النوتبوك -->
+<field name="show_club_notebook" invisible="1"/>
+<field name="show_ladies_notebook" invisible="1"/>
+
+<!-- نوتبوك جلسات النوادي -->
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_student_list" model="ir.ui.view">
+        <field name="name">quran.student.list</field>
+        <field name="model">quran.student</field>
+        <field name="arch" type="xml">
+            <list string="الطلاب">
+                <field name="student_code" string="رقم الطالب"/>
+                <field name="name_ar" string="الاسم"/>
+                <field name="age" string="العمر"/>
+                <field name="gender" string="الجنس"/>
+                <field name="nationality" string="الجنسية"/>
+                <field name="education_level" string="المرحلة الدراسية"/>
+                <field name="memorization_level" string="مستوى الحفظ"/>
+                <field name="current_memorized_pages" string="الصفحات المحفوظة"/>
+                <field name="state" string="الحالة" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'inactive'"
+                       decoration-info="state == 'graduated'"
+                       decoration-danger="state == 'suspended'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_student_search" model="ir.ui.view">
+        <field name="name">quran.student.search</field>
+        <field name="model">quran.student</field>
+        <field name="arch" type="xml">
+            <search string="بحث الطلاب">
+                <field name="student_code" string="رقم الطالب"/>
+                <field name="name_ar" string="الاسم بالعربية"/>
+                <field name="name_en" string="Name in English"/>
+                <field name="id_number" string="رقم الهوية"/>
+                <filter string="نشط" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="غير نشط" name="inactive" domain="[('state', '=', 'inactive')]"/>
+                <filter string="متخرج" name="graduated" domain="[('state', '=', 'graduated')]"/>
+                <filter string="موقوف" name="suspended" domain="[('state', '=', 'suspended')]"/>
+                <separator/>
+                <filter string="ذكور" name="male" domain="[('gender', '=', 'male')]"/>
+                <filter string="إناث" name="female" domain="[('gender', '=', 'female')]"/>
+                <separator/>
+                <filter string="مبتدئ" name="beginner" domain="[('memorization_level', '=', 'beginner')]"/>
+                <filter string="متوسط" name="intermediate" domain="[('memorization_level', '=', 'intermediate')]"/>
+                <filter string="متقدم" name="advanced" domain="[('memorization_level', '=', 'advanced')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الجنس" name="group_gender" context="{'group_by': 'gender'}"/>
+                    <filter string="الجنسية" name="group_nationality" context="{'group_by': 'nationality'}"/>
+                    <filter string="المرحلة الدراسية" name="group_education" context="{'group_by': 'education_level'}"/>
+                    <filter string="مستوى الحفظ" name="group_level" context="{'group_by': 'memorization_level'}"/>
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_student_kanban" model="ir.ui.view">
+        <field name="name">quran.student.kanban</field>
+        <field name="model">quran.student</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <field name="image"/>
+                <field name="student_code"/>
+                <field name="name_ar"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <field name="memorization_level"/>
+                <field name="current_memorized_pages"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('quran.student', 'image', record.id.raw_value)" alt="Student"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name_ar"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <field name="student_code"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-user"/>
+                                    <field name="age"/> سنة -
+                                    <field name="gender"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-book"/>
+                                    <field name="current_memorized_pages"/> صفحة
+                                </div>
+                                <div>
+                                    <span t-if="record.state.raw_value == 'active'" class="badge badge-success">نشط</span>
+                                    <span t-if="record.state.raw_value == 'inactive'" class="badge badge-warning">غير نشط</span>
+                                    <span t-if="record.state.raw_value == 'graduated'" class="badge badge-info">متخرج</span>
+                                    <span t-if="record.state.raw_value == 'suspended'" class="badge badge-danger">موقوف</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_student_form_portal_smart_button" model="ir.ui.view">
+        <field name="name">quran.student.form.portal.smart.button</field>
+        <field name="model">quran.student</field>
+        <field name="inherit_id" ref="quran_center.view_student_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_portal"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-external-link"
+                        invisible="not user_id"
+                        help="فتح البورتال الخاص بالطالب">
+                    <span class="o_stat_text">فتح البورتال</span>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_student" model="ir.actions.act_window">
+        <field name="name">الطلاب</field>
+        <field name="res_model">quran.student</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                لا يوجد طلاب مسجلين بعد
+            </p>
+            <p>
+                يتم إنشاء الطلاب من خلال قبول طلبات الالتحاق
+            </p>
+        </field>
+    </record>
+</odoo>

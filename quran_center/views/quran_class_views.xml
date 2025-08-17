@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_quran_class_form" model="ir.ui.view">
+        <field name="name">quran.class.form</field>
+        <field name="model">quran.class</field>
+        <field name="arch" type="xml">
+            <form string="الصف">
+                <header>
+                    <button name="action_confirm" string="تأكيد" type="object" 
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_start" string="بدء" type="object" 
+                            class="btn-success" invisible="state != 'confirmed'"/>
+                    <button name="action_complete" string="إكمال" type="object" 
+                            class="btn-info" invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="إلغاء" type="object" 
+                            class="btn-danger" invisible="state in ['completed', 'cancelled']"/>
+                    <button name="action_draft" string="إعادة للمسودة" type="object" 
+                            invisible="state not in ['cancelled']" groups="base.group_system"/>
+                    <button name="action_generate_sessions" string="توليد الجلسات" type="object" 
+                            class="btn-primary" invisible="state not in ['confirmed', 'in_progress']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_students" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="student_count" widget="statinfo" string="الطلاب"/>
+                        </button>
+                        <button name="action_view_sessions" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="session_count" widget="statinfo" string="الجلسات"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <label for="code" string="كود الصف"/>
+                        <h1>
+                            <field name="code"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="name" string="تفاصيل الصف"/>
+
+                            <field name="class_session_type" widget="radio" options="{'horizontal': true}"/>
+                            <field name="program_type" widget="radio" options="{'horizontal': true}"/>
+                            <field name="covenant_id" options="{'no_create': True}"/>
+                            <field name="teacher_id" string="المدرس الأول"/>
+                            <field name="teacher_id2" string="المدرس الثانى"/>
+                        </group>
+                        <group>
+                            <field name="start_date" string="تاريخ البدء"/>
+                            <field name="end_date" string="تاريخ الانتهاء"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    
+                    <group string="تفاصيل الصف">
+                        <group>
+                            <label for="age_from" string="أعمار المسجلين"/>
+                            <div class="o_row">
+                                <field name="age_from" nolabel="1"/> 
+                                <span> إلى </span>
+                                <field name="age_to" nolabel="1"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="total_sessions" string="عدد الحصص الإجمالي"/>
+                            <field name="session_duration" widget="float_time" string="مدة الجلسة"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="الطلاب المشتركين" name="students">
+                            <field name="student_ids">
+                                <list>
+                                    <field name="student_code"/>
+                                    <field name="name_ar"/>
+                                    <field name="name_en" string="الإسم باللغه الانجليزية"/>
+                                    <field name="age"/>
+                                    <field name="gender"/>
+                                    <field name="memorization_level"/>
+                                    <field name="current_memorized_pages"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="جدول الحصص" name="schedule">
+                            <field name="schedule_line_ids">
+                                <list editable="bottom">
+                                    <field name="weekday"/>
+                                    <field name="start_time" widget="float_time"/>
+                                    <field name="end_time" widget="float_time"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="الجلسات" name="sessions">
+                            <field name="session_ids" readonly="1">
+                                <list>
+                                    <field name="session_date"/>
+                                    <field name="start_datetime" widget="datetime"/>
+                                    <field name="end_datetime" widget="datetime"/>
+                                    <field name="present_count"/>
+                                    <field name="absent_count"/>
+                                    <field name="attendance_rate" widget="percentage"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="الشروط والأحكام" name="terms">
+                            <field name="terms_conditions" placeholder="أدخل الشروط والأحكام..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_quran_class_list" model="ir.ui.view">
+        <field name="name">quran.class.list</field>
+        <field name="model">quran.class</field>
+        <field name="arch" type="xml">
+            <list string="الصفوف">
+                <field name="code"/>
+                <field name="name"/>
+
+                <field name="class_session_type"/>
+                <field name="program_type"/>
+                <field name="covenant_id"/>
+                <field name="teacher_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="student_count"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'draft'" 
+                       decoration-warning="state == 'confirmed'"
+                       decoration-success="state == 'in_progress'"
+                       decoration-muted="state == 'completed'"
+                       decoration-danger="state == 'cancelled'"/>
+
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_quran_class_search" model="ir.ui.view">
+        <field name="name">quran.class.search</field>
+        <field name="model">quran.class</field>
+        <field name="arch" type="xml">
+            <search string="بحث الصفوف">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="covenant_id"/>
+                <field name="teacher_id"/>
+                <filter string="نشط" name="active" domain="[('active', '=', True)]"/>
+                <filter string="غير نشط" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="برامج النوادي" name="clubs_program"
+                        domain="[('program_type', '=', 'clubs')]"/>
+                <filter string="برامج السيدات" name="ladies_program"
+                        domain="[('program_type', '=', 'ladies')]"/>
+                <separator/>
+                <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="مؤكد" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="جاري" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="مكتمل" name="completed" domain="[('state', '=', 'completed')]"/>
+                <filter string="ملغي" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الميثاق" name="group_covenant" context="{'group_by': 'covenant_id'}"/>
+                    <filter string="المدرس" name="group_teacher" context="{'group_by': 'teacher_id'}"/>
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="نوع البرنامج" name="group_program" context="{'group_by': 'program_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_quran_class" model="ir.actions.act_window">
+        <field name="name">الصفوف</field>
+        <field name="res_model">quran.class</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء صف جديد
+            </p>
+            <p>
+                قم بإنشاء وإدارة الصفوف الدراسية
+            </p>
+        </field>
+    </record>
+</odoo>
