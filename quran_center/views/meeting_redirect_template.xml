@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Meeting Redirect Template -->
+    <template id="meeting_redirect_page" name="Meeting Redirect">
+        <html>
+            <head>
+                <title>جاري الدخول للجلسة...</title>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <t t-if="redirect_url">
+                    <meta http-equiv="refresh" t-att-content="'0; url=' + redirect_url"/>
+                </t>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                        background-color: #f5f5f5;
+                    }
+                    .loading-container {
+                        text-align: center;
+                        background: white;
+                        padding: 40px;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    }
+                    .spinner {
+                        border: 4px solid #f3f3f3;
+                        border-top: 4px solid #667eea;
+                        border-radius: 50%;
+                        width: 50px;
+                        height: 50px;
+                        animation: spin 1s linear infinite;
+                        margin: 0 auto 20px;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    h2 {
+                        color: #333;
+                        margin-bottom: 10px;
+                    }
+                    p {
+                        color: #666;
+                    }
+                    .btn {
+                        display: inline-block;
+                        margin-top: 20px;
+                        padding: 10px 20px;
+                        background-color: #667eea;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 5px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <h2>جاري الدخول للجلسة...</h2>
+                    <p>سيتم توجيهك تلقائياً خلال ثوانٍ</p>
+                    <t t-if="redirect_url">
+                        <a t-att-href="redirect_url" class="btn">انقر هنا إذا لم يتم التوجيه</a>
+                    </t>
+                </div>
+                <t t-if="redirect_url">
+                    <script>
+                        setTimeout(function() {
+                            window.location.href = '<t t-esc="redirect_url"/>';
+                        }, 1000);
+                    </script>
+                </t>
+            </body>
+        </html>
+    </template>
+</odoo>

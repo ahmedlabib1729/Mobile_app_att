@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Homepage Template -->
+    <template id="website_homepage" name="Quran Center Homepage" inherit_id="website.homepage" priority="20">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap">
+                <style>
+                    /* Arabic Fonts */
+                    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=Cairo:wght@300;400;600;700&amp;display=swap');
+
+                    .hero-section {
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                                    url('/web/image/website.hero_bg') center/cover;
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        color: white;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .hero-section::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                    }
+
+                    .quran-verse {
+                        font-family: 'Amiri', serif;
+                        font-size: 2.5rem;
+                        line-height: 2;
+                        text-align: center;
+                        margin-bottom: 2rem;
+                        position: relative;
+                        z-index: 1;
+                    }
+
+                    .verse-translation {
+                        font-family: 'Cairo', sans-serif;
+                        font-size: 1.2rem;
+                        opacity: 0.9;
+                        text-align: center;
+                        margin-bottom: 3rem;
+                    }
+
+                    .section-title {
+                        font-family: 'Cairo', sans-serif;
+                        font-weight: 700;
+                        font-size: 2.5rem;
+                        text-align: center;
+                        margin-bottom: 3rem;
+                        position: relative;
+                    }
+
+                    .section-title::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -15px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 80px;
+                        height: 4px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 2px;
+                    }
+
+                    .feature-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 40px 30px;
+                        text-align: center;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+                        transition: all 0.3s ease;
+                        height: 100%;
+                    }
+
+                    .feature-card:hover {
+                        transform: translateY(-10px);
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+                    }
+
+                    .feature-icon {
+                        width: 80px;
+                        height: 80px;
+                        margin: 0 auto 20px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 36px;
+                        color: white;
+                    }
+
+                    .stats-section {
+                        background: #f8f9fa;
+                        padding: 80px 0;
+                        position: relative;
+                    }
+
+                    .stat-box {
+                        text-align: center;
+                        padding: 30px;
+                    }
+
+                    .stat-number {
+                        font-size: 3rem;
+                        font-weight: 700;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        margin-bottom: 10px;
+                    }
+
+                    .cta-section {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 100px 0;
+                        color: white;
+                        text-align: center;
+                    }
+
+                    .btn-quran {
+                        background: white;
+                        color: #667eea;
+                        padding: 15px 40px;
+                        border-radius: 50px;
+                        font-weight: 600;
+                        text-decoration: none;
+                        display: inline-block;
+                        transition: all 0.3s ease;
+                        margin: 10px;
+                    }
+
+                    .btn-quran:hover {
+                        transform: scale(1.05);
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                        color: #764ba2;
+                    }
+
+                    .islamic-pattern {
+                        position: absolute;
+                        opacity: 0.1;
+                        font-size: 200px;
+                        color: #667eea;
+                    }
+
+                    .testimonial-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 30px;
+                        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                        margin-bottom: 20px;
+                    }
+
+                    .student-avatar {
+                        width: 60px;
+                        height: 60px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 24px;
+                        margin-right: 15px;
+                    }
+                </style>
+
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="quran-verse">
+                                    إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ
+                                </div>
+                                <div class="verse-translation">
+                                    "إن هذا القرآن يهدي للتي هي أقوم" - سورة الإسراء
+                                </div>
+                                <h1 class="display-3 text-center mb-4 font-weight-bold">
+                                    مركز تحفيظ القرآن الكريم
+                                </h1>
+                                <p class="lead text-center mb-5">
+                                    نور القلوب بكلام الله - تعلم وحفظ القرآن الكريم بأحدث الطرق التعليمية
+                                </p>
+                                <div class="text-center">
+                                    <a href="/enrollment/application" class="btn-quran">
+                                        <i class="fa fa-edit me-2"></i>
+                                        التسجيل الآن
+                                    </a>
+                                    <a href="/about" class="btn-quran">
+                                        <i class="fa fa-info-circle me-2"></i>
+                                        تعرف علينا
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="py-5 mt-5">
+                    <div class="container">
+                        <h2 class="section-title">لماذا تختار مركزنا؟</h2>
+                        <div class="row g-4 mt-5">
+                            <div class="col-md-4">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-graduation-cap"></i>
+                                    </div>
+                                    <h4 class="mb-3">معلمون متخصصون</h4>
+                                    <p class="text-muted">
+                                        نخبة من المعلمين المجازين في القراءات العشر وعلوم القرآن
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-users"></i>
+                                    </div>
+                                    <h4 class="mb-3">برامج متنوعة</h4>
+                                    <p class="text-muted">
+                                        برامج للأطفال والشباب والسيدات بمناهج متطورة ومرنة
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-card">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-laptop"></i>
+                                    </div>
+                                    <h4 class="mb-3">تعليم أونلاين</h4>
+                                    <p class="text-muted">
+                                        جلسات تفاعلية عبر الإنترنت مع متابعة مستمرة للطلاب
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Statistics Section -->
+                <section class="stats-section">
+                    <div class="container">
+                        <h2 class="section-title mb-5">إنجازاتنا بالأرقام</h2>
+                        <div class="row">
+                            <div class="col-md-3 col-6">
+                                <div class="stat-box">
+                                    <div class="stat-number">500+</div>
+                                    <h5>طالب وطالبة</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="stat-box">
+                                    <div class="stat-number">50+</div>
+                                    <h5>معلم ومعلمة</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="stat-box">
+                                    <div class="stat-number">100+</div>
+                                    <h5>خاتم للقرآن</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="stat-box">
+                                    <div class="stat-number">15+</div>
+                                    <h5>سنوات خبرة</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Programs Section -->
+                <section class="py-5">
+                    <div class="container">
+                        <h2 class="section-title">برامجنا التعليمية</h2>
+                        <div class="row g-4 mt-5">
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center p-4 bg-light rounded-3">
+                                    <div class="feature-icon me-4" style="background: #4caf50;">
+                                        <i class="fa fa-child"></i>
+                                    </div>
+                                    <div>
+                                        <h4>برنامج النوادي</h4>
+                                        <p class="mb-0 text-muted">للأطفال والناشئة من 6 إلى 18 سنة</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center p-4 bg-light rounded-3">
+                                    <div class="feature-icon me-4" style="background: #e91e63;">
+                                        <i class="fa fa-female"></i>
+                                    </div>
+                                    <div>
+                                        <h4>برنامج السيدات</h4>
+                                        <p class="mb-0 text-muted">للنساء من 18 سنة فما فوق</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testimonials Section -->
+                <section class="py-5 bg-light">
+                    <div class="container">
+                        <h2 class="section-title">آراء طلابنا</h2>
+                        <div class="row mt-5">
+                            <div class="col-md-4">
+                                <div class="testimonial-card">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="student-avatar">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">أحمد محمد</h6>
+                                            <small class="text-muted">طالب في برنامج النوادي</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">
+                                        "الحمد لله، أتممت حفظ 10 أجزاء في المركز. المعلمون رائعون والمتابعة ممتازة"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="testimonial-card">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="student-avatar" style="background: #e91e63;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">فاطمة أحمد</h6>
+                                            <small class="text-muted">طالبة في برنامج السيدات</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">
+                                        "تجربة رائعة في التعلم عن بُعد. الجلسات منظمة والمعلمات متميزات"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="testimonial-card">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="student-avatar" style="background: #4caf50;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">عبدالله سالم</h6>
+                                            <small class="text-muted">خريج المركز</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">
+                                        "بفضل الله ثم بفضل المركز، أتممت حفظ القرآن كاملاً وحصلت على الإجازة"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="cta-section">
+                    <div class="container">
+                        <h2 class="display-4 mb-4">ابدأ رحلتك مع القرآن الكريم</h2>
+                        <p class="lead mb-5">انضم إلى آلاف الطلاب الذين يحفظون كتاب الله معنا</p>
+                        <a href="/enrollment/application" class="btn-quran btn-lg">
+                            <i class="fa fa-rocket me-2"></i>
+                            سجل الآن
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Footer Enhancement -->
+                <section class="py-4 bg-dark text-white">
+                    <div class="container text-center">
+                        <div class="quran-verse" style="font-size: 1.5rem; margin-bottom: 1rem;">
+                            وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ
+                        </div>
+                        <p class="mb-0 opacity-75">سورة القمر - آية 17</p>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+</odoo>

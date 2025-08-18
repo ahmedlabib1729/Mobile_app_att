@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template للـ Navigation Bar المشترك -->
+    <template id="portal_student_layout" name="Student Portal Layout">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="False"/>
+            <t t-set="no_footer" t-value="False"/>
+
+            <!-- Navigation Bar الثابت -->
+            <div class="student-portal-navigation">
+                <style>
+                    /* Navigation Styles */
+                    .student-portal-navigation {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 0;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        position: sticky;
+                        top: 0;
+                        z-index: 1000;
+                    }
+
+                    .portal-nav-container {
+                        max-width: 1320px;
+                        margin: 0 auto;
+                        padding: 0 15px;
+                    }
+
+                    .portal-nav {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 10px 0;
+                    }
+
+                    .portal-nav-links {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        flex-wrap: wrap;
+                    }
+
+                    .portal-nav-item {
+                        color: white;
+                        text-decoration: none;
+                        padding: 8px 16px;
+                        border-radius: 25px;
+                        transition: all 0.3s ease;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-size: 14px;
+                        font-weight: 500;
+                        background: rgba(255,255,255,0.1);
+                    }
+
+                    .portal-nav-item:hover {
+                        background: rgba(255,255,255,0.2);
+                        color: white;
+                        text-decoration: none;
+                        transform: translateY(-2px);
+                    }
+
+                    .portal-nav-item.active {
+                        background: white;
+                        color: #667eea;
+                        font-weight: 600;
+                    }
+
+                    .portal-nav-item i {
+                        font-size: 16px;
+                    }
+
+                    .portal-logo {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        color: white;
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+
+                    .portal-logo i {
+                        font-size: 24px;
+                    }
+
+                    /* Breadcrumbs Styles */
+                    .portal-breadcrumbs {
+                        background: #f8f9fa;
+                        padding: 12px 0;
+                        border-bottom: 1px solid #dee2e6;
+                    }
+
+                    .breadcrumb-container {
+                        max-width: 1320px;
+                        margin: 0 auto;
+                        padding: 0 15px;
+                    }
+
+                    .breadcrumb {
+                        margin: 0;
+                        padding: 0;
+                        background: transparent;
+                        display: flex;
+                        align-items: center;
+                        flex-wrap: wrap;
+                    }
+
+                    .breadcrumb-item {
+                        font-size: 14px;
+                        color: #6c757d;
+                    }
+
+                    .breadcrumb-item a {
+                        color: #667eea;
+                        text-decoration: none;
+                        transition: all 0.3s ease;
+                    }
+
+                    .breadcrumb-item a:hover {
+                        color: #764ba2;
+                        text-decoration: underline;
+                    }
+
+                    .breadcrumb-item.active {
+                        color: #495057;
+                        font-weight: 500;
+                    }
+
+                    .breadcrumb-item + .breadcrumb-item::before {
+                        content: "›";
+                        padding: 0 8px;
+                        color: #adb5bd;
+                    }
+
+                    /* Quick Access Button */
+                    .quick-home-btn {
+                        position: fixed;
+                        bottom: 30px;
+                        left: 30px;
+                        width: 60px;
+                        height: 60px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 24px;
+                        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+                        z-index: 999;
+                        transition: all 0.3s ease;
+                        text-decoration: none;
+                    }
+
+                    .quick-home-btn:hover {
+                        transform: scale(1.1);
+                        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+                        color: white;
+                    }
+
+                    .quick-home-btn i {
+                        animation: pulse 2s infinite;
+                    }
+
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                        100% { transform: scale(1); }
+                    }
+
+                    /* Mobile Responsive */
+                    @media (max-width: 768px) {
+                        .portal-nav {
+                            flex-direction: column;
+                            gap: 10px;
+                            padding: 15px 0;
+                        }
+
+                        .portal-nav-links {
+                            width: 100%;
+                            justify-content: center;
+                        }
+
+                        .portal-nav-item {
+                            font-size: 12px;
+                            padding: 6px 12px;
+                        }
+
+                        .portal-nav-item i {
+                            font-size: 14px;
+                        }
+
+                        .portal-logo {
+                            font-size: 16px;
+                        }
+
+                        .quick-home-btn {
+                            width: 50px;
+                            height: 50px;
+                            bottom: 20px;
+                            left: 20px;
+                            font-size: 20px;
+                        }
+                    }
+
+                    /* Dropdown for user menu */
+                    .portal-user-menu {
+                        position: relative;
+                    }
+
+                    .portal-user-dropdown {
+                        position: absolute;
+                        top: 100%;
+                        right: 0;
+                        background: white;
+                        border-radius: 10px;
+                        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+                        padding: 10px 0;
+                        min-width: 200px;
+                        display: none;
+                        margin-top: 10px;
+                    }
+
+                    .portal-user-menu:hover .portal-user-dropdown {
+                        display: block;
+                    }
+
+                    .portal-dropdown-item {
+                        display: block;
+                        padding: 10px 20px;
+                        color: #495057;
+                        text-decoration: none;
+                        transition: all 0.3s ease;
+                    }
+
+                    .portal-dropdown-item:hover {
+                        background: #f8f9fa;
+                        color: #667eea;
+                        text-decoration: none;
+                    }
+
+                    .portal-dropdown-divider {
+                        height: 1px;
+                        background: #e9ecef;
+                        margin: 5px 0;
+                    }
+                </style>
+
+                <!-- Navigation Bar -->
+                <div class="portal-nav-container">
+                    <nav class="portal-nav">
+                        <!-- Logo/Brand -->
+                        <div class="portal-logo">
+                            <i class="fa fa-book"></i>
+                            <span>مركز تحفيظ القرآن</span>
+                        </div>
+
+                        <!-- Navigation Links -->
+                        <div class="portal-nav-links">
+                            <a href="/my/dashboard" t-attf-class="portal-nav-item #{page_name == 'student_dashboard' and 'active' or ''}">
+                                <i class="fa fa-home"></i>
+                                <span>الرئيسية</span>
+                            </a>
+
+                            <a href="/my/sessions/active" t-attf-class="portal-nav-item #{page_name == 'student_sessions' and 'active' or ''}">
+                                <i class="fa fa-calendar"></i>
+                                <span>الجلسات</span>
+                                <t t-if="active_sessions_count">
+                                    <span class="badge bg-danger ms-1"><t t-esc="active_sessions_count"/></span>
+                                </t>
+                            </a>
+
+                            <a href="/my/classes" t-attf-class="portal-nav-item #{page_name == 'student_classes' and 'active' or ''}">
+                                <i class="fa fa-graduation-cap"></i>
+                                <span>الصفوف</span>
+                            </a>
+
+                            <a href="/my/profile" t-attf-class="portal-nav-item #{page_name == 'student_profile' and 'active' or ''}">
+                                <i class="fa fa-user"></i>
+                                <span>الملف الشخصي</span>
+                            </a>
+
+                            <!-- User Menu Dropdown -->
+                            <div class="portal-user-menu">
+                                <a href="#" class="portal-nav-item" onclick="return false;">
+                                    <i class="fa fa-cog"></i>
+                                    <span>الإعدادات</span>
+                                    <i class="fa fa-angle-down ms-1"></i>
+                                </a>
+                                <div class="portal-user-dropdown">
+                                    <a href="/my/security" class="portal-dropdown-item">
+                                        <i class="fa fa-lock me-2"></i>
+                                        الأمان
+                                    </a>
+                                    <a href="/my/account" class="portal-dropdown-item">
+                                        <i class="fa fa-user-cog me-2"></i>
+                                        إعدادات الحساب
+                                    </a>
+                                    <div class="portal-dropdown-divider"></div>
+                                    <a href="/web/session/logout" class="portal-dropdown-item">
+                                        <i class="fa fa-sign-out me-2"></i>
+                                        تسجيل الخروج
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <!-- Breadcrumbs -->
+                <t t-if="breadcrumbs">
+                    <div class="portal-breadcrumbs">
+                        <div class="breadcrumb-container">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="/my/dashboard">
+                                        <i class="fa fa-home me-1"></i>
+                                        الرئيسية
+                                    </a>
+                                </li>
+                                <t t-foreach="breadcrumbs" t-as="crumb">
+                                    <li t-attf-class="breadcrumb-item #{crumb.get('active') and 'active' or ''}">
+                                        <t t-if="not crumb.get('active')">
+                                            <a t-att-href="crumb.get('url')">
+                                                <t t-esc="crumb.get('title')"/>
+                                            </a>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="crumb.get('title')"/>
+                                        </t>
+                                    </li>
+                                </t>
+                            </ol>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Main Content -->
+            <div class="portal-content-wrapper">
+                <t t-raw="0"/>
+            </div>
+
+            <!-- Quick Home Button (Floating) -->
+            <a href="/my/dashboard" class="quick-home-btn" title="العودة للرئيسية">
+                <i class="fa fa-home"></i>
+            </a>
+
+            <!-- JavaScript for better UX -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Add keyboard shortcut for home (Alt + H)
+                    document.addEventListener('keydown', function(e) {
+                        if (e.altKey &amp;&amp; e.key === 'h') {
+                            window.location.href = '/my/dashboard';
+                        }
+                    });
+
+                    // Show/hide floating button based on scroll
+                    let lastScrollTop = 0;
+                    const floatingBtn = document.querySelector('.quick-home-btn');
+
+                    if (floatingBtn) {
+                        window.addEventListener('scroll', function() {
+                            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                            if (scrollTop > lastScrollTop &amp;&amp; scrollTop > 200) {
+                                // Scrolling down - hide button
+                                floatingBtn.style.transform = 'translateX(-100px)';
+                            } else {
+                                // Scrolling up - show button
+                                floatingBtn.style.transform = 'translateX(0)';
+                            }
+
+                            lastScrollTop = scrollTop &lt;= 0 ? 0 : scrollTop;
+                        });
+                    }
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- تحديث Template الـ Dashboard ليستخدم الـ Layout الجديد -->
+    <template id="portal_student_dashboard_nav" inherit_id="quran_center.portal_student_dashboard" name="Dashboard with Navigation">
+        <xpath expr="//t[@t-call='website.layout']" position="replace">
+            <t t-call="quran_center.portal_student_layout">
+                <t t-set="breadcrumbs" t-value="[{'title': 'لوحة التحكم', 'active': True}]"/>
+                <t t-raw="0"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- تحديث Template الجلسات -->
+    <template id="portal_student_sessions_nav" inherit_id="quran_center.portal_student_sessions" name="Sessions with Navigation">
+        <xpath expr="//t[@t-call='website.layout']" position="replace">
+            <t t-call="quran_center.portal_student_layout">
+                <t t-if="filter_type == 'active'">
+                    <t t-set="breadcrumbs" t-value="[
+                        {'title': 'الجلسات', 'url': '/my/sessions', 'active': False},
+                        {'title': 'الجلسات النشطة', 'active': True}
+                    ]"/>
+                </t>
+                <t t-elif="filter_type == 'today'">
+                    <t t-set="breadcrumbs" t-value="[
+                        {'title': 'الجلسات', 'url': '/my/sessions', 'active': False},
+                        {'title': 'جلسات اليوم', 'active': True}
+                    ]"/>
+                </t>
+                <t t-elif="filter_type == 'upcoming'">
+                    <t t-set="breadcrumbs" t-value="[
+                        {'title': 'الجلسات', 'url': '/my/sessions', 'active': False},
+                        {'title': 'الجلسات القادمة', 'active': True}
+                    ]"/>
+                </t>
+                <t t-elif="filter_type == 'completed'">
+                    <t t-set="breadcrumbs" t-value="[
+                        {'title': 'الجلسات', 'url': '/my/sessions', 'active': False},
+                        {'title': 'الجلسات المنتهية', 'active': True}
+                    ]"/>
+                </t>
+                <t t-raw="0"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- تحديث Template الصفوف -->
+    <template id="portal_student_classes_nav" inherit_id="quran_center.portal_student_classes" name="Classes with Navigation">
+        <xpath expr="//t[@t-call='website.layout']" position="replace">
+            <t t-call="quran_center.portal_student_layout">
+                <t t-set="breadcrumbs" t-value="[{'title': 'الصفوف المسجلة', 'active': True}]"/>
+                <t t-raw="0"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- تحديث Template الملف الشخصي -->
+    <template id="portal_student_profile_nav" inherit_id="quran_center.portal_student_profile" name="Profile with Navigation">
+        <xpath expr="//t[@t-call='website.layout']" position="replace">
+            <t t-call="quran_center.portal_student_layout">
+                <t t-set="breadcrumbs" t-value="[{'title': 'الملف الشخصي', 'active': True}]"/>
+                <t t-raw="0"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>
