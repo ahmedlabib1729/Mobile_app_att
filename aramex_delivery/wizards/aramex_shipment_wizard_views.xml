@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aramex Shipment Wizard Form -->
+    <record id="view_aramex_shipment_wizard_form" model="ir.ui.view">
+        <field name="name">aramex.shipment.wizard.form</field>
+        <field name="model">aramex.shipment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Aramex Shipment">
+                <sheet>
+                    <!-- Header Section -->
+                    <div class="oe_title">
+                        <h1>Create Aramex Shipment</h1>
+                        <group>
+                            <group>
+                                <field name="picking_id" readonly="1" force_save="1"/>
+                                <field name="partner_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="carrier_id" readonly="1" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="aramex_config_id"
+                                       required="1"
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       domain="[('active', '=', True), ('company_id', '=', company_id)]"/>
+                            </group>
+                        </group>
+                    </div>
+
+                    <notebook>
+                        <!-- Shipment Details Tab -->
+                        <page string="Shipment Details" name="shipment_details">
+                            <group>
+                                <group string="References">
+                                    <field name="reference1" required="1"/>
+                                    <field name="reference2" placeholder="e.g. PO Number"/>
+                                    <field name="reference3" placeholder="e.g. Customer Reference"/>
+                                </group>
+                                <group string="Service Configuration">
+                                    <field name="product_group" required="1"/>
+                                    <field name="product_type" required="1"/>
+                                    <field name="payment_type" required="1"/>
+                                    <field name="payment_options"
+                                           placeholder="e.g. ASCC, ARCC"
+                                           invisible="payment_type != '3'"/>
+                                    <field name="services"
+                                           placeholder="e.g. CODS,SIGN,CHST"/>
+                                </group>
+                            </group>
+
+                            <separator string="Scheduling"/>
+                            <group>
+                                <group>
+                                    <field name="shipping_datetime" required="1"/>
+                                    <field name="due_date"/>
+                                </group>
+                                <group>
+                                    <field name="create_pickup" widget="boolean_toggle"/>
+                                    <field name="pickup_location"
+                                           placeholder="e.g. Reception desk, Loading dock"
+                                           invisible="not create_pickup"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Package Information Tab -->
+                        <page string="Package Information" name="package_info">
+                            <group>
+                                <group string="Package Details">
+                                    <field name="number_of_pieces" required="1"/>
+                                    <label for="actual_weight"/>
+                                    <div class="o_row">
+                                        <field name="actual_weight"
+                                               required="1"
+                                               nolabel="1"/>
+                                        <field name="weight_unit"
+                                               nolabel="1"
+                                               required="1"/>
+                                    </div>
+                                    <field name="use_multi_package"
+                                           widget="boolean_toggle"
+                                           help="Check if packages have different weights"/>
+                                </group>
+                                <group string="Dimensions (Optional)">
+                                    <label for="length" string="L × W × H"/>
+                                    <div class="o_row">
+                                        <field name="length"
+                                               nolabel="1"
+                                               placeholder="Length"/>
+                                        <span>×</span>
+                                        <field name="width"
+                                               nolabel="1"
+                                               placeholder="Width"/>
+                                        <span>×</span>
+                                        <field name="height"
+                                               nolabel="1"
+                                               placeholder="Height"/>
+                                        <field name="dimensions_unit"
+                                               nolabel="1"/>
+                                    </div>
+                                </group>
+                            </group>
+
+                            <!-- Multi-package Details -->
+                            <separator string="Package Details"
+                                      invisible="not use_multi_package"/>
+                            <field name="package_line_ids"
+                                   invisible="not use_multi_package"
+                                   nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="description"/>
+                                    <field name="weight" sum="Total Weight"/>
+                                    <field name="length" optional="show"/>
+                                    <field name="width" optional="show"/>
+                                    <field name="height" optional="show"/>
+                                </tree>
+                            </field>
+
+                            <group>
+                                <group string="Goods Information">
+                                    <field name="description_of_goods"
+                                           required="1"
+                                           placeholder="Brief description of shipment contents"/>
+                                    <field name="goods_origin_country"
+                                           options="{'no_create': True}"/>
+                                    <field name="foreign_hawb"
+                                           placeholder="Foreign House Air Waybill"/>
+                                </group>
+                                <group/>
+                            </group>
+                        </page>
+
+                        <!-- Financial Tab -->
+                        <page string="Financial" name="financial">
+                            <!-- COD Section -->
+                            <group string="Cash on Delivery (COD)">
+                                <group>
+                                    <field name="is_cod" widget="boolean_toggle"/>
+                                    <label for="cod_amount"
+                                           invisible="not is_cod"/>
+                                    <div class="o_row"
+                                         invisible="not is_cod">
+                                        <field name="cod_amount"
+                                               required="is_cod"
+                                               nolabel="1"/>
+                                        <field name="cod_currency_id"
+                                               required="is_cod"
+                                               nolabel="1"
+                                               options="{'no_create': True}"/>
+                                    </div>
+                                </group>
+                                <group>
+                                    <div class="alert alert-info"
+                                         role="alert"
+                                         invisible="not is_cod">
+                                        <i class="fa fa-info-circle"/>
+                                        COD service will be added automatically.
+                                        Amount will be collected on delivery.
+                                    </div>
+                                </group>
+                            </group>
+
+                            <separator/>
+
+                            <!-- Other Financial Information -->
+                            <group>
+                                <group string="Customs Value">
+                                    <label for="customs_value_amount"/>
+                                    <div class="o_row">
+                                        <field name="customs_value_amount" nolabel="1"/>
+                                        <field name="customs_value_currency"
+                                               nolabel="1"
+                                               options="{'no_create': True}"
+                                               required="customs_value_amount > 0"/>
+                                    </div>
+                                </group>
+                                <group string="Insurance">
+                                    <label for="insurance_amount"/>
+                                    <div class="o_row">
+                                        <field name="insurance_amount" nolabel="1"/>
+                                        <field name="insurance_currency"
+                                               nolabel="1"
+                                               options="{'no_create': True}"
+                                               required="insurance_amount > 0"/>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Shipper Information Tab -->
+                        <page string="Shipper" name="shipper">
+                            <group>
+                                <field name="use_warehouse_address"
+                                       widget="boolean_toggle"
+                                       string="Use Warehouse/Company Address"/>
+                            </group>
+
+                            <group invisible="use_warehouse_address">
+                                <group string="Contact Information">
+                                    <field name="shipper_name"
+                                           required="not use_warehouse_address"/>
+                                    <field name="shipper_company"/>
+                                    <field name="shipper_phone"
+                                           required="not use_warehouse_address"
+                                           placeholder="+971501234567"/>
+                                    <field name="shipper_email"
+                                           widget="email"/>
+                                </group>
+                                <group string="Address">
+                                    <field name="shipper_address"
+                                           required="not use_warehouse_address"
+                                           placeholder="Complete address including building, street, area"/>
+                                </group>
+                            </group>
+
+                            <div class="alert alert-info"
+                                 role="alert"
+                                 invisible="not use_warehouse_address">
+                                <i class="fa fa-info-circle"/>
+                                Shipper information will be taken from the warehouse address
+                                or company address if warehouse is not configured.
+                            </div>
+                        </page>
+
+                        <!-- Additional Information Tab -->
+                        <page string="Additional Info" name="additional">
+                            <group>
+                                <field name="comments"
+                                       placeholder="Any special instructions or comments for this shipment..."
+                                       nolabel="1"/>
+                            </group>
+
+                            <separator string="Attachments" class="mt-3"/>
+                            <group>
+                                <field name="attachment_ids"
+                                       widget="many2many_binary"
+                                       nolabel="1"/>
+                            </group>
+
+                            <div class="alert alert-warning mt-3" role="alert">
+                                <h4 class="alert-heading">
+                                    <i class="fa fa-exclamation-triangle"/> Important Notes
+                                </h4>
+                                <ul class="mb-0">
+                                    <li>Ensure all product items have Internal Reference (SKU)</li>
+                                    <li>Customer address must be complete with phone number</li>
+                                    <li>Weight must be accurate for proper pricing</li>
+                                    <li>COD amount will be collected in customer's local currency</li>
+                                </ul>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <footer>
+                    <button name="action_create_shipment"
+                            type="object"
+                            string="Create Shipment"
+                            class="btn-primary"
+                            icon="fa-check"
+                            data-hotkey="q"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"
+                            data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_aramex_shipment_wizard" model="ir.actions.act_window">
+        <field name="name">Create Aramex Shipment</field>
+        <field name="res_model">aramex.shipment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>

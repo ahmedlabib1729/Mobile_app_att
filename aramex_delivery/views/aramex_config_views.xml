@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_aramex_config_form" model="ir.ui.view">
+        <field name="name">aramex.config.form</field>
+        <field name="model">aramex.config</field>
+        <field name="arch" type="xml">
+            <form string="Aramex Configuration">
+                <header>
+                    <button name="test_connection"
+                            type="object"
+                            string="Test Connection"
+                            class="btn-primary"
+                            icon="fa-plug"/>
+                </header>
+                <sheet>
+                    <!-- Ribbon for inactive/test mode -->
+                    <widget name="web_ribbon"
+                            title="Archived"
+                            bg_color="bg-danger"
+                            invisible="active"/>
+                    <widget name="web_ribbon"
+                            title="TEST MODE"
+                            bg_color="bg-warning"
+                            invisible="not test_mode or not active"/>
+
+                    <div class="oe_title">
+                        <label for="name" string="Configuration Name"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="e.g. Aramex UAE, Aramex Saudi"
+                                   class="o_text_overflow"/>
+                        </h1>
+                        <field name="display_name" invisible="1"/>
+                    </div>
+
+                    <group>
+                        <group string="Country Settings">
+                            <field name="country_id"
+                                   options="{'no_create': True, 'no_create_edit': True}"
+                                   required="1"/>
+                            <field name="country_code" readonly="1"/>
+                            <field name="is_default_for_country"
+                                   widget="boolean_toggle"/>
+                            <field name="currency_id"
+                                   options="{'no_create': True, 'no_create_edit': True}"
+                                   required="1"/>
+                        </group>
+                        <group string="General Settings">
+                            <field name="company_id"
+                                   groups="base.group_multi_company"
+                                   options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="test_mode" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- API Settings Tab -->
+                        <page string="API Settings" name="api_settings">
+                            <group>
+                                <group string="Connection">
+                                    <field name="api_url"
+                                           placeholder="https://ws.aramex.net/shippingapi/shipping/service_1_0.svc"
+                                           required="1"/>
+                                    <field name="version"/>
+                                    <field name="timeout"/>
+                                </group>
+                                <group string="Authentication">
+                                    <field name="username" required="1"/>
+                                    <field name="password"
+                                           password="True"
+                                           required="1"/>
+                                </group>
+                            </group>
+
+                            <separator string="Account Information"/>
+                            <group>
+                                <group>
+                                    <field name="account_number" required="1"/>
+                                    <field name="account_pin"
+                                           password="True"
+                                           required="1"/>
+                                </group>
+                                <group>
+                                    <field name="account_entity"
+                                           placeholder="e.g. DXB, RYD, CAI"
+                                           required="1"/>
+                                    <field name="account_country_code"
+                                           placeholder="e.g. AE, SA, EG"
+                                           required="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Default Settings Tab -->
+                        <page string="Default Settings" name="default_settings">
+                            <group>
+                                <group string="Service Defaults">
+                                    <field name="default_product_group" required="1"/>
+                                    <field name="default_product_type" required="1"/>
+                                    <field name="default_payment_type" required="1"/>
+                                </group>
+                                <group string="Additional Defaults">
+                                    <field name="default_payment_options"
+                                           placeholder="e.g. ASCC, ARCC"/>
+                                    <field name="default_services"
+                                           placeholder="e.g. CODS,SIGN,CHST"/>
+                                </group>
+                            </group>
+
+                            <separator string="Label Settings"/>
+                            <group>
+                                <group>
+                                    <field name="label_report_id"/>
+                                    <field name="label_report_type"/>
+                                </group>
+                                <group>
+                                    <field name="auto_create_pickup" widget="boolean_toggle"/>
+                                    <field name="debug_mode" widget="boolean_toggle"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Notes Tab -->
+                        <page string="Notes" name="notes">
+                            <field name="note"
+                                   nolabel="1"
+                                   placeholder="Add any notes or special instructions..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_aramex_config_tree" model="ir.ui.view">
+        <field name="name">aramex.config.tree</field>
+        <field name="model">aramex.config</field>
+        <field name="arch" type="xml">
+            <tree string="Aramex Configurations"
+                  decoration-warning="test_mode"
+                  decoration-muted="not active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="is_default_for_country"
+                       widget="boolean_toggle"
+                       string="Default"/>
+                <field name="account_entity"/>
+                <field name="username"/>
+                <field name="test_mode"
+                       widget="boolean_toggle"
+                       optional="show"/>
+                <field name="currency_id" optional="show"/>
+                <field name="company_id"
+                       groups="base.group_multi_company"
+                       optional="show"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_aramex_config_search" model="ir.ui.view">
+        <field name="name">aramex.config.search</field>
+        <field name="model">aramex.config</field>
+        <field name="arch" type="xml">
+            <search string="Search Aramex Configuration">
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="account_entity"/>
+                <field name="username"/>
+
+                <filter string="Active"
+                        name="active"
+                        domain="[('active', '=', True)]"/>
+                <filter string="Inactive"
+                        name="inactive"
+                        domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Production"
+                        name="production"
+                        domain="[('test_mode', '=', False)]"/>
+                <filter string="Test Mode"
+                        name="test_mode"
+                        domain="[('test_mode', '=', True)]"/>
+                <separator/>
+                <filter string="Default for Country"
+                        name="is_default"
+                        domain="[('is_default_for_country', '=', True)]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Country"
+                            name="group_by_country"
+                            context="{'group_by': 'country_id'}"/>
+                    <filter string="Entity"
+                            name="group_by_entity"
+                            context="{'group_by': 'account_entity'}"/>
+                    <filter string="Test Mode"
+                            name="group_by_test"
+                            context="{'group_by': 'test_mode'}"/>
+                    <filter string="Company"
+                            name="group_by_company"
+                            context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_aramex_config" model="ir.actions.act_window">
+        <field name="name">Aramex Configuration</field>
+        <field name="res_model">aramex.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_aramex_config_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure Aramex Integration
+            </p>
+            <p>
+                Create configurations for each country where you use Aramex services.
+                Each configuration contains the API credentials and default settings
+                for that specific country.
+            </p>
+            <p>
+                <b>Steps to configure:</b><br/>
+                1. Click "New" to create a configuration<br/>
+                2. Select the country and enter API credentials<br/>
+                3. Set default service options<br/>
+                4. Click "Test Connection" to verify<br/>
+                5. Save the configuration
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_aramex_root"
+              name="Aramex Express"
+              parent="stock.menu_stock_root"
+              sequence="55"
+              groups="base.group_user"/>
+
+    <menuitem id="menu_aramex_config"
+              name="Configuration"
+              parent="menu_aramex_root"
+              action="action_aramex_config"
+              sequence="100"
+              groups="base.group_system"/>
+</odoo>
