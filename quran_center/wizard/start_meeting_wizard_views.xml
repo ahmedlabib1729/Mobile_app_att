@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Start Meeting Wizard Form -->
+    <record id="view_start_meeting_wizard_form" model="ir.ui.view">
+        <field name="name">quran.session.start.meeting.wizard.form</field>
+        <field name="model">quran.session.start.meeting.wizard</field>
+        <field name="arch" type="xml">
+            <form string="بدء الاجتماع الأونلاين">
+                <sheet>
+                    <!-- معلومات الجلسة -->
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading mb-2">
+                            <i class="fa fa-info-circle"></i> معلومات الجلسة
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>الجلسة:</strong> <field name="session_name" readonly="1" class="oe_inline"/></p>
+                                <p class="mb-1"><strong>الصف:</strong> <field name="class_name" readonly="1" class="oe_inline"/></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>الموعد:</strong> <field name="scheduled_time" readonly="1" class="oe_inline"/></p>
+                                <p class="mb-1"><strong>عدد الطلاب:</strong> <field name="student_count" readonly="1" class="oe_inline"/> طالب</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <!-- الإعدادات الأساسية -->
+                        <page string="الإعدادات الأساسية" name="basic_settings">
+                            <group>
+                                <group string="معلومات الاجتماع">
+                                    <field name="meeting_name" placeholder="مثال: حلقة حفظ سورة البقرة - الجزء الأول"/>
+                                    <field name="meeting_description" placeholder="وصف اختياري للاجتماع..."/>
+                                </group>
+                                <group string="إعدادات الصوت والفيديو">
+                                    <field name="allow_student_camera" widget="boolean_toggle"/>
+                                    <field name="allow_student_mic" widget="boolean_toggle"/>
+                                    <field name="mute_on_join" widget="boolean_toggle" invisible="not allow_student_mic"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- إعدادات متقدمة -->
+                        <page string="إعدادات متقدمة" name="advanced_settings">
+                            <group>
+                                <group string="التسجيل">
+                                    <field name="auto_record_meeting" widget="boolean_toggle"/>
+                                    <field name="record_type" invisible="not auto_record_meeting" widget="radio"/>
+                                </group>
+                                <group string="الأمان">
+                                    <field name="require_permission" widget="boolean_toggle"/>
+                                    <field name="enable_waiting_room" widget="boolean_toggle"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="المشاركة والتفاعل">
+                                    <field name="allow_screen_share" widget="boolean_toggle"/>
+                                    <field name="allow_chat" widget="boolean_toggle"/>
+                                    <field name="allow_reactions" widget="boolean_toggle"/>
+                                </group>
+                                <group string="الإشعارات">
+                                    <field name="send_email_invitation" widget="boolean_toggle"/>
+                                    <field name="send_sms_reminder" widget="boolean_toggle" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- تعليمات خاصة -->
+                        <page string="تعليمات خاصة" name="instructions">
+                            <group>
+                                <field name="special_instructions" nolabel="1"
+                                       placeholder="أدخل أي تعليمات خاصة للطلاب...&#10;مثال:&#10;- يرجى تحضير المصحف الشريف&#10;- سيكون هناك تسميع لسورة البقرة الآيات 1-20&#10;- يرجى مراجعة الدرس السابق"/>
+                            </group>
+                        </page>
+                    </notebook>
+
+                    <!-- معاينة الإعدادات -->
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fa fa-eye"></i> معاينة الإعدادات
+                        </h5>
+                        <ul class="mb-0">
+                            <li invisible="allow_student_camera">❌ الكاميرا مغلقة للطلاب</li>
+                            <li invisible="not allow_student_camera">✅ الطلاب يمكنهم تشغيل الكاميرا</li>
+                            <li invisible="allow_student_mic">❌ المايك مغلق للطلاب</li>
+                            <li invisible="not allow_student_mic or not mute_on_join">✅ الطلاب يمكنهم استخدام المايك</li>
+                            <li invisible="not allow_student_mic or not mute_on_join">🔇 المايك مكتوم عند الدخول</li>
+                            <li invisible="not auto_record_meeting">🔴 سيتم تسجيل الجلسة</li>
+                            <li invisible="not require_permission">🚪 يحتاج الطلاب إذن للدخول</li>
+                            <li invisible="not enable_waiting_room">⏳ غرفة الانتظار مفعلة</li>
+                        </ul>
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_start_meeting"
+                            string="بدء الاجتماع"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-video-camera"/>
+                    <button string="إلغاء"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard -->
+    <record id="action_start_meeting_wizard" model="ir.actions.act_window">
+        <field name="name">بدء الاجتماع الأونلاين</field>
+        <field name="res_model">quran.session.start.meeting.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_quran_session"/>
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>

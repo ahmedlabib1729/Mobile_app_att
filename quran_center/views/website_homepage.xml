@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Homepage Template -->
+    <template id="website_homepage" name="Quran Center Homepage" inherit_id="website.homepage" priority="20">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap">
+                <style>
+                    /* Arabic Fonts */
+                    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=Cairo:wght@300;400;600;700&amp;display=swap');
+
+                    /* Loading Screen */
+                    .loader-wrapper {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        z-index: 9999;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: opacity 0.5s ease;
+                    }
+
+                    .loader {
+                        width: 100px;
+                        height: 100px;
+                        border: 5px solid rgba(255, 255, 255, 0.3);
+                        border-top-color: white;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    }
+
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+
+                    /* Floating Animation */
+                    @keyframes float {
+                        0%, 100% { transform: translateY(0px); }
+                        50% { transform: translateY(-20px); }
+                    }
+
+                    @keyframes fadeInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.05); }
+                        100% { transform: scale(1); }
+                    }
+
+                    @keyframes shimmer {
+                        0% { background-position: -1000px 0; }
+                        100% { background-position: 1000px 0; }
+                    }
+
+                    .hero-section {
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                                    url('/web/image/website.hero_bg') center/cover;
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        color: white;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    /* Animated Background Particles */
+                    .particles {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow: hidden;
+                        z-index: 1;
+                    }
+
+                    .particle {
+                        position: absolute;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        animation: floatUp 15s infinite linear;
+                    }
+
+                    @keyframes floatUp {
+                        from {
+                            transform: translateY(100vh) translateX(0);
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        90% {
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateY(-100vh) translateX(100px);
+                            opacity: 0;
+                        }
+                    }
+
+                    h1, h2, h3, h4, h5, h6, .section-title, .display-3, .display-4 {
+                        font-family: 'Cairo', sans-serif !important;
+                    }
+
+                    .hero-section::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                    }
+
+                    .quran-verse {
+                        font-family: 'Amiri', serif;
+                        font-size: 2.5rem;
+                        line-height: 2;
+                        text-align: center;
+                        margin-bottom: 2rem;
+                        position: relative;
+                        z-index: 2;
+                        opacity: 0;
+                        animation: fadeInUp 1s ease forwards;
+                        animation-delay: 0.5s;
+                    }
+
+                    .verse-translation {
+                        font-family: 'Cairo', sans-serif;
+                        font-size: 1.2rem;
+                        opacity: 0;
+                        text-align: center;
+                        margin-bottom: 3rem;
+                        animation: fadeInUp 1s ease forwards;
+                        animation-delay: 0.7s;
+                    }
+
+                    /* Text Typing Effect */
+                    .typing-text {
+                        overflow: hidden;
+                        border-right: 3px solid white;
+                        white-space: nowrap;
+                        margin: 0 auto;
+                        animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+                    }
+
+                    @keyframes typing {
+                        from { width: 0 }
+                        to { width: 100% }
+                    }
+
+                    @keyframes blink-caret {
+                        from, to { border-color: transparent }
+                        50% { border-color: white; }
+                    }
+
+                    .section-title {
+                        font-family: 'Cairo', sans-serif;
+                        font-weight: 700;
+                        font-size: 2.5rem;
+                        text-align: center;
+                        margin-bottom: 3rem;
+                        position: relative;
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+
+                    .section-title.animated {
+                        animation: fadeInUp 0.8s ease forwards;
+                    }
+
+                    .section-title::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -15px;
+                        left: 50%;
+                        transform: translateX(-50%) scaleX(0);
+                        width: 80px;
+                        height: 4px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 2px;
+                        transition: transform 0.5s ease;
+                    }
+
+                    .section-title.animated::after {
+                        transform: translateX(-50%) scaleX(1);
+                    }
+
+                    .feature-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 40px 30px;
+                        text-align: center;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+                        transition: all 0.3s ease;
+                        height: 100%;
+                        opacity: 0;
+                        transform: translateY(30px) rotateX(10deg);
+                        transform-style: preserve-3d;
+                    }
+
+                    .feature-card.animated {
+                        animation: cardFlip 0.8s ease forwards;
+                    }
+
+                    @keyframes cardFlip {
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) rotateX(0);
+                        }
+                    }
+
+                    .feature-card:hover {
+                        transform: translateY(-10px) scale(1.05);
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+                        background: linear-gradient(135deg, #f5f5f5 0%, white 100%);
+                    }
+
+                    .feature-icon {
+                        width: 80px;
+                        height: 80px;
+                        margin: 0 auto 20px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 36px;
+                        color: white;
+                        transition: all 0.3s ease;
+                    }
+
+                    .feature-card:hover .feature-icon {
+                        animation: pulse 1s infinite;
+                        transform: rotateY(360deg);
+                    }
+
+                    .stats-section {
+                        background: #f8f9fa;
+                        padding: 80px 0;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    /* Animated Background Pattern */
+                    .stats-section::before {
+                        content: '';
+                        position: absolute;
+                        top: -50%;
+                        left: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.05) 50%, transparent 70%);
+                        animation: shimmer 3s infinite;
+                    }
+
+                    .stat-box {
+                        text-align: center;
+                        padding: 20px 5px;
+                        opacity: 0;
+                        transform: scale(0.5);
+                    }
+
+                    .stat-box.animated {
+                        animation: zoomIn 0.6s ease forwards;
+                    }
+
+                    @keyframes zoomIn {
+                        to {
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+                    }
+
+                    .stat-number {
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        margin-bottom: 10px;
+                        white-space: nowrap;
+                        line-height: 1;
+                        display: inline-block;
+                        min-width: 100px;
+                    }
+
+                    .cta-section {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 100px 0;
+                        color: white;
+                        text-align: center;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    /* Animated Wave Effect */
+                    .wave {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100px;
+                        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+                        animation: wave 10s linear infinite;
+                    }
+
+                    @keyframes wave {
+                        0% { transform: translateX(0); }
+                        100% { transform: translateX(-50%); }
+                    }
+
+                    .btn-quran {
+                        background: white;
+                        color: #667eea;
+                        padding: 15px 40px;
+                        border-radius: 50px;
+                        font-weight: 600;
+                        text-decoration: none;
+                        display: inline-block;
+                        transition: all 0.3s ease;
+                        margin: 10px;
+                        position: relative;
+                        overflow: hidden;
+                        z-index: 1;
+                    }
+
+                    .btn-quran::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                        transition: left 0.5s;
+                        z-index: -1;
+                    }
+
+                    .btn-quran:hover::before {
+                        left: 100%;
+                    }
+
+                    .btn-quran:hover {
+                        transform: scale(1.05) translateY(-3px);
+                        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+                        color: #764ba2;
+                    }
+
+                    .islamic-pattern {
+                        position: absolute;
+                        opacity: 0.1;
+                        font-size: 200px;
+                        color: #667eea;
+                        animation: float 6s ease-in-out infinite;
+                    }
+
+                    .testimonial-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 30px;
+                        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                        margin-bottom: 20px;
+                        opacity: 0;
+                        transform: translateX(-50px);
+                        transition: all 0.5s ease;
+                    }
+
+                    .testimonial-card.animated {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+
+                    .testimonial-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                    }
+
+                    .student-avatar {
+                        width: 60px;
+                        height: 60px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 24px;
+                        margin-right: 15px;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .testimonial-card:hover .student-avatar {
+                        transform: rotate(360deg) scale(1.1);
+                    }
+
+                    /* Parallax Effect */
+                    .parallax-element {
+                        transition: transform 0.5s ease-out;
+                    }
+
+                    /* Scroll Reveal */
+                    .scroll-reveal {
+                        opacity: 0;
+                        transform: translateY(50px);
+                        transition: all 0.8s ease;
+                    }
+
+                    .scroll-reveal.revealed {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+
+                    /* Glow Effect */
+                    @keyframes glow {
+                        0% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+                        50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 0 0 30px rgba(102, 126, 234, 0.6); }
+                        100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+                    }
+
+                    .glow-effect {
+                        animation: glow 2s ease-in-out infinite;
+                    }
+
+                    /* Mobile Optimizations */
+                    @media (max-width: 768px) {
+                        .quran-verse { font-size: 1.8rem; }
+                        .stat-number { font-size: 2rem; }
+                        .section-title { font-size: 2rem; }
+                    }
+                </style>
+
+                <!-- Loading Screen -->
+                <div class="loader-wrapper" id="loader">
+                    <div class="loader"></div>
+                </div>
+
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <div class="particles" id="particles"></div>
+                    <div class="container" style="z-index: 2; position: relative;">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="text-center mb-4">
+                                    <img src="quran_center/static/description/IMG_3821.PNG"
+                                         alt="مركز رؤيتي"
+                                         class="logo-image"
+                                         style="height: 250px; width: auto; filter: drop-shadow(0 5px 15px rgba(255,255,255,0.3)); animation: float 3s ease-in-out infinite;" />
+                                </div>
+                                <div class="quran-verse">
+                                    إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ
+                                </div>
+                                <div class="verse-translation">
+                                     "سورة الإسراء"
+                                </div>
+                                <h1 class="display-3 text-center mb-4 font-weight-bold" style="opacity: 0; animation: fadeInUp 1s ease forwards; animation-delay: 0.9s;">
+                                    مركز رؤيتي لتحفيظ القرآن الكريم
+                                </h1>
+                                <p class="lead text-center mb-5" style="opacity: 0; animation: fadeInUp 1s ease forwards; animation-delay: 1.1s;">
+                                   رؤيتنا : حافظ في كل بيت
+                                </p>
+                                <div class="text-center" style="opacity: 0; animation: fadeInUp 1s ease forwards; animation-delay: 1.3s;">
+                                    <a href="/enrollment/application" class="btn-quran glow-effect">
+                                        <i class="fa fa-edit me-2"></i>
+                                        التسجيل الآن
+                                    </a>
+                                    <a href="/about" class="btn-quran">
+                                        <i class="fa fa-info-circle me-2"></i>
+                                        تعرف علينا
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="py-5 mt-5">
+                    <div class="container">
+                        <h2 class="section-title scroll-reveal">لماذا تختار مركزنا؟</h2>
+                        <div class="row g-4 mt-5">
+                            <div class="col-md-4">
+                                <div class="feature-card scroll-reveal">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-graduation-cap"></i>
+                                    </div>
+                                    <h4 class="mb-3">معلمون متخصصون</h4>
+                                    <p class="text-muted">
+                                        نخبة من المعلمين المجازين في القراءات العشر وعلوم القرآن
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-card scroll-reveal" style="animation-delay: 0.2s;">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-users"></i>
+                                    </div>
+                                    <h4 class="mb-3">برامج متنوعة</h4>
+                                    <p class="text-muted">
+                                        برامج للأطفال والشباب والسيدات بمناهج متطورة ومرنة
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-card scroll-reveal" style="animation-delay: 0.4s;">
+                                    <div class="feature-icon">
+                                        <i class="fa fa-laptop"></i>
+                                    </div>
+                                    <h4 class="mb-3">تعليم أونلاين</h4>
+                                    <p class="text-muted">
+                                        جلسات تفاعلية عبر الإنترنت مع متابعة مستمرة للطلاب
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Statistics Section -->
+                <section class="stats-section">
+                    <div class="container">
+                        <h2 class="section-title scroll-reveal mb-5">إنجازاتنا بالأرقام</h2>
+                        <div class="row">
+                            <div class="col-md-2 col-6">
+                                <div class="stat-box scroll-reveal">
+                                    <div class="stat-number" data-target="1300">0</div>
+                                    <h5>طالب وطالبة</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="stat-box scroll-reveal" style="animation-delay: 0.1s;">
+                                    <div class="stat-number" data-target="100">0</div>
+                                    <h5>متطوع و متطوعة</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="stat-box scroll-reveal" style="animation-delay: 0.2s;">
+                                    <div class="stat-number" data-target="50">0</div>
+                                    <h5>معلم ومعلمة</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="stat-box scroll-reveal" style="animation-delay: 0.3s;">
+                                    <div class="stat-number" data-target="120">0</div>
+                                    <h5>مجازة بقراءة فى القرآن الكريم</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="stat-box scroll-reveal" style="animation-delay: 0.4s;">
+                                    <div class="stat-number" data-target="100">0</div>
+                                    <h5>خاتم للقرآن الكريم</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="stat-box scroll-reveal" style="animation-delay: 0.5s;">
+                                    <div class="stat-number" data-target="13">0</div>
+                                    <h5>سنوات خبرة</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Programs Section -->
+                <section class="py-5">
+                    <div class="container">
+                        <h2 class="section-title scroll-reveal">برامجنا التعليمية</h2>
+                        <div class="row g-4 mt-5">
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center p-4 bg-light rounded-3 scroll-reveal">
+                                    <div class="feature-icon me-4" style="background: #4caf50;">
+                                        <i class="fa fa-child"></i>
+                                    </div>
+                                    <div>
+                                        <h4>برنامج النوادي</h4>
+                                        <p class="mb-0 text-muted">للأطفال والناشئة من 6 إلى 18 سنة</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center p-4 bg-light rounded-3 scroll-reveal" style="animation-delay: 0.2s;">
+                                    <div class="feature-icon me-4" style="background: #e91e63;">
+                                        <i class="fa fa-female"></i>
+                                    </div>
+                                    <div>
+                                        <h4>برنامج السيدات</h4>
+                                        <p class="mb-0 text-muted">للنساء من 18 سنة فما فوق</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testimonials Section -->
+                <section class="py-5 bg-light">
+                    <div class="container">
+                        <h2 class="section-title scroll-reveal">آراء طلابنا</h2>
+                        <div class="row mt-5">
+                            <div class="col-md-4">
+                                <div class="testimonial-card scroll-reveal">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="student-avatar">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">أحمد محمد</h6>
+                                            <small class="text-muted">طالب في برنامج النوادي</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">
+                                        "الحمد لله، أتممت حفظ 10 أجزاء في المركز. المعلمون رائعون والمتابعة ممتازة"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="testimonial-card scroll-reveal" style="animation-delay: 0.2s;">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="student-avatar" style="background: #e91e63;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">فاطمة أحمد</h6>
+                                            <small class="text-muted">طالبة في برنامج السيدات</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">
+                                        "تجربة رائعة في التعلم عن بُعد. الجلسات منظمة والمعلمات متميزات"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="testimonial-card scroll-reveal" style="animation-delay: 0.4s;">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="student-avatar" style="background: #4caf50;">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">منة الله حمدى</h6>
+                                            <small class="text-muted">خريجة المركز</small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted">
+                                        "بفضل الله ثم بفضل المركز، أتممت حفظ القرآن كاملاً وحصلت على الإجازة"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="cta-section">
+                    <div class="wave"></div>
+                    <div class="container" style="position: relative; z-index: 2;">
+                        <h2 class="display-4 mb-4 scroll-reveal">ابدأ رحلتك مع القرآن الكريم</h2>
+                        <p class="lead mb-5 scroll-reveal" style="animation-delay: 0.2s;">انضم إلى آلاف الطلاب الذين يحفظون كتاب الله معنا</p>
+                        <div class="scroll-reveal" style="animation-delay: 0.4s;">
+                            <a href="/enrollment/application" class="btn-quran btn-lg glow-effect">
+                                <i class="fa fa-rocket me-2"></i>
+                                سجل الآن
+                            </a>
+                        </div>
+                        <div class="mt-5 pt-5 scroll-reveal" style="animation-delay: 0.6s;">
+                            <div class="quran-verse" style="font-size: 1.8rem !important;">
+                                وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ
+                            </div>
+                            <p class="mb-0" style="opacity: 0.85;">سورة القمر - آية 17</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- JavaScript Code -->
+                <script type="text/javascript">
+                    <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Hide loader
+                        setTimeout(function() {
+                            const loader = document.getElementById('loader');
+                            if (loader) {
+                                loader.style.opacity = '0';
+                                setTimeout(() => loader.style.display = 'none', 500);
+                            }
+                        }, 1500);
+
+                        // Create particles
+                        function createParticles() {
+                            const particlesContainer = document.getElementById('particles');
+                            if (particlesContainer) {
+                                for (let i = 0; i < 30; i++) {
+                                    const particle = document.createElement('div');
+                                    particle.className = 'particle';
+                                    particle.style.width = Math.random() * 5 + 2 + 'px';
+                                    particle.style.height = particle.style.width;
+                                    particle.style.left = Math.random() * 100 + '%';
+                                    particle.style.animationDelay = Math.random() * 15 + 's';
+                                    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                                    particlesContainer.appendChild(particle);
+                                }
+                            }
+                        }
+                        createParticles();
+
+                        // Counter animation
+                        function animateCounter(element) {
+                            const target = parseInt(element.getAttribute('data-target'));
+                            const duration = 2000;
+                            const step = target / (duration / 16);
+                            let current = 0;
+
+                            const counter = setInterval(() => {
+                                current += step;
+                                if (current >= target) {
+                                    element.textContent = target + '+';
+                                    clearInterval(counter);
+                                } else {
+                                    element.textContent = Math.floor(current) + '+';
+                                }
+                            }, 16);
+                        }
+
+                        // Scroll reveal
+                        const observerOptions = {
+                            threshold: 0.1,
+                            rootMargin: '0px 0px -50px 0px'
+                        };
+
+                        const observer = new IntersectionObserver(function(entries) {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    if (entry.target.classList.contains('scroll-reveal')) {
+                                        entry.target.classList.add('revealed');
+                                    }
+                                    if (entry.target.classList.contains('section-title')) {
+                                        entry.target.classList.add('animated');
+                                    }
+                                    if (entry.target.classList.contains('feature-card')) {
+                                        entry.target.classList.add('animated');
+                                    }
+                                    if (entry.target.classList.contains('stat-box')) {
+                                        entry.target.classList.add('animated');
+                                        const counter = entry.target.querySelector('.stat-number');
+                                        if (counter && counter.getAttribute('data-target')) {
+                                            animateCounter(counter);
+                                            counter.removeAttribute('data-target');
+                                        }
+                                    }
+                                    if (entry.target.classList.contains('testimonial-card')) {
+                                        entry.target.classList.add('animated');
+                                    }
+                                }
+                            });
+                        }, observerOptions);
+
+                        // Observe all elements
+                        document.querySelectorAll('.scroll-reveal, .section-title, .feature-card, .stat-box, .testimonial-card').forEach(el => {
+                            observer.observe(el);
+                        });
+
+                        // Parallax effect - exclude logo image
+                        window.addEventListener('scroll', () => {
+                            const scrolled = window.pageYOffset;
+                            const parallaxElements = document.querySelectorAll('.parallax-element');
+
+                            parallaxElements.forEach(element => {
+                                // Skip the logo image
+                                if (!element.querySelector('.logo-image')) {
+                                    const speed = element.getAttribute('data-speed') || 0.5;
+                                    element.style.transform = 'translateY(' + (scrolled * speed) + 'px)';
+                                }
+                            });
+                        });
+
+                        // Mouse move effect for hero section
+                        document.addEventListener('mousemove', (e) => {
+                            const hero = document.querySelector('.hero-section');
+                            if (hero && window.innerWidth > 768) {
+                                const x = e.clientX / window.innerWidth;
+                                const y = e.clientY / window.innerHeight;
+
+                                const gradient1 = 102 + x * 20;
+                                const gradient2 = 126 - y * 20;
+                                const gradient3 = 75 + y * 20;
+                                const gradient4 = 162 + x * 20;
+                                const angle = 135 + x * 10;
+
+                                hero.style.background = 'linear-gradient(' + angle + 'deg, rgba(' + gradient1 + ', ' + gradient2 + ', 234, 0.9) 0%, rgba(118, ' + gradient3 + ', ' + gradient4 + ', 0.9) 100%), url("/web/image/website.hero_bg") center/cover';
+                            }
+                        });
+
+                        // Add ripple effect to buttons
+                        document.querySelectorAll('.btn-quran').forEach(button => {
+                            button.addEventListener('click', function(e) {
+                                const ripple = document.createElement('span');
+                                const rect = this.getBoundingClientRect();
+                                const size = Math.max(rect.width, rect.height);
+                                const x = e.clientX - rect.left - size / 2;
+                                const y = e.clientY - rect.top - size / 2;
+
+                                ripple.style.width = ripple.style.height = size + 'px';
+                                ripple.style.left = x + 'px';
+                                ripple.style.top = y + 'px';
+                                ripple.classList.add('ripple');
+                                ripple.style.position = 'absolute';
+                                ripple.style.borderRadius = '50%';
+                                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                                ripple.style.transform = 'scale(0)';
+                                ripple.style.animation = 'ripple-animation 0.6s ease-out';
+                                ripple.style.pointerEvents = 'none';
+
+                                this.appendChild(ripple);
+                                setTimeout(() => ripple.remove(), 600);
+                            });
+                        });
+
+                        // Smooth scroll for anchor links
+                        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                            anchor.addEventListener('click', function(e) {
+                                const href = this.getAttribute('href');
+                                // Check if href is not just '#' and has actual content
+                                if (href && href.length > 1) {
+                                    e.preventDefault();
+                                    try {
+                                        const target = document.querySelector(href);
+                                        if (target) {
+                                            target.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'start'
+                                            });
+                                        }
+                                    } catch (error) {
+                                        console.log('Invalid selector:', href);
+                                    }
+                                }
+                            });
+                        });
+                    });
+                    ]]>
+                </script>
+
+                <!-- Add ripple animation styles -->
+                <style>
+                    @keyframes ripple-animation {
+                        to {
+                            transform: scale(4);
+                            opacity: 0;
+                        }
+                    }
+                </style>
+
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,288 @@
+/* quran_center/static/src/css/website_enrollment.css */
+
+/* الخلفية العامة */
+#wrap {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* تحسينات على نموذج التسجيل */
+.enrollment-form-custom .required::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* البطاقات */
+.enrollment-form-custom .card {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.enrollment-form-custom .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+
+
+/* رأس البطاقة */
+.enrollment-form-custom .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 20px;
+    border: none;
+}
+
+/* العنوان الرئيسي */
+.s_title h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+}
+
+.s_title .lead {
+    font-size: 1.3rem;
+    color: #6c757d;
+}
+.card-header .text-danger {
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+/* الحقول */
+.enrollment-form-custom .form-control,
+.enrollment-form-custom .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.enrollment-form-custom .form-control:focus,
+.enrollment-form-custom .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+    transform: translateY(-2px);
+}
+
+/* تسميات الحقول */
+.enrollment-form-custom .form-label {
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+/* أزرار الراديو */
+.enrollment-form-custom .form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.enrollment-form-custom .form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.enrollment-form-custom .form-check-label {
+    font-size: 16px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+/* زر الإرسال */
+.enrollment-form-custom .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 15px 50px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.enrollment-form-custom .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* رسائل النجاح والخطأ */
+.alert {
+    border-radius: 10px;
+    border: none;
+    padding: 20px;
+    font-size: 16px;
+}
+
+.alert-danger {
+    background-color: #fee;
+    color: #dc3545;
+    border-right: 5px solid #dc3545;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-right: 5px solid #28a745;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-right: 5px solid #17a2b8;
+}
+
+/* صفحة النجاح */
+.fa-check-circle {
+    animation: scaleIn 0.5s ease-in-out;
+    color: #28a745;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* تحسين الجداول */
+.table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #2d3436;
+    border: none;
+    padding: 15px;
+}
+
+.table td {
+    padding: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* تحسينات للهاتف المحمول */
+@media (max-width: 768px) {
+    .s_title h1 {
+        font-size: 2rem;
+    }
+
+    .enrollment-form-custom .btn-primary {
+        padding: 12px 30px;
+        font-size: 18px;
+        width: 100%;
+    }
+
+    .col-lg-8 {
+        padding: 0 15px;
+    }
+}
+
+/* تأثيرات إضافية */
+.enrollment-form-custom .card-body {
+    padding: 30px;
+}
+
+/* رقم الطلب في صفحة النجاح */
+.alert-info h4 {
+    color: #004085;
+    font-weight: bold;
+}
+
+/* الشارات */
+.badge {
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* تحسين مظهر الأيقونات */
+.fa {
+    margin-left: 8px;
+}
+
+/* إضافة ظل للنص في العنوان */
+.text-primary {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* تحسين التباعد */
+.mb-4 {
+    margin-bottom: 2rem !important;
+}
+
+/* إضافة حركة للبطاقات عند التحميل */
+.enrollment-form-custom .card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* تأخير الحركة للبطاقات */
+.enrollment-form-custom .card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.enrollment-form-custom .card:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* تحسين مظهر النص المساعد */
+.form-text {
+    color: #6c757d;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+h1, h2, h3, h4, h5, h6, .section-title, .display-3, .display-4 {
+                        font-family: 'Cairo', sans-serif !important;
+                    }

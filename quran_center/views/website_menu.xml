@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة رابط برامج المركز في قائمة الموقع -->
+    <record id="menu_programs" model="website.menu">
+        <field name="name">برامج المركز</field>
+        <field name="url">/programs</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- رابط طلب الالتحاق -->
+    <record id="menu_enrollment_application" model="website.menu">
+        <field name="name">طلب الالتحاق</field>
+        <field name="url">/enrollment/application</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">50</field>
+    </record>
+</odoo>
