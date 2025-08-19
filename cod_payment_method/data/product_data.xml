@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Product Category for COD Fee -->
+        <record id="product_category_cod_fee" model="product.category">
+            <field name="name">Payment Fees</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+
+        <!-- COD Fee Product -->
+        <record id="product_cod_fee" model="product.product">
+            <field name="name">Cash on Delivery Fee</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_cod_fee"/>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="invoice_policy">order</field>
+            <field name="default_code">COD_FEE</field>
+            <field name="description_sale">Additional fee for Cash on Delivery payment method</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+
+        <!-- Update COD Provider with default fee product -->
+        <function model="payment.provider" name="write">
+            <value model="payment.provider" search="[('code', '=', 'cod')]"/>
+            <value eval="{'cod_fee_product_id': ref('product_cod_fee')}"/>
+        </function>
+
+        <!-- Demo Data: Example country fees (optional) -->
+        <record id="demo_country_fee_egypt" model="payment.method.country.fee">
+            <field name="payment_method_id" ref="payment_method_cod"/>
+            <field name="country_id" ref="base.eg"/>
+            <field name="fee_type">fixed</field>
+            <field name="fee_amount">50.0</field>
+            <field name="currency_id" ref="base.EGP"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="demo_country_fee_saudi" model="payment.method.country.fee">
+            <field name="payment_method_id" ref="payment_method_cod"/>
+            <field name="country_id" ref="base.sa"/>
+            <field name="fee_type">percent</field>
+            <field name="fee_amount">2.5</field>
+            <field name="currency_id" ref="base.SAR"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="demo_country_fee_uae" model="payment.method.country.fee">
+            <field name="payment_method_id" ref="payment_method_cod"/>
+            <field name="country_id" ref="base.ae"/>
+            <field name="fee_type">fixed</field>
+            <field name="fee_amount">10.0</field>
+            <field name="currency_id" ref="base.AED"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

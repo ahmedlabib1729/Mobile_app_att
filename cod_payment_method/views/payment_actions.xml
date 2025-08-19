@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة Smart Button للـ Enable/Disable -->
+    <record id="payment_provider_form_cod_buttons" model="ir.ui.view">
+        <field name="name">payment.provider.form.cod.buttons</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="cod_payment_method.payment_provider_form_cod"/>
+        <field name="arch" type="xml">
+            <!-- إضافة buttons في نفس مكان باقي providers -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_toggle_is_published"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-globe"
+                        invisible="not is_cod_provider">
+                    <div class="o_stat_info">
+                        <field name="is_published" widget="boolean_button" options='{"terminology": "active"}'/>
+                        <span class="o_stat_text" invisible="is_published">Unpublished</span>
+                        <span class="o_stat_text" invisible="not is_published">Published</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
