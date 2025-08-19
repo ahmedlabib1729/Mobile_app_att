@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_iw_shipment_wizard_form" model="ir.ui.view">
+        <field name="name">iw.shipment.wizard.form</field>
+        <field name="model">iw.shipment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create IW Express Shipment">
+                <sheet>
+                    <group>
+                        <group string="Order Information">
+                            <field name="picking_id" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="carrier_id" column_invisible="True"/>
+                        </group>
+                        <group string="References">
+                            <field name="customer_reference_number"/>
+                            <field name="reference_number"/>
+                            <field name="inco_terms"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Service Details">
+                            <field name="service_type_id"/>
+                            <field name="consignment_type"/>
+                            <field name="load_type"/>
+                        </group>
+                        <group string="Insurance &amp; IDs">
+                            <field name="is_risk_surcharge_applicable"/>
+                            <field name="customer_civil_id"/>
+                            <field name="receiver_civil_id"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Package Information">
+                            <group>
+                                <group string="Package Details">
+                                    <field name="num_pieces"/>
+                                    <field name="weight"/>
+                                    <field name="weight_unit"/>
+                                    <field name="use_multi_piece" invisible="num_pieces == 1"/>
+                                </group>
+                                <group string="Dimensions" invisible="load_type == 'DOCUMENT'">
+                                    <label for="length"/>
+                                    <div class="o_row">
+                                        <field name="length" required="load_type == 'NON-DOCUMENT' and not use_multi_piece"/>
+                                        <span> x </span>
+                                        <field name="width" required="load_type == 'NON-DOCUMENT' and not use_multi_piece"/>
+                                        <span> x </span>
+                                        <field name="height" required="load_type == 'NON-DOCUMENT' and not use_multi_piece"/>
+                                        <span> </span>
+                                        <field name="dimension_unit"/>
+                                    </div>
+                                </group>
+                            </group>
+
+                            <group string="Value &amp; Description">
+                                <field name="declared_value"/>
+                                <field name="description" widget="text"/>
+                            </group>
+
+                            <field name="piece_line_ids" invisible="not use_multi_piece">
+                                <tree editable="bottom">
+                                    <field name="description"/>
+                                    <field name="declared_value" sum="Total Value"/>
+                                    <field name="weight" sum="Total Weight"/>
+                                    <field name="quantity"/>
+                                    <field name="hsn_code" optional="show"/>
+                                    <field name="length" optional="show" required="parent.load_type == 'NON-DOCUMENT'"/>
+                                    <field name="width" optional="show" required="parent.load_type == 'NON-DOCUMENT'"/>
+                                    <field name="height" optional="show" required="parent.load_type == 'NON-DOCUMENT'"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="COD Details">
+                            <group>
+                                <group>
+                                    <field name="is_cod"/>
+                                </group>
+                            </group>
+                            <group invisible="not is_cod">
+                                <group string="COD Information">
+                                    <field name="cod_amount" required="is_cod"/>
+                                    <field name="cod_currency_id" required="is_cod"/>
+                                    <field name="cod_collection_mode" required="is_cod"/>
+                                    <field name="cod_favor_of" required="is_cod"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Notes">
+                            <field name="notes" placeholder="Add any special instructions or notes..." nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_create_shipment"
+                            type="object"
+                            string="Create Shipment"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

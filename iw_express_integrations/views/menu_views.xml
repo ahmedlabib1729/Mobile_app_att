@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem
+        id="menu_iw_root"
+        name="IW Express"
+        parent="stock.menu_stock_root"
+        sequence="50"
+        groups="group_iw_user"/>
+
+    <!-- Shipments Menu -->
+    <menuitem
+        id="menu_iw_shipments"
+        name="Shipments"
+        parent="menu_iw_root"
+        action="action_iw_shipment"
+        sequence="10"/>
+
+    <!-- Configuration Menu -->
+    <menuitem
+        id="menu_iw_config"
+        name="Configuration"
+        parent="menu_iw_root"
+        action="action_iw_config"
+        sequence="100"
+        groups="group_iw_manager"/>
+</odoo>

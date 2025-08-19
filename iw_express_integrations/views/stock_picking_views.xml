@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Stock Picking Form -->
+    <record id="view_picking_form_iw" model="ir.ui.view">
+        <field name="name">stock.picking.form.iw</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <!-- Add IW buttons in header -->
+            <xpath expr="//header/button[@name='action_cancel']" position="after">
+                <button name="action_create_iw_shipment"
+                        string="Create IW Shipment"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not is_iw_carrier or iw_shipment_id or state != 'assigned'"
+                        />
+
+                <button name="action_print_iw_label"
+                        string="Print IW Label"
+                        type="object"
+                        invisible="not iw_shipment_id"
+                        groups="iw_express_integration.group_iw_user"/>
+
+                <button name="action_track_iw_shipment"
+                        string="Track Shipment"
+                        type="object"
+                        invisible="not iw_shipment_id"
+                        groups="iw_express_integration.group_iw_user"/>
+
+                <button name="action_cancel_iw_shipment"
+                        string="Cancel IW Shipment"
+                        type="object"
+                        invisible="not iw_shipment_id or iw_shipment_id.state not in ['draft', 'confirmed']"
+                        confirm="Are you sure you want to cancel this IW Express shipment?"
+                        groups="iw_express_integration.group_iw_user"/>
+            </xpath>
+
+            <!-- Add IW page in notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="IW Express" invisible="not is_iw_carrier">
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="is_iw_carrier" column_invisible="True"/>
+                            <field name="carrier_id" readonly="1" invisible="not carrier_id"/>
+                            <field name="iw_shipment_id" readonly="1"/>
+                            <field name="iw_consignment_ref" readonly="1"/>
+                        </group>
+                        <group string="Tracking &amp; Documents">
+                            <field name="iw_tracking_url" widget="url" readonly="1" invisible="not iw_tracking_url"/>
+                            <field name="iw_label_pdf" filename="iw_label_filename" readonly="1" invisible="not iw_label_pdf"/>
+                            <field name="iw_label_filename" column_invisible="True"/>
+                        </group>
+                    </group>
+
+                    <!-- Show shipment details if exists -->
+                    <group string="Shipment Details" invisible="not iw_shipment_id">
+                        <group>
+                            <field name="iw_service_type_id" readonly="1"/>
+                            <field name="iw_load_type" readonly="1"/>
+                            <field name="iw_num_pieces" readonly="1"/>
+                            <field name="iw_weight" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="iw_shipment_state" readonly="1" widget="badge"/>
+                            <field name="iw_is_cod" readonly="1"/>
+                            <field name="iw_cod_amount" readonly="1" invisible="not iw_is_cod"/>
+                            <field name="iw_cod_currency" readonly="1" invisible="not iw_is_cod"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add IW info in tree view -->
+    <record id="view_picking_tree_iw" model="ir.ui.view">
+        <field name="name">stock.picking.tree.iw</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="iw_consignment_ref" optional="show" string="IW Ref"/>
+                <field name="is_iw_carrier" column_invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add search filters -->
+    <record id="view_picking_internal_search_iw" model="ir.ui.view">
+        <field name="name">stock.picking.search.iw</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='starred']" position="after">
+                <separator/>
+                <filter string="IW Express" name="iw_express" domain="[('is_iw_carrier', '=', True)]"/>
+                <filter string="Has IW Shipment" name="has_iw_shipment" domain="[('iw_shipment_id', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

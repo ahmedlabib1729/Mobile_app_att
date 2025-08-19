@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_iw_shipment_form" model="ir.ui.view">
+        <field name="name">iw.shipment.form</field>
+        <field name="model">iw.shipment</field>
+        <field name="arch" type="xml">
+            <form string="IW Express Shipment">
+                <header>
+                    <button name="action_update_tracking"
+                            type="object"
+                            string="Update Tracking"
+                            class="btn-primary"
+                            invisible="state in ['delivered', 'cancelled']"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel Shipment"
+                            invisible="state in ['delivered', 'cancelled']"
+                            confirm="Are you sure you want to cancel this shipment?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,pickup_completed,in_transit,delivered"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" invisible="not name"/>
+                            <span invisible="name">New Shipment</span>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="customer_reference_number"/>
+                            <field name="reference_number"/>
+                            <field name="service_type_id"/>
+                            <field name="consignment_type"/>
+                            <field name="picking_id"/>
+                            <field name="sale_order_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
+                        </group>
+                        <group string="Service Details">
+                            <field name="load_type"/>
+                            <field name="inco_terms"/>
+                            <field name="is_risk_surcharge_applicable"/>
+                            <field name="pickup_date"/>
+                            <field name="delivery_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Package Details">
+                            <group>
+                                <group string="Dimensions">
+                                    <field name="num_pieces"/>
+                                    <field name="weight"/>
+                                    <field name="weight_unit"/>
+                                    <label for="length" invisible="load_type == 'DOCUMENT'"/>
+                                    <div class="o_row" invisible="load_type == 'DOCUMENT'">
+                                        <field name="length"/>
+                                        <span> x </span>
+                                        <field name="width"/>
+                                        <span> x </span>
+                                        <field name="height"/>
+                                        <span> </span>
+                                        <field name="dimension_unit"/>
+                                    </div>
+                                </group>
+                                <group string="Value">
+                                    <field name="declared_value"/>
+                                    <field name="description" widget="text"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="COD" invisible="not is_cod">
+                            <group>
+                                <group string="COD Details">
+                                    <field name="is_cod"/>
+                                    <field name="cod_amount" required="is_cod" invisible="not is_cod"/>
+                                    <field name="cod_currency" required="is_cod" invisible="not is_cod"/>
+                                    <field name="cod_collection_mode" required="is_cod" invisible="not is_cod"/>
+                                    <field name="cod_favor_of" invisible="not is_cod"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Additional Info">
+                            <group>
+                                <group string="Civil IDs">
+                                    <field name="customer_civil_id"/>
+                                    <field name="receiver_civil_id"/>
+                                </group>
+                                <group string="Notes">
+                                    <field name="notes" nolabel="1" colspan="2"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Tracking">
+                            <group>
+                                <field name="tracking_url" widget="url" invisible="not tracking_url"/>
+                                <field name="last_update_date" readonly="1"/>
+                            </group>
+                            <separator string="Tracking History"/>
+                            <field name="tracking_history" readonly="1" nolabel="1"/>
+                        </page>
+
+                        <page string="Documents">
+                            <group>
+                                <field name="label_pdf" filename="label_filename" invisible="not label_pdf"/>
+                                <field name="label_filename" column_invisible="True"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_iw_shipment_tree" model="ir.ui.view">
+        <field name="name">iw.shipment.tree</field>
+        <field name="model">iw.shipment</field>
+        <field name="arch" type="xml">
+            <tree string="IW Express Shipments">
+                <field name="name"/>
+                <field name="customer_reference_number"/>
+                <field name="picking_id"/>
+                <field name="partner_id"/>
+                <field name="service_type_id"/>
+                <field name="load_type"/>
+                <field name="num_pieces"/>
+                <field name="weight"/>
+                <field name="cod_amount" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'delivered'"
+                       decoration-info="state in ['in_transit', 'out_for_delivery']"
+                       decoration-warning="state in ['attempted', 'on_hold']"
+                       decoration-danger="state in ['cancelled', 'rto']"/>
+                <field name="create_date" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_iw_shipment_search" model="ir.ui.view">
+        <field name="name">iw.shipment.search</field>
+        <field name="model">iw.shipment</field>
+        <field name="arch" type="xml">
+            <search string="Search Shipments">
+                <field name="name"/>
+                <field name="customer_reference_number"/>
+                <field name="picking_id"/>
+                <field name="partner_id"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="In Transit" name="in_transit" domain="[('state','=','in_transit')]"/>
+                <filter string="Delivered" name="delivered" domain="[('state','=','delivered')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
+                <separator/>
+                <filter string="COD Shipments" name="cod" domain="[('is_cod','=',True)]"/>
+                <filter string="Today" name="today" domain="[('create_date','&gt;=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),('create_date','&lt;=', datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter string="This Week" name="week" domain="[('create_date','&gt;=', (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by':'state'}"/>
+                    <filter string="Customer" name="group_by_partner" context="{'group_by':'partner_id'}"/>
+                    <filter string="Service Type" name="group_by_service" context="{'group_by':'service_type_id'}"/>
+                    <filter string="Load Type" name="group_by_load" context="{'group_by':'load_type'}"/>
+                    <filter string="Date" name="group_by_date" context="{'group_by':'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_iw_shipment_kanban" model="ir.ui.view">
+        <field name="name">iw.shipment.kanban</field>
+        <field name="model">iw.shipment</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="service_type_id"/>
+                <field name="cod_amount"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <strong>
+                                    <field name="cod_amount" widget="monetary" invisible="cod_amount == 0"/>
+                                </strong>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <field name="partner_id"/>
+                                </div>
+                                <div>
+                                    <field name="service_type_id" widget="badge"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="picking_id"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'confirmed': 'primary', 'delivered': 'success', 'cancelled': 'danger'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_iw_shipment" model="ir.actions.act_window">
+        <field name="name">IW Express Shipments</field>
+        <field name="res_model">iw.shipment</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="view_iw_shipment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No IW Express shipments found
+            </p>
+            <p>
+                Create shipments from delivery orders.
+            </p>
+        </field>
+    </record>
+</odoo>

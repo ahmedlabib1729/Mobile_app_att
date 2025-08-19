@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_iw_config_form" model="ir.ui.view">
+        <field name="name">iw.config.form</field>
+        <field name="model">iw.config</field>
+        <field name="arch" type="xml">
+            <form string="IW Express Configuration">
+                <header>
+                    <button name="test_connection" type="object" string="Test Connection" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. IW Kuwait, IW Saudi"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Country Settings">
+                            <field name="country_id" options="{'no_create': True}"/>
+                            <field name="is_default_for_country"/>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="API Settings">
+                            <field name="api_url"/>
+                            <field name="api_token" password="True"/>
+                            <field name="customer_code"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Default Settings">
+                            <field name="default_service_type"/>
+                            <field name="default_load_type"/>
+                            <field name="dimension_unit"/>
+                            <field name="weight_unit"/>
+                        </group>
+                        <group string="Options">
+                            <field name="auto_print_label"/>
+                            <field name="debug_mode"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <group string="Webhook Settings" invisible="not enable_webhook">
+                        <group>
+                            <field name="enable_webhook"/>
+                            <field name="webhook_url" required="enable_webhook" invisible="not enable_webhook"/>
+                        </group>
+                    </group>
+
+                    <separator string="Notes"/>
+                    <field name="note" nolabel="1" placeholder="Add any notes or special instructions..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_iw_config_tree" model="ir.ui.view">
+        <field name="name">iw.config.tree</field>
+        <field name="model">iw.config</field>
+        <field name="arch" type="xml">
+            <tree string="IW Express Configurations">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="is_default_for_country" widget="boolean_toggle"/>
+                <field name="customer_code"/>
+                <field name="default_service_type"/>
+                <field name="currency_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_iw_config_search" model="ir.ui.view">
+        <field name="name">iw.config.search</field>
+        <field name="model">iw.config</field>
+        <field name="arch" type="xml">
+            <search string="Search IW Configuration">
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="customer_code"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Default for Country" name="is_default" domain="[('is_default_for_country', '=', True)]"/>
+                <filter string="Webhook Enabled" name="webhook" domain="[('enable_webhook', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_by_country" context="{'group_by': 'country_id'}"/>
+                    <filter string="Service Type" name="group_by_service" context="{'group_by': 'default_service_type'}"/>
+                    <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_iw_config" model="ir.actions.act_window">
+        <field name="name">IW Express Configuration</field>
+        <field name="res_model">iw.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_iw_config_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure IW Express Integration
+            </p>
+            <p>
+                Create configurations for each country where you use IW Express services.
+            </p>
+        </field>
+    </record>
+</odoo>

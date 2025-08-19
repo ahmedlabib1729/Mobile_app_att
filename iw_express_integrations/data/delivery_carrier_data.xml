@@ -1,0 +1,45 @@
+<odoo>
+    <data noupdate="1">
+        <!-- IW Express Delivery Product -->
+        <record id="product_iw_delivery" model="product.product">
+            <field name="name">IW Express Shipping</field>
+            <field name="default_code">IW_SHIP</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="delivery.product_category_deliveries"/>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="standard_price">0</field>
+        </record>
+
+        <!-- Example IW Express Delivery Carrier - Premium Service -->
+        <record id="delivery_carrier_iw_premium" model="delivery.carrier">
+            <field name="name">IW Express - Premium</field>
+            <field name="delivery_type">iw_express</field>
+            <field name="product_id" ref="product_iw_delivery"/>
+            <field name="iw_service_type">PREMIUM</field>
+            <field name="iw_load_type">NON-DOCUMENT</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Example IW Express Delivery Carrier - International -->
+        <record id="delivery_carrier_iw_international" model="delivery.carrier">
+            <field name="name">IW Express - International</field>
+            <field name="delivery_type">iw_express</field>
+            <field name="product_id" ref="product_iw_delivery"/>
+            <field name="iw_service_type">INTERNATIONAL</field>
+            <field name="iw_load_type">NON-DOCUMENT</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Example IW Express Delivery Carrier - Document -->
+        <record id="delivery_carrier_iw_document" model="delivery.carrier">
+            <field name="name">IW Express - Document</field>
+            <field name="delivery_type">iw_express</field>
+            <field name="product_id" ref="product_iw_delivery"/>
+            <field name="iw_service_type">DELIVERY</field>
+            <field name="iw_load_type">DOCUMENT</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

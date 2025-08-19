@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Sale Order Form -->
+    <record id="view_order_form_iw" model="ir.ui.view">
+        <field name="name">sale.order.form.iw</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add IW shipment button in header button box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_iw_shipments"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        invisible="iw_shipment_count == 0">
+                    <field name="iw_shipment_count" widget="statinfo" string="IW Shipments"/>
+                </button>
+            </xpath>
+
+            <!-- Show IW info in status bar if applicable -->
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="iw_shipment_state"
+                       widget="badge"
+                       invisible="not is_iw_carrier or iw_shipment_state == 'none'"
+                       decoration-success="iw_shipment_state == 'delivered'"
+                       decoration-info="iw_shipment_state in ['in_transit', 'out_for_delivery']"
+                       decoration-warning="iw_shipment_state in ['confirmed', 'pickup_scheduled', 'pickup_completed']"
+                       decoration-danger="iw_shipment_state in ['cancelled', 'rto']"/>
+            </xpath>
+
+            <!-- Add IW tab in notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="IW Express" invisible="not is_iw_carrier">
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="is_iw_carrier" column_invisible="True"/>
+                            <field name="iw_service_type" readonly="1"/>
+                            <field name="iw_load_type" readonly="1"/>
+                            <field name="iw_consignment_refs" readonly="1"/>
+                            <field name="iw_shipment_state"
+                                   widget="badge"
+                                   decoration-success="iw_shipment_state == 'delivered'"
+                                   decoration-info="iw_shipment_state in ['in_transit', 'out_for_delivery']"
+                                   decoration-warning="iw_shipment_state in ['confirmed', 'pickup_scheduled', 'pickup_completed']"
+                                   decoration-danger="iw_shipment_state in ['cancelled', 'rto']"
+                                   readonly="1"/>
+                        </group>
+                        <group string="Tracking">
+                            <field name="iw_tracking_urls"
+                                   widget="url"
+                                   readonly="1"
+                                   invisible="not iw_tracking_urls"/>
+                            <button name="action_open_iw_tracking"
+                                    string="Track Shipments"
+                                    type="object"
+                                    class="btn-link"
+                                    icon="fa-external-link"
+                                    invisible="not iw_tracking_urls"/>
+                        </group>
+                    </group>
+
+                    <!-- List of shipments -->
+                    <separator string="IW Express Shipments" invisible="iw_shipment_count == 0"/>
+                    <field name="iw_shipment_ids" readonly="1" invisible="iw_shipment_count == 0">
+                        <tree>
+                            <field name="name" string="Consignment Ref"/>
+                            <field name="customer_reference_number" string="Customer Ref"/>
+                            <field name="service_type_id" string="Service"/>
+                            <field name="load_type"/>
+                            <field name="num_pieces"/>
+                            <field name="weight"/>
+                            <field name="cod_amount" optional="show"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'delivered'"
+                                   decoration-info="state in ['in_transit', 'out_for_delivery']"
+                                   decoration-warning="state in ['confirmed', 'pickup_scheduled', 'pickup_completed']"
+                                   decoration-danger="state in ['cancelled', 'rto']"/>
+                            <field name="pickup_date" optional="show"/>
+                            <field name="delivery_date" optional="show"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Add IW info in Sale Order Tree View -->
+    <record id="view_order_tree_iw" model="ir.ui.view">
+        <field name="name">sale.order.tree.iw</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="carrier_id" optional="show" string="Delivery"/>
+                <field name="iw_consignment_refs" optional="hide" string="IW Ref"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add search filters -->
+    <record id="view_sales_order_filter_iw" model="ir.ui.view">
+        <field name="name">sale.order.search.iw</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter string="IW Express"
+                        name="iw_orders"
+                        domain="[('is_iw_carrier', '=', True)]"/>
+                <filter string="Has IW Shipment"
+                        name="has_iw_shipment"
+                        domain="[('picking_ids.iw_shipment_id', '!=', False)]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Carrier"
+                        name="group_by_carrier"
+                        context="{'group_by': 'carrier_id'}"/>
+                <filter string="IW Status"
+                        name="group_by_iw_status"
+                        context="{'group_by': 'iw_shipment_state'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

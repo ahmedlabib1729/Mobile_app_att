@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_iw_config_user,iw.config.user,model_iw_config,group_iw_user,1,0,0,0
+access_iw_config_manager,iw.config.manager,model_iw_config,group_iw_manager,1,1,1,1
+access_iw_shipment_user,iw.shipment.user,model_iw_shipment,group_iw_user,1,1,1,0
+access_iw_shipment_manager,iw.shipment.manager,model_iw_shipment,group_iw_manager,1,1,1,1
+access_iw_shipment_wizard,iw.shipment.wizard,model_iw_shipment_wizard,group_iw_user,1,1,1,1
+access_iw_shipment_wizard_piece,iw.shipment.wizard.piece,model_iw_shipment_wizard_piece,group_iw_user,1,1,1,1
+access_iw_shipment_stock_user,iw.shipment.stock.user,model_iw_shipment,stock.group_stock_user,1,0,0,0
