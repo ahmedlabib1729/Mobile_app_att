@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Delivery Carrier Form -->
+    <record id="view_delivery_carrier_form_aramex" model="ir.ui.view">
+        <field name="name">delivery.carrier.form.aramex</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Aramex page in notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Aramex Settings"
+                      name="aramex_settings"
+                      invisible="delivery_type != 'aramex'">
+
+                    <!-- Test Button -->
+                    <div class="text-end mb-3">
+                        <button name="action_get_aramex_rates"
+                                type="object"
+                                string="Test Rate Calculation"
+                                class="btn-secondary"
+                                icon="fa-calculator"
+                                help="Test rate calculation with last sale order"/>
+                    </div>
+
+                    <group>
+                        <group string="Service Configuration">
+                            <field name="aramex_default_product_group"
+                                   required="delivery_type == 'aramex'"/>
+                            <field name="aramex_default_product_type"
+                                   required="delivery_type == 'aramex'"/>
+                            <field name="aramex_default_payment_type"
+                                   required="delivery_type == 'aramex'"/>
+                            <field name="aramex_default_service_codes"
+                                   placeholder="e.g. CODS,SIGN,CHST"
+                                   help="Comma-separated service codes"/>
+                        </group>
+                        <group string="Label Settings">
+                            <field name="aramex_label_report_id"/>
+                            <field name="aramex_label_report_type"/>
+                            <field name="aramex_auto_create_pickup"
+                                   widget="boolean_toggle"/>
+                            <field name="aramex_test_mode"
+                                   widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <separator string="Pricing Configuration"/>
+                    <group>
+                        <group string="Base Pricing">
+                            <label for="aramex_base_price"/>
+                            <div class="o_row">
+                                <field name="aramex_base_price" nolabel="1"/>
+                                <span class="o_form_label"> per shipment</span>
+                            </div>
+                            <label for="aramex_price_per_kg"/>
+                            <div class="o_row">
+                                <field name="aramex_price_per_kg" nolabel="1"/>
+                                <span class="o_form_label"> per KG</span>
+                            </div>
+                        </group>
+                        <group string="Additional Fees">
+                            <label for="aramex_cod_fee"/>
+                            <div class="o_row">
+                                <field name="aramex_cod_fee" nolabel="1"/>
+                                <span class="o_form_label"> for COD service</span>
+                            </div>
+                        </group>
+                    </group>
+
+                    <separator string="Aramex Configurations" class="mt-4"/>
+                    <p class="text-muted">
+                        <i class="fa fa-info-circle"/> Select Aramex configurations for different countries.
+                        The system will automatically choose the appropriate configuration based on the delivery address.
+                    </p>
+                    <field name="aramex_config_ids"
+                           required="delivery_type == 'aramex'"
+                           options="{'no_create': True, 'no_create_edit': True}"
+                           domain="[('active', '=', True)]">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="country_id"/>
+                            <field name="display_name" string="Configuration" readonly="1"/>
+                            <field name="is_default_for_country"
+                                   widget="boolean_toggle"
+                                   string="Default"/>
+                            <field name="test_mode"
+                                   widget="boolean_toggle"
+                                   readonly="1"/>
+                            <field name="username" readonly="1"/>
+                            <field name="account_entity" readonly="1"/>
+                            <field name="active"
+                                   widget="boolean_toggle"
+                                   readonly="1"/>
+                        </tree>
+                    </field>
+
+                    <div class="alert alert-info mt-3" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-lightbulb-o"/> Configuration Tips
+                        </h4>
+                        <ul class="mb-0">
+                            <li>Add configurations for each country you ship to</li>
+                            <li>Mark one configuration as default per country</li>
+                            <li>Test mode configurations will be used when "Test Mode" is enabled</li>
+                            <li>Pricing is calculated based on weight and destination country</li>
+                        </ul>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit Delivery Carrier Tree -->
+    <record id="view_delivery_carrier_tree_aramex" model="ir.ui.view">
+        <field name="name">delivery.carrier.tree.aramex</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add Aramex specific columns -->
+            <xpath expr="//field[@name='delivery_type']" position="after">
+                <field name="aramex_default_product_type"
+                       string="Aramex Service"
+                       optional="show"
+                       invisible="delivery_type != 'aramex'"/>
+                <field name="aramex_test_mode"
+                       string="Test Mode"
+                       widget="boolean_toggle"
+                       optional="show"
+                       invisible="delivery_type != 'aramex'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit Delivery Carrier Search -->
+
+
+    <!-- Action for Aramex Carriers -->
+    <record id="action_aramex_carrier" model="ir.actions.act_window">
+        <field name="name">Aramex Delivery Methods</field>
+        <field name="res_model">delivery.carrier</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('delivery_type', '=', 'aramex')]</field>
+        <field name="context">{'search_default_active': 1, 'default_delivery_type': 'aramex'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create an Aramex Delivery Method
+            </p>
+            <p>
+                Set up Aramex as a delivery method for your sales orders.
+                Configure different settings for each service type and country.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu for Aramex Carriers -->
+    <menuitem id="menu_aramex_carriers"
+              name="Delivery Methods"
+              parent="menu_aramex_root"
+              action="action_aramex_carrier"
+              sequence="20"/>
+</odoo>
