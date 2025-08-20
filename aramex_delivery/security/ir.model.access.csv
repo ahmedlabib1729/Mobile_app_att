@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_aramex_config_all,aramex.config.all,model_aramex_config,,1,1,1,1
-access_aramex_shipment_all,aramex.shipment.all,model_aramex_shipment,,1,1,1,1
-access_aramex_shipment_wizard_all,aramex.shipment.wizard.all,model_aramex_shipment_wizard,,1,1,1,1
-access_aramex_shipment_wizard_package_all,aramex.shipment.wizard.package.all,model_aramex_shipment_wizard_package,,1,1,1,1
