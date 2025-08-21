@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_m5_order_form" model="ir.ui.view">
+        <field name="name">m5.order.form</field>
+        <field name="model">m5.order</field>
+        <field name="arch" type="xml">
+            <form string="M5 Order">
+                <header>
+                    <button name="action_send_to_m5"
+                            string="Send to M5"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ['draft', 'error']"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" invisible="not name"/>
+                        <h1>
+                            <field name="name" readonly="1" placeholder="Will be generated..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Order Information">
+                            <field name="plat_order_id"/>
+                            <field name="picking_id"/>
+                            <field name="sale_order_id"/>
+                            <field name="partner_id"/>
+                            <field name="warehouse_id"/>
+                        </group>
+                        <group string="M5 Information">
+                            <field name="m5_client_id"/>
+                            <field name="m5_warehouse_id"/>
+                            <field name="order_date"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Customer Details">
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="email"/>
+                            <field name="mobile"/>
+                        </group>
+                        <group string="Address">
+                            <field name="address"/>
+                            <field name="city_name"/>
+                            <field name="city_id"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Financial">
+                            <field name="grand_total"/>
+                            <field name="cod_amount"/>
+                        </group>
+                        <group string="Other">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                        <page string="Response" invisible="not response_data and not error_message">
+                            <group string="API Response" invisible="not response_data">
+                                <field name="response_data" nolabel="1" widget="text"/>
+                            </group>
+                            <group string="Error Message" invisible="not error_message">
+                                <field name="error_message" nolabel="1" widget="text"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_m5_order_tree" model="ir.ui.view">
+        <field name="name">m5.order.tree</field>
+        <field name="model">m5.order</field>
+        <field name="arch" type="xml">
+            <tree string="M5 Orders">
+                <field name="name"/>
+                <field name="plat_order_id"/>
+                <field name="picking_id"/>
+                <field name="sale_order_id"/>
+                <field name="partner_id"/>
+                <field name="warehouse_id"/>
+                <field name="order_date"/>
+                <field name="grand_total"/>
+                <field name="cod_amount"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-info="state in ['sent', 'processing']"
+                       decoration-danger="state in ['cancelled', 'error']"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_m5_order_search" model="ir.ui.view">
+        <field name="name">m5.order.search</field>
+        <field name="model">m5.order</field>
+        <field name="arch" type="xml">
+            <search string="Search M5 Orders">
+                <field name="name"/>
+                <field name="plat_order_id"/>
+                <field name="picking_id"/>
+                <field name="sale_order_id"/>
+                <field name="partner_id"/>
+
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]"/>
+                <filter string="Processing" name="processing" domain="[('state', '=', 'processing')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <filter string="Error" name="error" domain="[('state', '=', 'error')]"/>
+
+                <separator/>
+
+                <filter string="Today" name="today" domain="[('order_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="this_week" domain="[('order_date', '>=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Warehouse" name="group_by_warehouse" context="{'group_by': 'warehouse_id'}"/>
+                    <filter string="Customer" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Order Date" name="group_by_date" context="{'group_by': 'order_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_m5_order" model="ir.actions.act_window">
+        <field name="name">M5 Orders</field>
+        <field name="res_model">m5.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_m5_order_search"/>
+        <field name="context">{'search_default_draft': 1, 'search_default_sent': 1, 'search_default_processing': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No M5 orders found
+            </p>
+            <p>
+                M5 orders will appear here when created from delivery orders.
+            </p>
+        </field>
+    </record>
+</odoo>

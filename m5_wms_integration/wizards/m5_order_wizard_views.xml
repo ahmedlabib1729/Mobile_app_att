@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_m5_order_wizard_form" model="ir.ui.view">
+        <field name="name">m5.order.wizard.form</field>
+        <field name="model">m5.order.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create M5 Shipment">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"/> Enter shipment details. The order will be sent directly to M5 WMS when you click "Create Shipment".
+                    </div>
+
+                    <group>
+                        <group string="Order Information">
+                            <field name="picking_id" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="warehouse_id"/>
+                        </group>
+                        <group string="Order Details">
+                            <field name="plat_order_id"/>
+                            <field name="order_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Customer Information">
+                        <group>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="mobile"/>
+                            <field name="city_name"/>
+                            <field name="city_id"/>
+                        </group>
+                    </group>
+
+                    <group string="Delivery Address">
+                        <field name="address" nolabel="1" widget="text"/>
+                    </group>
+
+                    <group>
+                        <group string="Financial">
+                            <field name="grand_total"/>
+                            <field name="is_cod"/>
+                            <field name="cod_amount" required="is_cod" invisible="not is_cod"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes" nolabel="1" widget="text" placeholder="Add any special instructions..."/>
+                        </group>
+                    </group>
+
+                    <separator string="Products to Send"/>
+                    <p class="text-muted">
+                        <i class="fa fa-info-circle"/> Make sure all products have Internal Reference (M5 Product ID)
+                    </p>
+                    <field name="product_line_ids" readonly="1" nolabel="1">
+                        <tree>
+                            <field name="product_id"/>
+                            <field name="m5_product_id" decoration-danger="m5_product_id == 'NOT SET'"/>
+                            <field name="quantity"/>
+                            <field name="unit_price"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_create_shipment"
+                            type="object"
+                            string="Create Shipment"
+                            class="btn-primary"
+                            icon="fa-send"
+                            confirm="This will send the order directly to M5 WMS. Are you sure all details are correct?"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

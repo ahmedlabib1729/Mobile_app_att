@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Stock Picking Form -->
+    <record id="view_picking_form_m5" model="ir.ui.view">
+        <field name="name">stock.picking.form.m5</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <!-- Add M5 buttons in header -->
+            <xpath expr="//header/button[@name='action_cancel']" position="after">
+                <button name="action_create_m5_order"
+                        string="Create M5 Order"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not is_m5_enabled or m5_order_id or picking_type_code != 'outgoing'"
+                        groups="m5_wms_integration.group_m5_user"/>
+
+                <button name="action_view_m5_order"
+                        string="View M5 Order"
+                        type="object"
+                        invisible="not m5_order_id"
+                        groups="m5_wms_integration.group_m5_user"/>
+            </xpath>
+
+            <!-- Add M5 info in sheet -->
+            <xpath expr="//sheet" position="inside">
+                <group string="M5 WMS" invisible="not is_m5_enabled or picking_type_code != 'outgoing'" groups="m5_wms_integration.group_m5_user">
+                    <group>
+                        <field name="is_m5_enabled" invisible="1"/>
+                        <field name="m5_order_id" readonly="1"/>
+                        <field name="m5_order_state" readonly="1" widget="badge"
+                               decoration-success="m5_order_state == 'completed'"
+                               decoration-info="m5_order_state in ['sent', 'processing']"
+                               decoration-danger="m5_order_state in ['cancelled', 'error']"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add M5 info in tree view -->
+    <record id="view_picking_tree_m5" model="ir.ui.view">
+        <field name="name">stock.picking.tree.m5</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="m5_order_state" optional="show" widget="badge"
+                       decoration-success="m5_order_state == 'completed'"
+                       decoration-info="m5_order_state in ['sent', 'processing']"
+                       decoration-danger="m5_order_state in ['cancelled', 'error']"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
