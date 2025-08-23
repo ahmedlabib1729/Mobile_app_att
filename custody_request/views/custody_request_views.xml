@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_custody_request_form" model="ir.ui.view">
+        <field name="name">custody.request.form</field>
+        <field name="model">custody.request</field>
+        <field name="arch" type="xml">
+            <form string="Custody Request">
+                <header>
+                    <button name="action_submit" string="Submit" type="object" 
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object" 
+                            class="btn-success" invisible="not can_approve"
+                            confirm="Are you sure you want to approve this request?"/>
+                    <button name="action_reject" string="Reject" type="object" 
+                            class="btn-danger" invisible="not can_approve"
+                            confirm="Are you sure you want to reject this request?"/>
+                    <button name="action_cancel" string="Cancel" type="object" 
+                            invisible="state not in ['draft','submitted','in_approval']"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" 
+                            invisible="state not in ['cancelled','rejected']"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,submitted,in_approval,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_approval_history" icon="fa-history">
+                            <field name="approval_count" widget="statinfo" string="Approvals"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Approved" invisible="state != 'approved'"/>
+                    <widget name="web_ribbon" title="Rejected" bg_color="bg-danger"
+                            invisible="state != 'rejected'"/>
+                    <widget name="web_ribbon" title="Cancelled" bg_color="bg-warning"
+                            invisible="state != 'cancelled'"/>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="partner_id" placeholder="Select recipient"
+                                   readonly="state != 'draft'"/>
+                            <field name="amount" widget="monetary"
+                                   readonly="state != 'draft'"/>
+                            <field name="department_id" placeholder="Select department"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="can_approve" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason" placeholder="Enter reason for custody request"
+                               readonly="state != 'draft'"/>
+                    </group>
+                    <group string="Approval Information" invisible="state == 'draft'">
+                        <field name="next_approvers" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Approval History" invisible="state == 'draft'">
+                            <field name="approval_line_ids">
+                                <list>
+                                    <field name="sequence"/>
+                                    <field name="stage_name"/>
+                                    <field name="required_users"/>
+                                    <field name="status" widget="badge"
+                                           decoration-success="status == 'approved'"
+                                           decoration-danger="status == 'rejected'"
+                                           decoration-info="status == 'pending'"/>
+                                    <field name="approved_by"/>
+                                    <field name="approval_date"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_custody_request_list" model="ir.ui.view">
+        <field name="name">custody.request.list</field>
+        <field name="model">custody.request</field>
+        <field name="arch" type="xml">
+            <list string="Custody Requests">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="department_id"/>
+                <field name="amount"/>
+                <field name="date"/>
+                <field name="reason"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"
+                       decoration-warning="state == 'cancelled'"
+                       decoration-info="state == 'in_approval'"/>
+                <field name="next_approvers" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <!-- Search View -->
+<record id="view_custody_request_search" model="ir.ui.view">
+    <field name="name">custody.request.search</field>
+    <field name="model">custody.request</field>
+    <field name="arch" type="xml">
+        <search string="Search">
+            <field name="partner_id"/>
+            <field name="date"/>
+            <field name="reason"/>
+            <field name="state"/>
+            <filter string="Today" name="today"
+                    domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+            <separator/>
+            <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+            <filter string="In Approval" name="in_approval" domain="[('state', '=', 'in_approval')]"/>
+            <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+            <filter string="Rejected" name="rejected" domain="[('state', '=', 'rejected')]"/>
+            <separator/>
+            <!-- Removed My Approvals filter because can_approve is not searchable -->
+            <group expand="0" string="Group By">
+                <filter string="Recipient" name="partner" domain="[]"
+                        context="{'group_by':'partner_id'}"/>
+                <filter string="Date" name="date" domain="[]"
+                        context="{'group_by':'date'}"/>
+                <filter string="Status" name="state" domain="[]"
+                        context="{'group_by':'state'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+    <!-- Action -->
+    <record id="action_custody_request" model="ir.actions.act_window">
+        <field name="name">Custody Requests</field>
+        <field name="res_model">custody.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new custody request
+            </p>
+        </field>
+    </record>
+
+</odoo>

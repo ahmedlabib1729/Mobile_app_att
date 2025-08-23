@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_custody_approval_config_form" model="ir.ui.view">
+        <field name="name">custody.approval.config.form</field>
+        <field name="model">custody.approval.config</field>
+        <field name="arch" type="xml">
+            <form string="Approval Stage">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="name" placeholder="e.g. Manager Approval"/>
+                            <field name="department_id" placeholder="Select department"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="user_ids" widget="many2many_tags" placeholder="Select approvers"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_custody_approval_config_list" model="ir.ui.view">
+        <field name="name">custody.approval.config.list</field>
+        <field name="model">custody.approval.config</field>
+        <field name="arch" type="xml">
+            <list string="Approval Stages">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="user_ids" widget="many2many_tags"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_custody_approval_config" model="ir.actions.act_window">
+        <field name="name">Approval Configuration</field>
+        <field name="res_model">custody.approval.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure approval stages for custody requests
+            </p>
+        </field>
+    </record>
+</odoo>

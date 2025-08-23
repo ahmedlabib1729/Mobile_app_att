@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_custody_root"
+              name="Custody"
+              sequence="10"/>
+
+    <!-- Sub Menu -->
+    <menuitem id="menu_custody_request"
+              name="Custody Requests"
+              parent="menu_custody_root"
+              action="action_custody_request"
+              sequence="10"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_custody_config"
+              name="Configuration"
+              parent="menu_custody_root"
+              sequence="90"/>
+
+    <menuitem id="menu_custody_approval_config"
+              name="Approval Stages"
+              parent="menu_custody_config"
+              action="action_custody_approval_config"
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Record Rule for Multi-Company -->
+    <record id="custody_request_company_rule" model="ir.rule">
+        <field name="name">Custody Request Multi-Company</field>
+        <field name="model_id" ref="model_custody_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="custody_approval_config_company_rule" model="ir.rule">
+        <field name="name">Custody Approval Config Multi-Company</field>
+        <field name="model_id" ref="model_custody_approval_config"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

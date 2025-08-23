@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custody_request_user,custody.request.user,model_custody_request,base.group_user,1,1,1,1
+access_custody_approval_config_user,custody.approval.config.user,model_custody_approval_config,base.group_user,1,0,0,0
+access_custody_approval_config_manager,custody.approval.config.manager,model_custody_approval_config,base.group_system,1,1,1,1
+access_custody_approval_line_user,custody.approval.line.user,model_custody_approval_line,base.group_user,1,1,1,0
