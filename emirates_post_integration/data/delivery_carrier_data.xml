@@ -1,0 +1,15 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Default Product for Emirates Post -->
+        <record id="product_emirates_post_delivery" model="product.product">
+            <field name="name">Emirates Post Delivery</field>
+            <field name="default_code">EP-DELIVERY</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="delivery.product_category_deliveries"/>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">20.0</field>
+            <field name="standard_price">20.0</field>
+        </record>
+    </data>
+</odoo>

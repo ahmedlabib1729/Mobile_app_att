@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_order_form_emirates_post" model="ir.ui.view">
+        <field name="name">sale.order.form.emirates.post</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Hidden field for condition -->
+                <field name="emirates_post_shipment_count" invisible="1"/>
+
+                <button name="action_view_emirates_post_shipments"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        invisible="emirates_post_shipment_count == 0">
+                    <field name="emirates_post_shipment_count" widget="statinfo" string="EP Shipments"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="after">
+                <!-- Hidden fields for conditions -->
+                <field name="is_emirates_post_carrier" invisible="1"/>
+                <field name="emirates_post_tracking_urls" invisible="1"/>
+
+                <page string="Emirates Post" invisible="is_emirates_post_carrier == False">
+                    <group>
+                        <field name="emirates_post_awb_numbers" readonly="1"/>
+                        <field name="emirates_post_tracking_urls" widget="text" readonly="1"/>
+                        <field name="emirates_post_shipment_state" readonly="1"/>
+                    </group>
+                    <button name="action_open_emirates_post_tracking"
+                            string="Open Tracking"
+                            type="object"
+                            class="btn-link"
+                            invisible="emirates_post_tracking_urls == False"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

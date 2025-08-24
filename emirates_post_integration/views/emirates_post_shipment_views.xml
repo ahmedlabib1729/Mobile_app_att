@@ -1,0 +1,161 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_emirates_post_shipment_tree" model="ir.ui.view">
+        <field name="name">emirates.post.shipment.tree</field>
+        <field name="model">emirates.post.shipment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="reference_no"/>
+                <field name="picking_id"/>
+                <field name="partner_id"/>
+                <field name="receiver_country_id"/>
+                <field name="receiver_emirate_id" optional="show"/>
+                <field name="receiver_city_name" optional="show"/>
+                <field name="cod_amount"/>
+                <field name="state" widget="badge" decoration-success="state == 'delivered'" decoration-warning="state == 'in_transit'" decoration-info="state == 'confirmed'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_emirates_post_shipment_form" model="ir.ui.view">
+        <field name="name">emirates.post.shipment.form</field>
+        <field name="model">emirates.post.shipment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_transit,delivered"/>
+                </header>
+                <sheet>
+                    <!-- Hidden fields used in modifiers -->
+                    <field name="tracking_url" invisible="1"/>
+                    <field name="label_data" invisible="1"/>
+                    <field name="is_domestic_shipment" invisible="1"/>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_track_shipment"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-globe"
+                                string="Track"
+                                invisible="tracking_url == False"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" placeholder="AWB Number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="General Information">
+                            <field name="reference_no"/>
+                            <field name="picking_id"/>
+                            <field name="sale_order_id"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Shipment Details">
+                            <field name="cod_amount"/>
+                            <field name="pieces"/>
+                            <field name="weight"/>
+                            <field name="item_value"/>
+                            <field name="commodity_description"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Sender Information">
+                            <group>
+                                <field name="sender_name"/>
+                                <field name="sender_company"/>
+                                <field name="sender_address"/>
+                                <field name="sender_city"/>
+                                <field name="sender_phone"/>
+                                <field name="sender_mobile"/>
+                                <field name="sender_email"/>
+                            </group>
+                        </page>
+                        <page string="Receiver Information">
+                            <group>
+                                <group>
+                                    <field name="receiver_name"/>
+                                    <field name="receiver_company"/>
+                                    <field name="receiver_address"/>
+                                    <field name="receiver_phone"/>
+                                    <field name="receiver_mobile"/>
+                                    <field name="receiver_email"/>
+                                </group>
+                                <group string="Location">
+                                    <field name="receiver_country_id" options="{'no_create': True}"/>
+                                    <field name="receiver_state_id"
+                                           options="{'no_create': True}"
+                                           invisible="not receiver_country_id"/>
+                                    <field name="receiver_emirate_id"
+                                           options="{'no_create': True}"
+                                           invisible="not is_domestic_shipment"
+                                           required="is_domestic_shipment"/>
+                                    <field name="receiver_city_name"
+                                           invisible="is_domestic_shipment"
+                                           required="not is_domestic_shipment"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Dimensions">
+                            <group>
+                                <field name="length"/>
+                                <field name="width"/>
+                                <field name="height"/>
+                            </group>
+                        </page>
+                        <page string="Label" invisible="label_data == False">
+                            <group>
+                                <field name="label_filename" invisible="1"/>
+                                <field name="label_data" filename="label_filename" widget="binary" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_emirates_post_shipment_search" model="ir.ui.view">
+        <field name="name">emirates.post.shipment.search</field>
+        <field name="model">emirates.post.shipment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="reference_no"/>
+                <field name="partner_id"/>
+                <field name="picking_id"/>
+                <field name="receiver_country_id"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="In Transit" name="in_transit" domain="[('state', '=', 'in_transit')]"/>
+                <filter string="Delivered" name="delivered" domain="[('state', '=', 'delivered')]"/>
+                <separator/>
+                <filter string="COD" name="cod" domain="[('cod_amount', '>', 0)]"/>
+                <filter string="Domestic" name="domestic" domain="[('is_domestic_shipment', '=', True)]"/>
+                <filter string="International" name="international" domain="[('is_domestic_shipment', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Customer" name="partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Country" name="country" context="{'group_by': 'receiver_country_id'}"/>
+                    <filter string="City/Emirate" name="city" context="{'group_by': 'receiver_emirate_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_emirates_post_shipment" model="ir.actions.act_window">
+        <field name="name">Emirates Post Shipments</field>
+        <field name="res_model">emirates.post.shipment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_emirates_post_shipment_search"/>
+    </record>
+</odoo>

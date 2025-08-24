@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_emirates_post_config_user,emirates.post.config.user,model_emirates_post_config,base.group_user,1,0,0,0
+access_emirates_post_config_manager,emirates.post.config.manager,model_emirates_post_config,stock.group_stock_manager,1,1,1,1
+access_emirates_post_emirate_user,emirates.post.emirate.user,model_emirates_post_emirate,base.group_user,1,0,0,0
+access_emirates_post_emirate_manager,emirates.post.emirate.manager,model_emirates_post_emirate,stock.group_stock_manager,1,1,1,1
+access_emirates_post_zone_user,emirates.post.zone.user,model_emirates_post_zone,base.group_user,1,0,0,0
+access_emirates_post_zone_manager,emirates.post.zone.manager,model_emirates_post_zone,stock.group_stock_manager,1,1,1,1
+access_emirates_post_shipment_user,emirates.post.shipment.user,model_emirates_post_shipment,base.group_user,1,1,1,0
+access_emirates_post_shipment_manager,emirates.post.shipment.manager,model_emirates_post_shipment,stock.group_stock_manager,1,1,1,1
+access_emirates_post_shipment_wizard,emirates.post.shipment.wizard,model_emirates_post_shipment_wizard,base.group_user,1,1,1,1
