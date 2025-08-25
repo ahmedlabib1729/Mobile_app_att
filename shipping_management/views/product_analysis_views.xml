@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- List View -->
+        <record id="view_product_analysis_list" model="ir.ui.view">
+            <field name="name">product.analysis.list</field>
+            <field name="model">product.analysis</field>
+            <field name="arch" type="xml">
+                <list string="Product Analysis" create="false" edit="false">
+                    <field name="shipping_date"/>
+                    <field name="product_name"/>
+                    <field name="brand"/>
+                    <field name="category_id"/>
+                    <field name="customer_id"/>
+                    <field name="customer_type" widget="badge"/>
+                    <field name="quantity" sum="Total Quantity"/>
+                    <field name="unit_price" widget="monetary"/>
+                    <field name="total_value" widget="monetary" sum="Total Value"/>
+                    <field name="governorate_id"/>
+                    <field name="city"/>
+                    <field name="is_repeat_product" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_product_analysis_form" model="ir.ui.view">
+            <field name="name">product.analysis.form</field>
+            <field name="model">product.analysis</field>
+            <field name="arch" type="xml">
+                <form string="Product Analysis" create="false" edit="false">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="product_name" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="brand" readonly="1"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <group string="Product Information">
+                                <field name="category_id"/>
+                                <field name="subcategory_id"/>
+                                <field name="quantity"/>
+                                <field name="unit_price" widget="monetary"/>
+                                <field name="total_value" widget="monetary"/>
+                            </group>
+                            <group string="Order Information">
+                                <field name="order_id"/>
+                                <field name="customer_id"/>
+                                <field name="customer_type"/>
+                                <field name="shipping_date"/>
+                                <field name="shipping_month"/>
+                                <field name="shipping_week"/>
+                                <field name="shipping_day"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Geographic Information">
+                                <field name="governorate_id"/>
+                                <field name="city"/>
+                            </group>
+                            <group string="Analysis Data">
+                                <field name="is_repeat_product"/>
+                                <field name="days_since_last_order" invisible="not is_repeat_product"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_product_analysis_search" model="ir.ui.view">
+            <field name="name">product.analysis.search</field>
+            <field name="model">product.analysis</field>
+            <field name="arch" type="xml">
+                <search string="Search Product Analysis">
+                    <field name="product_name"/>
+                    <field name="brand"/>
+                    <field name="category_id"/>
+                    <field name="customer_id"/>
+                    <field name="governorate_id"/>
+                    <separator/>
+                    <filter string="Today" name="today"
+                            domain="[('shipping_date','&gt;=',context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Week" name="this_week"
+                            domain="[('shipping_date','&gt;=',(context_today()-datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month"
+                            domain="[('shipping_date','&gt;=',(context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <filter string="Repeat Products" name="repeat" domain="[('is_repeat_product','=',True)]"/>
+                    <filter string="VIP Customers" name="vip" domain="[('customer_type','=','vip')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product" name="group_product" context="{'group_by':'product_name'}"/>
+                        <filter string="Brand" name="group_brand" context="{'group_by':'brand'}"/>
+                        <filter string="Category" name="group_category" context="{'group_by':'category_id'}"/>
+                        <filter string="Customer" name="group_customer" context="{'group_by':'customer_id'}"/>
+                        <filter string="Governorate" name="group_governorate" context="{'group_by':'governorate_id'}"/>
+                        <filter string="Month" name="group_month" context="{'group_by':'shipping_month'}"/>
+                        <filter string="Week" name="group_week" context="{'group_by':'shipping_week'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="view_product_analysis_pivot" model="ir.ui.view">
+            <field name="name">product.analysis.pivot</field>
+            <field name="model">product.analysis</field>
+            <field name="arch" type="xml">
+                <pivot string="Product Analysis">
+                    <field name="category_id" type="row"/>
+                    <field name="shipping_month" type="col"/>
+                    <field name="quantity" type="measure"/>
+                    <field name="total_value" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Graph View -->
+        <record id="view_product_analysis_graph" model="ir.ui.view">
+            <field name="name">product.analysis.graph</field>
+            <field name="model">product.analysis</field>
+            <field name="arch" type="xml">
+                <graph string="Product Trends" type="line">
+                    <field name="shipping_date" interval="week"/>
+                    <field name="quantity" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_product_analysis" model="ir.actions.act_window">
+            <field name="name">Product Analysis</field>
+            <field name="res_model">product.analysis</field>
+            <field name="view_mode">list,pivot,graph,form</field>
+            <field name="search_view_id" ref="view_product_analysis_search"/>
+            <field name="context">{'search_default_this_month': 1, 'search_default_group_product': 1}</field>
+        </record>
+
+        <!-- Top Products Report Action -->
+        <record id="action_top_products_report" model="ir.actions.act_window">
+            <field name="name">Top Products</field>
+            <field name="res_model">product.analysis</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="context">{
+                'search_default_this_month': 1,
+                'pivot_measures': ['quantity', 'total_value'],
+                'pivot_row_groupby': ['product_name'],
+            }</field>
+        </record>
+
+    </data>
+</odoo>

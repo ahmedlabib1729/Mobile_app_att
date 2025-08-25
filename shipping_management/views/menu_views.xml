@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Main Menu -->
+        <menuitem id="menu_shipping_root"
+                  name="Shipping Management"
+                  sequence="5"
+                  web_icon="shipping_management,static/description/icon.png"/>
+
+        <!-- Operations Menu -->
+        <menuitem id="menu_shipping_operations"
+                  name="Operations"
+                  parent="menu_shipping_root"
+                  sequence="10"/>
+
+        <!-- Shipping Orders -->
+        <menuitem id="menu_shipping_orders"
+                  name="Shipping Orders"
+                  parent="menu_shipping_operations"
+                  action="action_shipping_order"
+                  sequence="10"/>
+
+        <!-- Today's Orders -->
+        <menuitem id="menu_today_orders"
+                  name="Today's Orders"
+                  parent="menu_shipping_operations"
+                  action="action_today_shipping_orders"
+                  sequence="20"/>
+
+        <!-- Pending Delivery -->
+        <menuitem id="menu_pending_delivery"
+                  name="Pending Delivery"
+                  parent="menu_shipping_operations"
+                  action="action_pending_delivery_orders"
+                  sequence="30"/>
+
+        <!-- Analytics Menu -->
+        <menuitem id="menu_shipping_analytics"
+                  name="Analytics"
+                  parent="menu_shipping_root"
+                  sequence="20"/>
+
+        <!-- Product Analysis -->
+        <menuitem id="menu_product_analysis"
+                  name="Product Analysis"
+                  parent="menu_shipping_analytics"
+                  action="action_product_analysis"
+                  sequence="10"/>
+
+        <!-- Customer Profiles -->
+        <menuitem id="menu_customer_profiles"
+                  name="Customer Profiles"
+                  parent="menu_shipping_analytics"
+                  action="action_customer_profile"
+                  sequence="20"/>
+
+        <!-- Top Products Report -->
+        <menuitem id="menu_top_products"
+                  name="Top Products"
+                  parent="menu_shipping_analytics"
+                  action="action_top_products_report"
+                  sequence="30"/>
+
+        <!-- Configuration Menu -->
+        <menuitem id="menu_shipping_config"
+                  name="Configuration"
+                  parent="menu_shipping_root"
+                  sequence="90"
+                  groups="base.group_system"/>
+
+        <!-- Shipping Companies -->
+        <menuitem id="menu_shipping_companies"
+                  name="Shipping Companies"
+                  parent="menu_shipping_config"
+                  action="action_shipping_company"
+                  sequence="10"/>
+
+        <!-- Shipping Services -->
+        <menuitem id="menu_shipping_services"
+                  name="Shipping Services"
+                  parent="menu_shipping_config"
+                  action="action_shipping_company_service"
+                  sequence="20"/>
+
+        <!-- Product Templates -->
+        <menuitem id="menu_product_templates"
+                  name="Product Templates"
+                  parent="menu_shipping_config"
+                  action="action_shipping_product_template"
+                  sequence="30"/>
+
+        <!-- Reporting Menu -->
+
+
+    </data>
+</odoo>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+
+
+        <!-- Aramex Services -->
+        <record id="aramex_service_normal" model="shipping.company.service">
+            <field name="company_id" ref="shipping_company_aramex"/>
+            <field name="name">Aramex Normal</field>
+            <field name="code">DOM</field>
+            <field name="sequence">10</field>
+            <field name="service_type">normal</field>
+            <field name="delivery_time">3-5 Business Days</field>
+            <field name="base_price">50</field>
+            <field name="price_per_kg">5</field>
+            <field name="cod_fee">10</field>
+            <field name="insurance_rate">2</field>
+            <field name="max_weight">30</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="aramex_service_express" model="shipping.company.service">
+            <field name="company_id" ref="shipping_company_aramex"/>
+            <field name="name">Aramex Express</field>
+            <field name="code">EXP</field>
+            <field name="sequence">20</field>
+            <field name="service_type">express</field>
+            <field name="delivery_time">1-2 Business Days</field>
+            <field name="base_price">75</field>
+            <field name="price_per_kg">8</field>
+            <field name="cod_fee">15</field>
+            <field name="insurance_rate">2</field>
+            <field name="max_weight">30</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- FedEx Services -->
+        <record id="fedex_service_normal" model="shipping.company.service">
+            <field name="company_id" ref="shipping_company_fedex"/>
+            <field name="name">FedEx Ground</field>
+            <field name="code">FEDEX_GROUND</field>
+            <field name="sequence">10</field>
+            <field name="service_type">normal</field>
+            <field name="delivery_time">3-5 Business Days</field>
+            <field name="base_price">55</field>
+            <field name="price_per_kg">6</field>
+            <field name="cod_fee">12</field>
+            <field name="insurance_rate">2.5</field>
+            <field name="max_weight">50</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="fedex_service_express" model="shipping.company.service">
+            <field name="company_id" ref="shipping_company_fedex"/>
+            <field name="name">FedEx Express</field>
+            <field name="code">FEDEX_EXPRESS</field>
+            <field name="sequence">20</field>
+            <field name="service_type">express</field>
+            <field name="delivery_time">Next Business Day</field>
+            <field name="base_price">85</field>
+            <field name="price_per_kg">10</field>
+            <field name="cod_fee">15</field>
+            <field name="insurance_rate">2.5</field>
+            <field name="max_weight">50</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- DHL Services -->
+        <record id="dhl_service_express" model="shipping.company.service">
+            <field name="company_id" ref="shipping_company_dhl"/>
+            <field name="name">DHL Express Worldwide</field>
+            <field name="code">EXPRESS_WORLDWIDE</field>
+            <field name="sequence">10</field>
+            <field name="service_type">express</field>
+            <field name="delivery_time">1-3 Business Days</field>
+            <field name="base_price">90</field>
+            <field name="price_per_kg">12</field>
+            <field name="cod_fee">20</field>
+            <field name="insurance_rate">3</field>
+            <field name="max_weight">70</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="dhl_service_same_day" model="shipping.company.service">
+            <field name="company_id" ref="shipping_company_dhl"/>
+            <field name="name">DHL Same Day</field>
+            <field name="code">SAME_DAY</field>
+            <field name="sequence">20</field>
+            <field name="service_type">same_day</field>
+            <field name="delivery_time">Same Day</field>
+            <field name="base_price">150</field>
+            <field name="price_per_kg">15</field>
+            <field name="cod_fee">25</field>
+            <field name="insurance_rate">3</field>
+            <field name="max_weight">30</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>
