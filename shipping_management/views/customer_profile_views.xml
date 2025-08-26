@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- List View -->
+        <record id="view_customer_profile_list" model="ir.ui.view">
+            <field name="name">customer.profile.list</field>
+            <field name="model">customer.profile</field>
+            <field name="arch" type="xml">
+                <list string="Customer Profiles">
+                    <field name="customer_id"/>
+                    <field name="customer_type" widget="badge"
+                           decoration-success="customer_type == 'vip'"
+                           decoration-info="customer_type == 'active'"
+                           decoration-warning="customer_type == 'cold'"
+                           decoration-muted="customer_type == 'new'"/>
+                    <field name="total_orders"/>
+                    <field name="total_revenue" widget="monetary"/>
+                    <field name="avg_order_value" widget="monetary"/>
+                    <field name="last_order_date"/>
+                    <field name="days_since_last_order"/>
+                    <field name="loyalty_tier" widget="badge"
+                           decoration-success="loyalty_tier == 'platinum'"
+                           decoration-warning="loyalty_tier == 'gold'"
+                           decoration-info="loyalty_tier == 'silver'"/>
+                    <field name="loyalty_points"/>
+                    <field name="churn_risk" widget="badge"
+                           decoration-danger="churn_risk == 'high'"
+                           decoration-warning="churn_risk == 'medium'"
+                           decoration-success="churn_risk == 'low'"/>
+                    <field name="clv" widget="monetary" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_customer_profile_form" model="ir.ui.view">
+            <field name="name">customer.profile.form</field>
+            <field name="model">customer.profile</field>
+            <field name="arch" type="xml">
+                <form string="Customer Profile Analysis">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_orders" type="object"
+                                    class="oe_stat_button" icon="fa-truck">
+                                <field name="total_orders" widget="statinfo" string="Orders"/>
+                            </button>
+                            <button name="action_send_marketing_email" type="object"
+                                    class="oe_stat_button" icon="fa-envelope">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Send Marketing</span>
+                                </div>
+                            </button>
+                            <button name="update_statistics" type="object"
+                                    class="oe_stat_button" icon="fa-refresh">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Update Stats</span>
+                                </div>
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="VIP Customer" bg_color="bg-success"
+                                invisible="customer_type != 'vip'"/>
+                        <widget name="web_ribbon" title="High Churn Risk" bg_color="bg-danger"
+                                invisible="churn_risk != 'high'"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="customer_id" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="customer_type" widget="badge"/>
+                                <field name="loyalty_tier" widget="badge"/>
+                            </h3>
+                        </div>
+
+                        <group>
+                            <group string="Order Statistics">
+                                <field name="total_orders"/>
+                                <field name="delivered_orders"/>
+                                <field name="cancelled_orders"/>
+                                <field name="returned_orders"/>
+                                <field name="total_products_shipped"/>
+                            </group>
+                            <group string="Financial Metrics">
+                                <field name="total_revenue" widget="monetary"/>
+                                <field name="avg_order_value" widget="monetary"/>
+                                <field name="clv" widget="monetary"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Timeline">
+                                <field name="first_order_date"/>
+                                <field name="last_order_date"/>
+                                <field name="days_since_last_order"/>
+                                <field name="customer_lifetime_days"/>
+                            </group>
+                            <group string="Predictive Analytics">
+                                <field name="churn_risk" widget="badge"/>
+                                <field name="predicted_next_order_date"/>
+                                <field name="predicted_next_order_value" widget="monetary"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Preferences">
+                                <group>
+                                    <group string="Product Preferences">
+                                        <field name="top_brand"/>
+                                    </group>
+                                    <group string="Shipping Preferences">
+                                        <field name="preferred_shipping_type"/>
+                                        <field name="preferred_payment_method"/>
+                                        <field name="most_common_city"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Loyalty &amp; Marketing">
+                                <group>
+                                    <group string="Loyalty Program">
+                                        <field name="loyalty_points"/>
+                                        <field name="loyalty_tier"/>
+                                        <field name="referral_count"/>
+                                    </group>
+                                    <group string="Marketing Preferences">
+                                        <field name="email_subscribed"/>
+                                        <field name="sms_subscribed"/>
+                                        <field name="campaign_response_rate" widget="percentage"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_customer_profile_search" model="ir.ui.view">
+            <field name="name">customer.profile.search</field>
+            <field name="model">customer.profile</field>
+            <field name="arch" type="xml">
+                <search string="Search Customer Profiles">
+                    <field name="customer_id"/>
+                    <field name="top_brand"/>
+                    <separator/>
+                    <filter string="VIP Customers" name="vip" domain="[('customer_type','=','vip')]"/>
+                    <filter string="Active Customers" name="active" domain="[('customer_type','=','active')]"/>
+                    <filter string="Cold Customers" name="cold" domain="[('customer_type','=','cold')]"/>
+                    <filter string="New Customers" name="new" domain="[('customer_type','=','new')]"/>
+                    <separator/>
+                    <filter string="High Churn Risk" name="high_risk" domain="[('churn_risk','=','high')]"/>
+                    <filter string="Medium Churn Risk" name="medium_risk" domain="[('churn_risk','=','medium')]"/>
+                    <separator/>
+                    <filter string="Platinum Tier" name="platinum" domain="[('loyalty_tier','=','platinum')]"/>
+                    <filter string="Gold Tier" name="gold" domain="[('loyalty_tier','=','gold')]"/>
+                    <filter string="Silver Tier" name="silver" domain="[('loyalty_tier','=','silver')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Customer Type" name="group_type" context="{'group_by':'customer_type'}"/>
+                        <filter string="Loyalty Tier" name="group_tier" context="{'group_by':'loyalty_tier'}"/>
+                        <filter string="Churn Risk" name="group_risk" context="{'group_by':'churn_risk'}"/>
+                        <filter string="Preferred Shipping" name="group_shipping" context="{'group_by':'preferred_shipping_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Kanban View -->
+        <record id="view_customer_profile_kanban" model="ir.ui.view">
+            <field name="name">customer.profile.kanban</field>
+            <field name="model">customer.profile</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="customer_type">
+                    <field name="customer_id"/>
+                    <field name="customer_type"/>
+                    <field name="total_orders"/>
+                    <field name="total_revenue"/>
+                    <field name="loyalty_tier"/>
+                    <field name="churn_risk"/>
+                    <field name="last_order_date"/>
+                    <progressbar field="churn_risk"
+                                 colors='{"low": "success", "medium": "warning", "high": "danger"}'/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top mb-0">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="customer_id"/>
+                                        </strong>
+                                    </div>
+                                    <field name="loyalty_tier" widget="label_selection"
+                                           options="{'classes': {'platinum': 'success', 'gold': 'warning', 'silver': 'info', 'bronze': 'secondary'}}"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <i class="fa fa-shopping-cart" title="Orders"/> Orders: <field name="total_orders"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-money" title="Revenue"/> Revenue: <field name="total_revenue" widget="monetary"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-calendar" title="Last Order"/> Last Order: <field name="last_order_date"/>
+                                    </div>
+                                    <div invisible="churn_risk != 'high'" class="text-danger">
+                                        <i class="fa fa-warning" title="Risk"/> High Churn Risk
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="customer_type" widget="badge"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="loyalty_points"/> Points
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="view_customer_profile_pivot" model="ir.ui.view">
+            <field name="name">customer.profile.pivot</field>
+            <field name="model">customer.profile</field>
+            <field name="arch" type="xml">
+                <pivot string="Customer Analysis">
+                    <field name="customer_type" type="row"/>
+                    <field name="loyalty_tier" type="col"/>
+                    <field name="total_revenue" type="measure"/>
+                    <field name="total_orders" type="measure"/>
+                    <field name="avg_order_value" type="measure"/>
+                    <field name="clv" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Graph View -->
+        <record id="view_customer_profile_graph" model="ir.ui.view">
+            <field name="name">customer.profile.graph</field>
+            <field name="model">customer.profile</field>
+            <field name="arch" type="xml">
+                <graph string="Customer Segments" type="pie">
+                    <field name="customer_type"/>
+                    <field name="total_revenue" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_customer_profile" model="ir.actions.act_window">
+            <field name="name">Customer Profiles</field>
+            <field name="res_model">customer.profile</field>
+            <field name="view_mode">list,kanban,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_customer_profile_search"/>
+            <field name="context">{'search_default_vip': 1, 'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No customer profiles found
+                </p>
+                <p>
+                    Customer profiles are automatically created when customers place their first shipping order.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

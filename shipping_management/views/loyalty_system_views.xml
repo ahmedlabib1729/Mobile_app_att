@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============ LOYALTY TIERS VIEWS ============ -->
+
+        <!-- List View -->
+        <record id="view_loyalty_tier_list" model="ir.ui.view">
+            <field name="name">loyalty.tier.list</field>
+            <field name="model">loyalty.tier</field>
+            <field name="arch" type="xml">
+                <list string="Loyalty Tiers">
+                    <field name="name"/>
+                    <field name="min_points"/>
+                    <field name="max_points"/>
+                    <field name="discount_percentage" widget="percentage"/>
+                    <field name="color" widget="badge"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_loyalty_tier_form" model="ir.ui.view">
+            <field name="name">loyalty.tier.form</field>
+            <field name="model">loyalty.tier</field>
+            <field name="arch" type="xml">
+                <form string="Loyalty Tier">
+                    <sheet>
+                        <widget name="web_ribbon" title="Inactive" bg_color="bg-danger" invisible="active"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Tier Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Points Range">
+                                <field name="min_points"/>
+                                <field name="max_points" placeholder="Leave empty for highest tier"/>
+                            </group>
+                            <group string="Benefits">
+                                <field name="discount_percentage" widget="percentage"/>
+                                <field name="color"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <separator string="Benefits Description"/>
+                        <field name="benefits" placeholder="Describe the benefits for this tier..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============ LOYALTY POINTS RULES VIEWS ============ -->
+
+        <!-- List View -->
+        <record id="view_loyalty_points_rule_list" model="ir.ui.view">
+            <field name="name">loyalty.points.rule.list</field>
+            <field name="model">loyalty.points.rule</field>
+            <field name="arch" type="xml">
+                <list string="Points Rules">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="rule_type"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_loyalty_points_rule_form" model="ir.ui.view">
+            <field name="name">loyalty.points.rule.form</field>
+            <field name="model">loyalty.points.rule</field>
+            <field name="arch" type="xml">
+                <form string="Points Rule">
+                    <sheet>
+                        <widget name="web_ribbon" title="Inactive" bg_color="bg-danger" invisible="active"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Rule Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Rule Configuration">
+                                <field name="rule_type"/>
+                                <field name="sequence"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Rule Details" invisible="not rule_type">
+                                <!-- Order Amount -->
+                                <field name="points_per_currency" invisible="rule_type != 'order_amount'"/>
+                                <field name="min_order_amount" invisible="rule_type != 'order_amount'"/>
+
+                                <!-- Category -->
+                                <field name="category_id" invisible="rule_type != 'product_category'" options="{'no_create': True}"/>
+                                <field name="category_multiplier" invisible="rule_type != 'product_category'"/>
+
+                                <!-- Shipping Type -->
+                                <field name="shipping_type" invisible="rule_type != 'shipping_type'"/>
+                                <field name="shipping_bonus_points" invisible="rule_type != 'shipping_type'"/>
+
+                                <!-- Payment Method -->
+                                <field name="payment_method" invisible="rule_type != 'payment_method'"/>
+                                <field name="payment_bonus_points" invisible="rule_type != 'payment_method'"/>
+
+                                <!-- Fixed Points -->
+                                <field name="fixed_points" invisible="rule_type not in ['first_order', 'referral']"/>
+                            </group>
+                        </group>
+                        <separator string="Description"/>
+                        <field name="description"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============ CUSTOMER DISCOUNT VIEWS ============ -->
+
+        <!-- List View -->
+        <record id="view_customer_discount_list" model="ir.ui.view">
+            <field name="name">customer.discount.list</field>
+            <field name="model">customer.discount</field>
+            <field name="arch" type="xml">
+                <list string="Customer Discounts">
+                    <field name="partner_id"/>
+                    <field name="discount_type"/>
+                    <field name="discount_value"/>
+                    <field name="valid_from"/>
+                    <field name="valid_to"/>
+                    <field name="times_used"/>
+                    <field name="usage_limit"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_customer_discount_form" model="ir.ui.view">
+            <field name="name">customer.discount.form</field>
+            <field name="model">customer.discount</field>
+            <field name="arch" type="xml">
+                <form string="Customer Discount">
+                    <sheet>
+                        <widget name="web_ribbon" title="Expired" bg_color="bg-danger"
+                                invisible="not valid_to or valid_to &gt;= context_today()"/>
+                        <widget name="web_ribbon" title="Inactive" bg_color="bg-warning" invisible="active"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="partner_id" options="{'no_create': True}"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Discount Details">
+                                <field name="discount_type"/>
+                                <field name="discount_value"/>
+                                <field name="max_discount_amount" invisible="discount_type != 'percentage'"/>
+                                <field name="min_order_amount"/>
+                            </group>
+                            <group string="Validity">
+                                <field name="valid_from"/>
+                                <field name="valid_to"/>
+                                <field name="usage_limit" placeholder="Leave empty for unlimited"/>
+                                <field name="times_used" readonly="1"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <separator string="Notes"/>
+                        <field name="notes"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============ LOYALTY POINTS HISTORY VIEWS ============ -->
+
+        <!-- List View -->
+        <record id="view_loyalty_points_history_list" model="ir.ui.view">
+            <field name="name">loyalty.points.history.list</field>
+            <field name="model">loyalty.points.history</field>
+            <field name="arch" type="xml">
+                <list string="Points History" create="false">
+                    <field name="date"/>
+                    <field name="profile_id"/>
+                    <field name="transaction_type" widget="badge"/>
+                    <field name="points" decoration-success="points &gt; 0" decoration-danger="points &lt; 0"/>
+                    <field name="reason"/>
+                    <field name="order_id"/>
+                    <field name="balance_after"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ============ ACTIONS ============ -->
+
+        <record id="action_loyalty_tier" model="ir.actions.act_window">
+            <field name="name">Loyalty Tiers</field>
+            <field name="res_model">loyalty.tier</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_loyalty_points_rule" model="ir.actions.act_window">
+            <field name="name">Points Rules</field>
+            <field name="res_model">loyalty.points.rule</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_customer_discount" model="ir.actions.act_window">
+            <field name="name">Customer Discounts</field>
+            <field name="res_model">customer.discount</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_loyalty_points_history" model="ir.actions.act_window">
+            <field name="name">Points History</field>
+            <field name="res_model">loyalty.points.history</field>
+            <field name="view_mode">list</field>
+        </record>
+
+    </data>
+</odoo>
