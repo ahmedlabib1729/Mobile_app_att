@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Shipping Company List View -->
+        <record id="view_shipping_company_list" model="ir.ui.view">
+            <field name="name">shipping.company.list</field>
+            <field name="model">shipping.company</field>
+            <field name="arch" type="xml">
+                <list string="Shipping Companies">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="total_orders"/>
+                    <field name="delivered_orders"/>
+                    <field name="success_rate" widget="percentage"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Shipping Company Form View -->
+        <record id="view_shipping_company_form" model="ir.ui.view">
+            <field name="name">shipping.company.form</field>
+            <field name="model">shipping.company</field>
+            <field name="arch" type="xml">
+                <form string="Shipping Company">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+
+                            <button class="oe_stat_button" icon="fa-check-circle">
+                                <field name="success_rate" widget="statinfo" string="Success Rate"/>
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="Inactive" bg_color="bg-danger"
+                                invisible="active"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Company Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="General Information">
+                                <field name="code"/>
+                                <field name="website" widget="url"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Statistics">
+                                <field name="total_orders"/>
+                                <field name="delivered_orders"/>
+                                <field name="success_rate" widget="percentage"/>
+
+                            </group>
+
+
+                        </group>
+
+                        <group string="COD Settings">
+                                <field name="cod_commission_rate" widget="percentage"/>
+                                <field name="cod_fixed_fee" widget="monetary"/>
+                            </group>
+
+                        <notebook>
+                            <page string="Services">
+                                <field name="service_ids">
+                                    <list string="Services" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                        <field name="service_type"/>
+                                        <field name="delivery_time"/>
+                                        <field name="base_price" widget="monetary"/>
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Contact Information">
+                                <group>
+                                    <group>
+                                        <field name="phone"/>
+                                        <field name="email"/>
+                                    </group>
+                                    <group>
+                                        <field name="website" widget="url"/>
+                                        <field name="address"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Shipping Company Service List View -->
+        <record id="view_shipping_company_service_list" model="ir.ui.view">
+            <field name="name">shipping.company.service.list</field>
+            <field name="model">shipping.company.service</field>
+            <field name="arch" type="xml">
+                <list string="Shipping Services">
+                    <field name="company_id"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="service_type" widget="badge"/>
+                    <field name="delivery_time"/>
+                    <field name="base_price" widget="monetary"/>
+                    <field name="price_per_kg" widget="monetary"/>
+                    <field name="cod_fee" widget="monetary"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Shipping Company Service Form View -->
+        <record id="view_shipping_company_service_form" model="ir.ui.view">
+            <field name="name">shipping.company.service.form</field>
+            <field name="model">shipping.company.service</field>
+            <field name="arch" type="xml">
+                <form string="Shipping Service">
+                    <sheet>
+                        <widget name="web_ribbon" title="Inactive" bg_color="bg-danger"
+                                invisible="active"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Service Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="General Information">
+                                <field name="company_id" options="{'no_create': True}"/>
+                                <field name="code"/>
+                                <field name="service_type"/>
+                                <field name="delivery_time"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Pricing">
+                                <field name="base_price" widget="monetary"/>
+                                <field name="price_per_kg" widget="monetary"/>
+                                <field name="cod_fee" widget="monetary"/>
+                                <field name="insurance_rate" widget="percentage"/>
+                            </group>
+                        </group>
+                        <group string="Restrictions">
+                            <group>
+                                <field name="max_weight"/>
+                            </group>
+                            <group>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_shipping_company" model="ir.actions.act_window">
+            <field name="name">Shipping Companies</field>
+            <field name="res_model">shipping.company</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first shipping company
+                </p>
+                <p>
+                    Configure shipping companies and their API integrations to automate your shipping process.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_shipping_company_service" model="ir.actions.act_window">
+            <field name="name">Shipping Services</field>
+            <field name="res_model">shipping.company.service</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+
+        <menuitem id="menu_shipping_config"
+                  name="Configuration"
+                  parent="menu_shipment_config"
+                  sequence="90"
+                  groups="base.group_system"/>
+
+        <!-- Shipping Companies -->
+        <menuitem id="menu_shipping_companies"
+                  name="Shipping Companies"
+                  parent="menu_shipment_config"
+                  action="action_shipping_company"
+                  sequence="10"/>
+
+        <!-- Shipping Services -->
+        <menuitem id="menu_shipping_services"
+                  name="Shipping Services"
+                  parent="menu_shipment_config"
+                  action="action_shipping_company_service"
+                  sequence="20"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- استبدل الملف views/website_templates.xml بهذا الكود -->
+
+    <!-- Template الصفحة الرئيسية مع المؤثرات البصرية -->
+    <template id="torood_homepage" name="Torood Homepage with Effects">
+        <t t-call="website.layout">
+            <!-- Add CSS & JS Assets -->
+            <xpath expr="//head" position="inside">
+                <!-- AOS Library -->
+                <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+                <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+            </xpath>
+
+            <div id="wrap">
+                <style>
+                    /* المتغيرات */
+                    :root {
+                        --primary-color: #FF6B35;
+                        --secondary-color: #004E7C;
+                        --accent-color: #5C8001;
+                        --dark-color: #073B3A;
+                        --gradient-primary: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                        --gradient-secondary: linear-gradient(135deg, #004E7C 0%, #0066A6 100%);
+                    }
+
+                    /* Loading Screen */
+                    .torood-loader {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: var(--gradient-primary);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 10000;
+                        transition: opacity 0.5s ease;
+                    }
+
+                    .torood-loader.hide {
+                        opacity: 0;
+                        pointer-events: none;
+                    }
+
+                    .loader-truck {
+                        animation: truckMove 2s ease-in-out infinite;
+                        font-size: 60px;
+                        color: white;
+                    }
+
+                    @keyframes truckMove {
+                        0%, 100% { transform: translateX(-30px); }
+                        50% { transform: translateX(30px); }
+                    }
+
+                    /* Hide Odoo Header */
+                    header.o_header_standard {
+                        display: none !important;
+                    }
+
+                    /* Custom Navigation with Glass Effect */
+                    .torood-navbar {
+                        background: rgba(255, 255, 255, 0.95);
+                        backdrop-filter: blur(20px);
+                        -webkit-backdrop-filter: blur(20px);
+                        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+                        position: fixed;
+                        width: 100%;
+                        top: 0;
+                        z-index: 1000;
+                        transition: all 0.3s ease;
+                    }
+
+                    .torood-navbar.scrolled {
+                        background: rgba(255, 255, 255, 0.98);
+                        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+                    }
+
+                    /* Animated Background Shapes */
+                    .animated-bg {
+                        position: fixed;
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        left: 0;
+                        pointer-events: none;
+                        z-index: -1;
+                        overflow: hidden;
+                    }
+
+                    .shape {
+                        position: absolute;
+                        opacity: 0.05;
+                    }
+
+                    .shape-1 {
+                        width: 300px;
+                        height: 300px;
+                        background: var(--gradient-primary);
+                        border-radius: 50%;
+                        top: 10%;
+                        left: 5%;
+                        animation: morphing 8s ease-in-out infinite, floating 6s ease-in-out infinite;
+                    }
+
+                    .shape-2 {
+                        width: 200px;
+                        height: 200px;
+                        background: var(--gradient-secondary);
+                        top: 60%;
+                        right: 10%;
+                        animation: morphing 10s ease-in-out infinite reverse, floating 8s ease-in-out infinite;
+                    }
+
+                    @keyframes morphing {
+                        0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+                        50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+                    }
+
+                    @keyframes floating {
+                        0%, 100% { transform: translateY(0) translateX(0); }
+                        33% { transform: translateY(-20px) translateX(10px); }
+                        66% { transform: translateY(20px) translateX(-10px); }
+                    }
+
+                    /* Hero with Particles */
+                    .torood-hero {
+                        margin-top: 82px;
+                        min-height: 100vh;
+                        background: linear-gradient(135deg, #004E7C10 0%, #FF6B3510 100%);
+                        position: relative;
+                        overflow: hidden;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .particles {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        left: 0;
+                        pointer-events: none;
+                    }
+
+                    .particle {
+                        position: absolute;
+                        width: 4px;
+                        height: 4px;
+                        background: var(--primary-color);
+                        border-radius: 50%;
+                        opacity: 0.3;
+                        animation: particleFloat 15s infinite linear;
+                    }
+
+                    @keyframes particleFloat {
+                        from {
+                            transform: translateY(100vh) translateX(0);
+                            opacity: 0;
+                        }
+                        10% { opacity: 0.3; }
+                        90% { opacity: 0.3; }
+                        to {
+                            transform: translateY(-100vh) translateX(100px);
+                            opacity: 0;
+                        }
+                    }
+
+                    /* Logo with Shine Effect */
+                    .torood-logo-icon {
+                        width: 50px;
+                        height: 50px;
+                        background: var(--gradient-primary);
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 24px;
+                        animation: float 3s ease-in-out infinite;
+                        box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .torood-logo-icon::before {
+                        content: '';
+                        position: absolute;
+                        top: -50%;
+                        left: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+                        transform: rotate(45deg);
+                        animation: shine 3s ease-in-out infinite;
+                    }
+
+                    @keyframes shine {
+                        0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+                        50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+                    }
+
+                    @keyframes float {
+                        0%, 100% { transform: translateY(0) rotate(0deg); }
+                        50% { transform: translateY(-5px) rotate(5deg); }
+                    }
+
+                    /* Badge with Ripple Effect */
+                    .hero-badge {
+                        display: inline-block;
+                        background: rgba(255, 107, 53, 0.1);
+                        color: var(--primary-color);
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        font-weight: 600;
+                        margin-bottom: 20px;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .hero-badge::before {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(255, 107, 53, 0.2);
+                        border-radius: 20px;
+                        transform: translate(-50%, -50%);
+                        animation: ripple 2s infinite;
+                    }
+
+                    @keyframes ripple {
+                        0% {
+                            width: 0;
+                            height: 0;
+                            opacity: 1;
+                        }
+                        100% {
+                            width: 200%;
+                            height: 200%;
+                            opacity: 0;
+                        }
+                    }
+
+                    /* 3D Buttons */
+                    .btn-3d {
+                        position: relative;
+                        display: inline-block;
+                        padding: 15px 35px;
+                        border-radius: 30px;
+                        text-decoration: none;
+                        font-weight: 700;
+                        font-size: 1.1rem;
+                        transition: all 0.3s ease;
+                        transform-style: preserve-3d;
+                        transform: perspective(1000px);
+                    }
+
+                    .btn-primary-3d {
+                        background: var(--gradient-primary);
+                        color: white !important;
+                        box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3),
+                                    inset 0 1px 0 rgba(255,255,255,0.3);
+                    }
+
+                    .btn-primary-3d:hover {
+                        transform: perspective(1000px) rotateX(-10deg) translateY(-5px);
+                        box-shadow: 0 20px 40px rgba(255, 107, 53, 0.4),
+                                    inset 0 1px 0 rgba(255,255,255,0.3);
+                        text-decoration: none;
+                        color: white !important;
+                    }
+
+                    /* Service Cards with Tilt */
+                    .torood-service-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 30px;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+                        transition: all 0.3s ease;
+                        border: 1px solid #f0f0f0;
+                        position: relative;
+                        overflow: hidden;
+                        transform-style: preserve-3d;
+                        transform: perspective(1000px);
+                    }
+
+                    .torood-service-card::before {
+                        content: '';
+                        position: absolute;
+                        top: -100%;
+                        left: -100%;
+                        width: 300%;
+                        height: 300%;
+                        background: linear-gradient(45deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+                        transition: all 0.6s ease;
+                        transform: rotate(45deg);
+                    }
+
+                    .torood-service-card:hover::before {
+                        top: -50%;
+                        left: -50%;
+                    }
+
+                    .torood-service-card:hover {
+                        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(-10px);
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+                    }
+
+                    /* Animated Icon */
+                    .service-icon {
+                        width: 70px;
+                        height: 70px;
+                        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
+                        border-radius: 15px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-bottom: 20px;
+                        font-size: 30px;
+                        color: var(--primary-color);
+                        position: relative;
+                    }
+
+                    .torood-service-card:hover .service-icon {
+                        animation: iconBounce 0.6s ease;
+                    }
+
+                    @keyframes iconBounce {
+                        0%, 100% { transform: scale(1) rotate(0deg); }
+                        25% { transform: scale(1.1) rotate(-5deg); }
+                        75% { transform: scale(0.9) rotate(5deg); }
+                    }
+
+                    /* Stats with Glow */
+                    .torood-stats {
+                        padding: 80px 0;
+                        background: var(--gradient-primary);
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .stat-number {
+                        font-size: 3rem;
+                        font-weight: 900;
+                        margin-bottom: 10px;
+                        display: block;
+                        text-shadow: 0 0 30px rgba(255,255,255,0.5);
+                        animation: glow 2s ease-in-out infinite alternate;
+                        color: white;
+                    }
+
+                    @keyframes glow {
+                        from { text-shadow: 0 0 30px rgba(255,255,255,0.5); }
+                        to { text-shadow: 0 0 50px rgba(255,255,255,0.8), 0 0 70px rgba(255,255,255,0.6); }
+                    }
+
+                    /* Wave Animation */
+                    .wave {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100px;
+                        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,32L48,37.3C96,43,192,53,288,80C384,107,480,149,576,154.7C672,160,768,128,864,112C960,96,1056,96,1152,112C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+                        background-size: cover;
+                        animation: wave 10s linear infinite;
+                    }
+
+                    @keyframes wave {
+                        from { transform: translateX(0); }
+                        to { transform: translateX(-100%); }
+                    }
+                </style>
+
+                <!-- Loading Screen -->
+                <div class="torood-loader" id="toroodLoader">
+                    <div>
+                        <div class="loader-truck">
+                            <i class="fa fa-truck"></i>
+                        </div>
+                        <h3 style="color: white; margin-top: 20px;">جاري التحميل...</h3>
+                    </div>
+                </div>
+
+                <!-- Animated Background -->
+                <div class="animated-bg">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                </div>
+
+                <!-- Custom Navigation -->
+                <nav class="torood-navbar" id="toroodNavbar">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center py-3">
+                            <a href="/" class="d-flex align-items-center text-decoration-none">
+                                <div class="torood-logo-icon">
+                                    <i class="fa fa-box"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary-color); line-height: 1;">طرود</div>
+                                    <div style="font-size: 0.9rem; color: var(--secondary-color); font-weight: 600;">TOROOD</div>
+                                </div>
+                            </a>
+
+                            <ul class="nav">
+                                <li class="nav-item"><a href="/" class="nav-link">الرئيسية</a></li>
+                                <li class="nav-item"><a href="#services" class="nav-link">خدماتنا</a></li>
+                                <li class="nav-item"><a href="#features" class="nav-link">المميزات</a></li>
+                                <li class="nav-item"><a href="/shipment/track" class="nav-link">تتبع الشحنة</a></li>
+                                <li class="nav-item">
+                                    <a href="/shipment" class="btn btn-primary-3d">أرسل طرد</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Hero Section -->
+                <section class="torood-hero">
+                    <!-- Particles -->
+                    <div class="particles" id="particles"></div>
+
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6">
+                                <span class="hero-badge" data-aos="fade-down" data-aos-delay="100">
+                                    🚀 الشحن السريع في جميع أنحاء مصر
+                                </span>
+                                <h1 style="font-size: 3.5rem; font-weight: 900; color: var(--dark-color); line-height: 1.2; margin-bottom: 20px;"
+                                    data-aos="fade-right" data-aos-delay="200">
+                                    شحن سريع وآمن مع
+                                    <span style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">طرود</span>
+                                </h1>
+                                <p style="font-size: 1.2rem; color: #666; margin-bottom: 30px; line-height: 1.8;"
+                                   data-aos="fade-right" data-aos-delay="300">
+                                    نقدم خدمات شحن احترافية وموثوقة لجميع أنحاء مصر.
+                                    مع أسطول متكامل وفريق محترف، نضمن وصول شحنتك بأمان وفي الوقت المحدد.
+                                </p>
+
+                                <div class="d-flex gap-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                                    <a href="/shipment" class="btn-3d btn-primary-3d">
+                                        <i class="fa fa-paper-plane"></i>
+                                        أرسل شحنتك الآن
+                                    </a>
+                                    <a href="/shipment/track" class="btn-3d" style="background: white; color: var(--secondary-color); border: 2px solid var(--secondary-color); padding: 15px 35px; border-radius: 30px; text-decoration: none; font-weight: 700;">
+                                        <i class="fa fa-search"></i>
+                                        تتبع الشحنة
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="600">
+                                <div style="position: relative;">
+                                    <svg viewBox="0 0 500 500" style="width: 100%; height: 500px;">
+                                        <!-- Animated SVG Truck -->
+                                        <g id="truck" transform="translate(250, 250)">
+                                            <rect x="-80" y="-30" width="160" height="60" fill="url(#gradient1)" rx="10">
+                                                <animate attributeName="y" values="-30;-35;-30" dur="2s" repeatCount="indefinite"/>
+                                            </rect>
+                                            <rect x="-100" y="-20" width="40" height="50" fill="#FF6B35" rx="5">
+                                                <animate attributeName="y" values="-20;-25;-20" dur="2s" repeatCount="indefinite"/>
+                                            </rect>
+                                            <circle cx="-60" cy="30" r="15" fill="#333">
+                                                <animateTransform attributeName="transform" type="rotate"
+                                                                from="0 -60 30" to="360 -60 30" dur="1s" repeatCount="indefinite"/>
+                                            </circle>
+                                            <circle cx="60" cy="30" r="15" fill="#333">
+                                                <animateTransform attributeName="transform" type="rotate"
+                                                                from="0 60 30" to="360 60 30" dur="1s" repeatCount="indefinite"/>
+                                            </circle>
+                                        </g>
+
+                                        <!-- Animated Packages -->
+                                        <rect x="100" y="100" width="40" height="40" fill="#F7931E" rx="5" opacity="0.8">
+                                            <animateTransform attributeName="transform" type="rotate"
+                                                            from="45 120 120" to="405 120 120" dur="10s" repeatCount="indefinite"/>
+                                            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                                        </rect>
+
+                                        <defs>
+                                            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+                                                <stop offset="100%" style="stop-color:#F7931E;stop-opacity:1" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Services Section -->
+                <section class="py-5" id="services">
+                    <div class="container">
+                        <div class="text-center mb-5">
+                            <span class="badge" style="background: rgba(0, 78, 124, 0.1); color: var(--secondary-color); padding: 8px 20px; border-radius: 20px; font-weight: 600;"
+                                  data-aos="zoom-in">خدماتنا المتميزة</span>
+                            <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--dark-color); margin-top: 20px;"
+                                data-aos="fade-up">حلول شحن متكاملة لكل احتياجاتك</h2>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                                <div class="torood-service-card">
+                                    <div class="service-icon">
+                                        <i class="fa fa-shipping-fast"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--dark-color); margin-bottom: 15px;">الشحن السريع</h3>
+                                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                        خدمة توصيل سريعة في نفس اليوم أو اليوم التالي لجميع أنحاء القاهرة والجيزة
+                                    </p>
+                                    <a href="/shipment" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                        ابدأ الآن <i class="fa fa-arrow-left"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                                <div class="torood-service-card">
+                                    <div class="service-icon">
+                                        <i class="fa fa-box-open"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--dark-color); margin-bottom: 15px;">الشحن العادي</h3>
+                                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                        توصيل اقتصادي خلال 3-5 أيام عمل لجميع المحافظات بأسعار تنافسية
+                                    </p>
+                                    <a href="/shipment" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                        ابدأ الآن <i class="fa fa-arrow-left"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                                <div class="torood-service-card">
+                                    <div class="service-icon">
+                                        <i class="fa fa-hand-holding-usd"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--dark-color); margin-bottom: 15px;">الدفع عند الاستلام</h3>
+                                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                        خدمة تحصيل المبالغ من العملاء عند التسليم مع ضمان تحويل الأموال بسرعة
+                                    </p>
+                                    <a href="/shipment" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                        ابدأ الآن <i class="fa fa-arrow-left"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Statistics -->
+                <section class="torood-stats">
+                    <div class="container">
+                        <div class="row text-center">
+                            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
+                                <span class="stat-number counter" data-target="10000">0</span>
+                                <div style="font-size: 1.2rem; opacity: 0.95; color: white;">عميل سعيد</div>
+                            </div>
+                            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
+                                <span class="stat-number counter" data-target="50000">0</span>
+                                <div style="font-size: 1.2rem; opacity: 0.95; color: white;">شحنة شهرياً</div>
+                            </div>
+                            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
+                                <span class="stat-number counter" data-target="27">0</span>
+                                <div style="font-size: 1.2rem; opacity: 0.95; color: white;">محافظة</div>
+                            </div>
+                            <div class="col-md-3" data-aos="zoom-in" data-aos-delay="400">
+                                <span class="stat-number counter" data-target="99">0</span>
+                                <div style="font-size: 1.2rem; opacity: 0.95; color: white;">% رضا العملاء</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section style="padding: 80px 0; background: var(--gradient-secondary); color: white; text-align: center; position: relative; overflow: hidden;">
+                    <div class="wave"></div>
+                    <div class="container">
+                        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 20px;" data-aos="fade-down">
+                            جاهز لبدء الشحن معنا؟
+                        </h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.95;" data-aos="fade-up">
+                            انضم لآلاف العملاء الذين يثقون في خدماتنا
+                        </p>
+                        <a href="/shipment" class="btn btn-light btn-lg" style="padding: 15px 40px; border-radius: 30px; font-weight: 700;" data-aos="zoom-in">
+                            <i class="fa fa-rocket"></i> ابدأ الشحن الآن
+                        </a>
+                    </div>
+                </section>
+
+                <!-- JavaScript -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Initialize AOS
+                        AOS.init({
+                            duration: 1000,
+                            once: true,
+                            offset: 100
+                        });
+
+                        // Hide loader
+                        setTimeout(function() {
+                            document.getElementById('toroodLoader').classList.add('hide');
+                        }, 1500);
+
+                        // Navbar scroll effect
+                        window.addEventListener('scroll', function() {
+                            const navbar = document.getElementById('toroodNavbar');
+                            if (window.scrollY > 100) {
+                                navbar.classList.add('scrolled');
+                            } else {
+                                navbar.classList.remove('scrolled');
+                            }
+                        });
+
+                        // Generate particles
+                        const particlesContainer = document.getElementById('particles');
+                        if (particlesContainer) {
+                            for (let i = 0; i &lt; 30; i++) {
+                                const particle = document.createElement('div');
+                                particle.className = 'particle';
+                                particle.style.left = Math.random() * 100 + '%';
+                                particle.style.animationDelay = Math.random() * 15 + 's';
+                                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                                particlesContainer.appendChild(particle);
+                            }
+                        }
+
+                        // Counter animation
+                        const counters = document.querySelectorAll('.counter');
+                        const speed = 200;
+
+                        const countUp = function() {
+                            counters.forEach(function(counter) {
+                                const target = +counter.getAttribute('data-target');
+                                const count = +counter.innerText;
+                                const increment = target / speed;
+
+                                if (count &lt; target) {
+                                    counter.innerText = Math.ceil(count + increment);
+                                    setTimeout(countUp, 10);
+                                } else {
+                                    counter.innerText = target;
+                                    if (target === 99) {
+                                        counter.innerText += '%';
+                                    } else if (target >= 1000) {
+                                        counter.innerText = target.toLocaleString() + '+';
+                                    }
+                                }
+                            });
+                        };
+
+                        // Trigger counter when in viewport
+                        const statsSection = document.querySelector('.torood-stats');
+                        const statsObserver = new IntersectionObserver(function(entries) {
+                            entries.forEach(function(entry) {
+                                if (entry.isIntersecting) {
+                                    countUp();
+                                    statsObserver.unobserve(entry.target);
+                                }
+                            });
+                        }, { threshold: 0.5 });
+
+                        if (statsSection) {
+                            statsObserver.observe(statsSection);
+                        }
+
+                        // Smooth scrolling
+                        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                            anchor.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const target = document.querySelector(this.getAttribute('href'));
+                                if (target) {
+                                    target.scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'start'
+                                    });
+                                }
+                            });
+                        });
+                    });
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <!-- تحديث Route Controller -->
+    <record id="website_homepage_route" model="website.page">
+        <field name="name">Torood Homepage</field>
+        <field name="website_published">True</field>
+        <field name="url">/</field>
+        <field name="view_id" ref="torood_homepage"/>
+    </record>
+</odoo>
