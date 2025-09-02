@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Tree View -->
+    <record id="view_shipment_dashboard_list" model="ir.ui.view">
+        <field name="name">shipment.order.dashboard.list</field>
+        <field name="model">shipment.order</field>
+        <field name="arch" type="xml">
+            <list string="Shipments" create="false">
+                <field name="order_number"/>
+                <field name="sender_id"/>
+                <field name="recipient_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'delivered'"
+                       decoration-warning="state in ['in_transit', 'out_for_delivery']"
+                       decoration-danger="state == 'returned'"
+                       decoration-info="state == 'confirmed'"/>
+                <field name="shipping_company_id"/>
+                <field name="final_customer_price" widget="monetary"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Dashboard Kanban View -->
+    <record id="view_shipment_dashboard_kanban" model="ir.ui.view">
+        <field name="name">shipment.order.dashboard.kanban</field>
+        <field name="model">shipment.order</field>
+        <field name="arch" type="xml">
+            <kanban create="false" class="o_kanban_dashboard" js_class="dashboard_kanban">
+                <field name="state"/>
+                <field name="order_number"/>
+                <field name="sender_id"/>
+                <field name="recipient_id"/>
+                <field name="final_customer_price"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <strong><field name="order_number"/></strong>
+                                    <div>
+                                        <span class="text-muted">From:</span> <field name="sender_id"/>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">To:</span> <field name="recipient_id"/>
+                                    </div>
+                                    <div class="mt-2">
+                                        <field name="state" widget="badge"/>
+                                        <span class="float-right"><field name="final_customer_price" widget="monetary"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Dashboard Graph View -->
+    <record id="view_shipment_dashboard_graph" model="ir.ui.view">
+        <field name="name">shipment.order.dashboard.graph</field>
+        <field name="model">shipment.order</field>
+        <field name="arch" type="xml">
+            <graph string="Shipments Analysis" type="bar" stacked="False">
+                <field name="create_date" interval="day"/>
+                <field name="final_customer_price" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Dashboard Pivot View -->
+    <record id="view_shipment_dashboard_pivot" model="ir.ui.view">
+        <field name="name">shipment.order.dashboard.pivot</field>
+        <field name="model">shipment.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Shipments Analysis">
+                <field name="state" type="row"/>
+                <field name="shipping_company_id" type="col"/>
+                <field name="final_customer_price" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Dashboard Action -->
+    <record id="action_shipment_dashboard" model="ir.actions.act_window">
+        <field name="name">📊 Shipment Dashboard</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">kanban,list,graph,pivot</field>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No shipments found!
+            </p>
+            <p>
+                Start creating shipment orders to see your dashboard.
+            </p>
+        </field>
+    </record>
+
+    <!-- Search View with Filters -->
+    <record id="view_shipment_dashboard_search" model="ir.ui.view">
+        <field name="name">shipment.order.dashboard.search</field>
+        <field name="model">shipment.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter string="Today" name="today"
+                        domain="[('create_date', '>=', datetime.datetime.now().replace(hour=0, minute=0, second=0)),
+                                ('create_date', '&lt;=', datetime.datetime.now().replace(hour=23, minute=59, second=59))]"/>
+                <filter string="This Week" name="this_week"
+                        domain="[('create_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Month" name="this_month"
+                        domain="[('create_date', '>=', datetime.datetime.now().replace(day=1).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="In Transit" name="in_transit" domain="[('state', '=', 'in_transit')]"/>
+                <filter string="Delivered" name="delivered" domain="[('state', '=', 'delivered')]"/>
+                <filter string="Returned" name="returned" domain="[('state', '=', 'returned')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Shipping Company" name="group_company" context="{'group_by': 'shipping_company_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_shipment_dashboard"
+              name="📊 Dashboard"
+              parent="menu_shipment_root"
+              action="action_shipment_dashboard"
+              sequence="1"/>
+</odoo>
