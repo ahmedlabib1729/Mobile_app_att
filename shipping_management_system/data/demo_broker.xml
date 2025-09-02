@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- التسعير العام الافتراضي -->
+        <record id="broker_pricing_general" model="broker.pricing.config">
+            <field name="name">التسعير العام - 20 جنيه ثابت</field>
+            <field name="sequence">100</field>
+            <field name="active">True</field>
+            <field name="pricing_type">general</field>
+            <field name="broker_fee_type">fixed</field>
+            <field name="broker_fee">20</field>
+            <field name="handling_fee">5</field>
+            <field name="packaging_fee">0</field>
+            <field name="documentation_fee">0</field>
+            <field name="fuel_surcharge">0</field>
+            <field name="minimum_profit">10</field>
+            <field name="notes">التسعير الافتراضي لكل الشحنات - 20 جنيه + 5 جنيه handling</field>
+        </record>
+
+        <!-- تسعير خاص لشركة Bosta -->
+        <record id="broker_pricing_bosta" model="broker.pricing.config">
+            <field name="name">تسعير خاص - Bosta (15%)</field>
+            <field name="sequence">50</field>
+            <field name="active">True</field>
+            <field name="pricing_type">per_company</field>
+            <field name="shipping_company_id" ref="company_bosta"/>
+            <field name="broker_fee_type">percentage</field>
+            <field name="broker_fee">15</field>
+            <field name="handling_fee">5</field>
+            <field name="notes">عمولة 15% على شحنات Bosta + 5 جنيه handling</field>
+        </record>
+
+        <!-- تسعير للخدمات السريعة -->
+        <record id="broker_pricing_express" model="broker.pricing.config">
+            <field name="name">تسعير الخدمات السريعة</field>
+            <field name="sequence">40</field>
+            <field name="active">True</field>
+            <field name="pricing_type">per_service</field>
+            <field name="service_type">express</field>
+            <field name="broker_fee_type">fixed</field>
+            <field name="broker_fee">35</field>
+            <field name="handling_fee">10</field>
+            <field name="fuel_surcharge">5</field>
+            <field name="notes">35 جنيه للخدمات السريعة + 10 handling + 5% fuel</field>
+        </record>
+
+        <!-- تسعير Same Day -->
+        <record id="broker_pricing_same_day" model="broker.pricing.config">
+            <field name="name">تسعير Same Day Delivery</field>
+            <field name="sequence">30</field>
+            <field name="active">True</field>
+            <field name="pricing_type">per_service</field>
+            <field name="service_type">same_day</field>
+            <field name="broker_fee_type">fixed</field>
+            <field name="broker_fee">50</field>
+            <field name="handling_fee">15</field>
+            <field name="notes">50 جنيه للتوصيل في نفس اليوم + 15 handling</field>
+        </record>
+
+        <!-- تسعير حسب الوزن -->
+        <record id="broker_pricing_heavy" model="broker.pricing.config">
+            <field name="name">شحنات ثقيلة (أكثر من 10 كجم)</field>
+            <field name="sequence">60</field>
+            <field name="active">True</field>
+            <field name="pricing_type">per_weight</field>
+            <field name="weight_from">10</field>
+            <field name="weight_to">9999</field>
+            <field name="broker_fee_type">per_kg</field>
+            <field name="broker_fee">3</field>
+            <field name="handling_fee">20</field>
+            <field name="notes">3 جنيه لكل كجم + 20 جنيه handling للشحنات الثقيلة</field>
+        </record>
+
+        <!-- تسعير حسب المنطقة -->
+        <record id="broker_pricing_cairo_alex" model="broker.pricing.config">
+            <field name="name">القاهرة - الإسكندرية</field>
+            <field name="sequence">45</field>
+            <field name="active">True</field>
+            <field name="pricing_type">per_zone</field>
+            <field name="from_city">Cairo</field>
+            <field name="to_city">Alexandria</field>
+            <field name="broker_fee_type">fixed</field>
+            <field name="broker_fee">30</field>
+            <field name="handling_fee">5</field>
+            <field name="notes">30 جنيه للشحن من القاهرة للإسكندرية</field>
+        </record>
+
+        <!-- تسعير متدرج حسب قيمة الشحن -->
+        <record id="broker_pricing_tiered" model="broker.pricing.config">
+            <field name="name">تسعير متدرج حسب التكلفة</field>
+            <field name="sequence">70</field>
+            <field name="active">True</field>
+            <field name="pricing_type">general</field>
+            <field name="broker_fee_type">tiered</field>
+            <field name="broker_fee">0</field>
+            <field name="handling_fee">5</field>
+            <field name="notes">تسعير متدرج حسب تكلفة الشحن</field>
+        </record>
+
+        <!-- Tiers للتسعير المتدرج -->
+        <record id="tier_1" model="broker.pricing.tier">
+            <field name="config_id" ref="broker_pricing_tiered"/>
+            <field name="amount_from">0</field>
+            <field name="amount_to">50</field>
+            <field name="fee_type">fixed</field>
+            <field name="fee_amount">15</field>
+        </record>
+
+        <record id="tier_2" model="broker.pricing.tier">
+            <field name="config_id" ref="broker_pricing_tiered"/>
+            <field name="amount_from">50</field>
+            <field name="amount_to">100</field>
+            <field name="fee_type">fixed</field>
+            <field name="fee_amount">25</field>
+        </record>
+
+        <record id="tier_3" model="broker.pricing.tier">
+            <field name="config_id" ref="broker_pricing_tiered"/>
+            <field name="amount_from">100</field>
+            <field name="amount_to">200</field>
+            <field name="fee_type">percentage</field>
+            <field name="fee_amount">20</field>
+        </record>
+
+        <record id="tier_4" model="broker.pricing.tier">
+            <field name="config_id" ref="broker_pricing_tiered"/>
+            <field name="amount_from">200</field>
+            <field name="amount_to">9999</field>
+            <field name="fee_type">percentage</field>
+            <field name="fee_amount">15</field>
+        </record>
+
+        <!-- خدمات إضافية من الوسيط -->
+        <record id="broker_service_pickup" model="broker.service.fee">
+            <field name="sequence">10</field>
+            <field name="name">خدمة الاستلام من الباب</field>
+            <field name="code">PICKUP</field>
+            <field name="service_type">pickup</field>
+            <field name="fee_calculation">fixed</field>
+            <field name="fee_amount">15</field>
+            <field name="description">استلام الشحنة من عنوان العميل</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="broker_service_packaging" model="broker.service.fee">
+            <field name="sequence">20</field>
+            <field name="name">تغليف احترافي</field>
+            <field name="code">PROF_PACK</field>
+            <field name="service_type">handling</field>
+            <field name="fee_calculation">fixed</field>
+            <field name="fee_amount">25</field>
+            <field name="description">تغليف احترافي بمواد عالية الجودة</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="broker_service_storage" model="broker.service.fee">
+            <field name="sequence">30</field>
+            <field name="name">تخزين مؤقت</field>
+            <field name="code">STORAGE</field>
+            <field name="service_type">storage</field>
+            <field name="fee_calculation">per_day</field>
+            <field name="fee_amount">10</field>
+            <field name="minimum_fee">30</field>
+            <field name="description">تخزين الشحنة لحين التوصيل (10 جنيه/يوم)</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="broker_service_customs" model="broker.service.fee">
+            <field name="sequence">40</field>
+            <field name="name">تخليص جمركي</field>
+            <field name="code">CUSTOMS</field>
+            <field name="service_type">customs</field>
+            <field name="fee_calculation">percentage</field>
+            <field name="fee_amount">5</field>
+            <field name="minimum_fee">100</field>
+            <field name="apply_to_international">True</field>
+            <field name="description">تخليص جمركي للشحنات الدولية (5% من قيمة الشحن)</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="broker_service_cod_handling" model="broker.service.fee">
+            <field name="sequence">50</field>
+            <field name="name">خدمة تحصيل COD</field>
+            <field name="code">COD_HANDLE</field>
+            <field name="service_type">other</field>
+            <field name="fee_calculation">percentage</field>
+            <field name="fee_amount">2</field>
+            <field name="minimum_fee">10</field>
+            <field name="apply_to_cod">True</field>
+            <field name="description">رسوم تحصيل المبلغ عند التسليم (2% من المبلغ)</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>
