@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Global Footer Template -->
+    <template id="torood_global_footer" name="Torood Global Footer">
+        <footer class="torood-footer">
+            <!-- Main Footer -->
+            <div class="footer-main">
+                <div class="container">
+                    <div class="row">
+                        <!-- Company Info -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="footer-widget">
+                                <div class="footer-logo">
+                                    <div class="logo-box-footer">
+                                        <i class="fa fa-box"></i>
+                                    </div>
+                                    <div class="logo-text-footer">
+                                        <span class="logo-ar">طرود</span>
+                                        <span class="logo-en">TOROOD</span>
+                                    </div>
+                                </div>
+                                <p class="footer-desc">
+                                    نحن شركة رائدة في مجال الشحن والتوصيل في مصر، نقدم خدمات شحن سريعة وموثوقة لجميع المحافظات
+                                </p>
+                                <div class="social-links">
+                                    <a href="#" class="social-link facebook">
+                                        <i class="fa fa-facebook"></i>
+                                    </a>
+                                    <a href="#" class="social-link twitter">
+                                        <i class="fa fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="social-link instagram">
+                                        <i class="fa fa-instagram"></i>
+                                    </a>
+                                    <a href="#" class="social-link linkedin">
+                                        <i class="fa fa-linkedin"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Links -->
+                        <div class="col-lg-2 col-md-6 mb-4">
+                            <div class="footer-widget">
+                                <h4 class="widget-title">روابط سريعة</h4>
+                                <ul class="footer-links">
+                                    <li><a href="/"><i class="fa fa-angle-left"></i> الرئيسية</a></li>
+                                    <li><a href="/shipment"><i class="fa fa-angle-left"></i> أرسل طرد</a></li>
+                                    <li><a href="/shipment/track"><i class="fa fa-angle-left"></i> تتبع الشحنة</a></li>
+                                    <li><a href="/my/shipments"><i class="fa fa-angle-left"></i> شحناتي</a></li>
+                                    <li><a href="/my/invoices"><i class="fa fa-angle-left"></i> الفواتير</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Services -->
+                        <div class="col-lg-2 col-md-6 mb-4">
+                            <div class="footer-widget">
+                                <h4 class="widget-title">خدماتنا</h4>
+                                <ul class="footer-links">
+                                    <li><a href="/shipment"><i class="fa fa-angle-left"></i> الشحن السريع</a></li>
+                                    <li><a href="/shipment"><i class="fa fa-angle-left"></i> الشحن العادي</a></li>
+                                    <li><a href="/shipment"><i class="fa fa-angle-left"></i> الدفع عند الاستلام</a></li>
+                                    <li><a href="/shipment"><i class="fa fa-angle-left"></i> التغليف الآمن</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Contact Info -->
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="footer-widget">
+                                <h4 class="widget-title">تواصل معنا</h4>
+                                <div class="contact-info">
+                                    <div class="contact-item">
+                                        <i class="fa fa-map-marker"></i>
+                                        <div class="contact-text">
+                                            <span>العنوان</span>
+                                            <p>القاهرة، مصر</p>
+                                        </div>
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fa fa-phone"></i>
+                                        <div class="contact-text">
+                                            <span>اتصل بنا</span>
+                                            <p dir="ltr">+20 123 456 7890</p>
+                                        </div>
+                                    </div>
+                                    <div class="contact-item">
+                                        <i class="fa fa-envelope"></i>
+                                        <div class="contact-text">
+                                            <span>البريد الإلكتروني</span>
+                                            <p>info@torood.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <p class="copyright">
+                                © <span t-out="datetime.datetime.now().year"/> طرود. جميع الحقوق محفوظة | تطوير بواسطة <a href="#">فريق طرود</a>
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <ul class="footer-bottom-links">
+                                <li><a href="/privacy">سياسة الخصوصية</a></li>
+                                <li><a href="/terms">الشروط والأحكام</a></li>
+                                <li><a href="/refund">سياسة الاسترجاع</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Top Button -->
+            <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">
+                <i class="fa fa-chevron-up"></i>
+            </button>
+        </footer>
+    </template>
+
+    <!-- Footer Styles -->
+    <template id="torood_footer_styles" name="Torood Footer Styles">
+        <style>
+            /* Ensure main content takes full height */
+            #wrapwrap {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #wrapwrap main {
+                flex: 1;
+            }
+
+            /* Footer Styles */
+            .torood-footer {
+                background: #1a1a2e;
+                color: #fff;
+                margin-top: auto;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .torood-footer::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #FF6B35 0%, #F7931E 50%, #FF6B35 100%);
+                background-size: 200% 100%;
+                animation: gradient-move 3s ease infinite;
+            }
+
+            @keyframes gradient-move {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            .footer-main {
+                padding: 80px 0 40px;
+                background: #1a1a2e;
+                position: relative;
+            }
+
+            .footer-widget {
+                margin-bottom: 30px;
+            }
+
+            /* Footer Logo */
+            .footer-logo {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .logo-box-footer {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 24px;
+                box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+            }
+
+            .logo-text-footer {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .logo-text-footer .logo-ar {
+                font-size: 24px;
+                font-weight: 800;
+                color: #fff;
+                line-height: 1;
+            }
+
+            .logo-text-footer .logo-en {
+                font-size: 14px;
+                color: #FF6B35;
+                font-weight: 600;
+                letter-spacing: 2px;
+            }
+
+            .footer-desc {
+                color: #a0a0a0;
+                line-height: 1.8;
+                margin-bottom: 25px;
+            }
+
+            /* Social Links */
+            .social-links {
+                display: flex;
+                gap: 10px;
+            }
+
+            .social-link {
+                width: 40px;
+                height: 40px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .social-link:hover {
+                color: #fff;
+                transform: translateY(-3px);
+            }
+
+            .social-link.facebook:hover {
+                background: #3b5998;
+                border-color: #3b5998;
+            }
+
+            .social-link.twitter:hover {
+                background: #1da1f2;
+                border-color: #1da1f2;
+            }
+
+            .social-link.instagram:hover {
+                background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+                border-color: #e6683c;
+            }
+
+            .social-link.linkedin:hover {
+                background: #0077b5;
+                border-color: #0077b5;
+            }
+
+            /* Widget Title */
+            .widget-title {
+                font-size: 20px;
+                font-weight: 700;
+                margin-bottom: 25px;
+                color: #fff;
+                position: relative;
+                padding-bottom: 10px;
+            }
+
+            .widget-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 50px;
+                height: 2px;
+                background: linear-gradient(90deg, #FF6B35 0%, #F7931E 100%);
+            }
+
+            /* Footer Links */
+            .footer-links {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .footer-links li {
+                margin-bottom: 12px;
+            }
+
+            .footer-links a {
+                color: #a0a0a0;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .footer-links a:hover {
+                color: #FF6B35;
+                padding-right: 5px;
+            }
+
+            .footer-links i {
+                font-size: 12px;
+                color: #FF6B35;
+            }
+
+            /* Contact Info */
+            .contact-item {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .contact-item i {
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                flex-shrink: 0;
+            }
+
+            .contact-text span {
+                display: block;
+                color: #a0a0a0;
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+
+            .contact-text p {
+                color: #fff;
+                margin: 0;
+                font-weight: 600;
+            }
+
+            /* Newsletter */
+            .newsletter-box {
+                margin-top: 30px;
+                padding: 25px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 15px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .newsletter-box h5 {
+                color: #fff;
+                font-size: 18px;
+                margin-bottom: 15px;
+                font-weight: 600;
+            }
+
+            .newsletter-form {
+                display: flex;
+                gap: 10px;
+            }
+
+            .newsletter-input {
+                flex: 1;
+                padding: 12px 20px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 25px;
+                color: #fff;
+                outline: none;
+                transition: all 0.3s ease;
+            }
+
+            .newsletter-input::placeholder {
+                color: #a0a0a0;
+            }
+
+            .newsletter-input:focus {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: #FF6B35;
+            }
+
+            .newsletter-btn {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                border: none;
+                border-radius: 50%;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .newsletter-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+            }
+
+            /* Footer Bottom */
+            .footer-bottom {
+                background: #0f0f1e;
+                padding: 20px 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .copyright {
+                color: #a0a0a0;
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .copyright a {
+                color: #FF6B35;
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+            .copyright a:hover {
+                color: #F7931E;
+            }
+
+            .footer-bottom-links {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+                gap: 20px;
+                justify-content: flex-end;
+            }
+
+            .footer-bottom-links a {
+                color: #a0a0a0;
+                text-decoration: none;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+
+            .footer-bottom-links a:hover {
+                color: #FF6B35;
+            }
+
+            /* Back to Top */
+            .back-to-top {
+                position: fixed;
+                bottom: 30px;
+                left: 30px;
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                border: none;
+                border-radius: 50%;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+            }
+
+            .back-to-top.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-top:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .footer-main {
+                    padding: 50px 0 30px;
+                }
+
+                .footer-bottom-links {
+                    justify-content: center;
+                    margin-top: 15px;
+                }
+
+                .text-md-end {
+                    text-align: center !important;
+                }
+
+                .back-to-top {
+                    left: 20px;
+                    bottom: 20px;
+                    width: 40px;
+                    height: 40px;
+                    font-size: 16px;
+                }
+            }
+        </style>
+
+        <!-- Footer JavaScript -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Back to Top Button
+                const backToTopBtn = document.getElementById('backToTop');
+
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.add('show');
+                    } else {
+                        backToTopBtn.classList.remove('show');
+                    }
+                });
+
+                if (backToTopBtn) {
+                    backToTopBtn.addEventListener('click', function() {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    });
+                }
+
+                // Newsletter Form
+                const newsletterForm = document.querySelector('.newsletter-form');
+                if (newsletterForm) {
+                    newsletterForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const email = this.querySelector('.newsletter-input').value;
+                        if (email) {
+                            // For Odoo 18, you might want to make an AJAX call here
+                            fetch('/newsletter/subscribe', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': odoo.csrf_token
+                                },
+                                body: JSON.stringify({email: email})
+                            }).then(response => {
+                                if(response.ok) {
+                                    alert('شكراً لاشتراكك! سنرسل لك آخر الأخبار والعروض.');
+                                    this.reset();
+                                }
+                            }).catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                    });
+                }
+            });
+        </script>
+    </template>
+
+    <!-- Apply Footer to All Website Pages -->
+    <template id="website_layout_with_footer" inherit_id="website.layout" priority="10">
+    <!-- Add Footer Styles in head -->
+    <xpath expr="//head" position="inside">
+        <t t-call="shipping_management_system.torood_footer_styles"/>
+    </xpath>
+
+    <!-- Add custom footer after main content -->
+    <xpath expr="//main" position="after">
+        <t t-call="shipping_management_system.torood_global_footer"/>
+    </xpath>
+
+    <!-- Hide original footer if exists -->
+    <xpath expr="//footer[@id='bottom']" position="attributes">
+        <attribute name="style">display: none;</attribute>
+    </xpath>
+</template>
+
+
+</odoo>
