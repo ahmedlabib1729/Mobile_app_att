@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- القائمة الرئيسية -->
+    <menuitem id="menu_tax_reminder_root"
+              name="تذكير الضرائب"
+              sequence="10"
+              web_icon="tax_reminder,static/description/icon.png"/>
+    
+    <!-- قائمة الإقرارات -->
+    <menuitem id="menu_tax_declarations"
+              name="الإقرارات الضريبية"
+              parent="menu_tax_reminder_root"
+              action="action_tax_declaration"
+              sequence="10"/>
+    
+    <!-- قائمة العملاء -->
+    <menuitem id="menu_tax_clients"
+              name="العملاء"
+              parent="menu_tax_reminder_root"
+              action="action_tax_client"
+              sequence="20"/>
+    
+    <!-- قائمة التقارير -->
+    <menuitem id="menu_tax_reports"
+              name="التقارير"
+              parent="menu_tax_reminder_root"
+              sequence="30"/>
+    
+    <!-- إقرارات متأخرة -->
+    <record id="action_overdue_declarations" model="ir.actions.act_window">
+        <field name="name">الإقرارات المتأخرة</field>
+        <field name="res_model">tax.declaration</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('due_date', '&lt;', context_today().strftime('%Y-%m-%d')), ('state', 'not in', ['submitted', 'cancelled'])]</field>
+        <field name="context">{'search_default_group_client': 1}</field>
+    </record>
+    
+    <menuitem id="menu_overdue_declarations"
+              name="الإقرارات المتأخرة"
+              parent="menu_tax_reports"
+              action="action_overdue_declarations"
+              sequence="10"/>
+    
+    <!-- إقرارات هذا الشهر -->
+    <record id="action_current_month_declarations" model="ir.actions.act_window">
+        <field name="name">إقرارات هذا الشهر</field>
+        <field name="res_model">tax.declaration</field>
+        <field name="view_mode">list,kanban,calendar,form</field>
+        <field name="domain">[
+            ('due_date', '&gt;=', (context_today()).strftime('%Y-%m-01')), 
+            ('due_date', '&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))
+        ]</field>
+    </record>
+    
+    <menuitem id="menu_current_month_declarations"
+              name="إقرارات هذا الشهر"
+              parent="menu_tax_reports"
+              action="action_current_month_declarations"
+              sequence="20"/>
+    
+    <!-- قائمة الإعدادات -->
+    <menuitem id="menu_tax_configuration"
+              name="الإعدادات"
+              parent="menu_tax_reminder_root"
+              sequence="100"
+              groups="base.group_system"/>
+</odoo>

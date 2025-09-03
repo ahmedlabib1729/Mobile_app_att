@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View for Settings -->
+    <record id="view_tax_client_settings_list" model="ir.ui.view">
+        <field name="name">tax.client.settings.list</field>
+        <field name="model">tax.client.settings</field>
+        <field name="arch" type="xml">
+            <list string="إعدادات الضرائب" editable="bottom">
+                <field name="tax_type"/>
+                <field name="period_type"/>
+                <field name="generation_type" optional="show"/>
+                <field name="periods_to_generate" invisible="generation_type != 'periods'" optional="show"/>
+                <field name="generation_months" invisible="generation_type != 'months'" optional="show"/>
+                <field name="generation_years" invisible="generation_type != 'years'" optional="show"/>
+                <field name="day_of_month"/>
+                <field name="months_after_period"/>
+                <field name="days_before_reminder"/>
+                <field name="active" widget="boolean_toggle"/>
+                <button name="generate_next_declarations" type="object" 
+                        string="توليد" 
+                        icon="fa-refresh"
+                        class="btn-sm btn-primary"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Settings -->
+    <record id="view_tax_client_settings_form" model="ir.ui.view">
+        <field name="name">tax.client.settings.form</field>
+        <field name="model">tax.client.settings</field>
+        <field name="arch" type="xml">
+            <form string="إعدادات ضريبة">
+                <sheet>
+                    <group>
+                        <group string="معلومات الضريبة">
+                            <field name="client_id" invisible="context.get('hide_client', False)"/>
+                            <field name="tax_type"/>
+                            <field name="period_type"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="مواعيد الاستحقاق">
+                            <field name="day_of_month"/>
+                            <field name="months_after_period"/>
+                            <field name="days_before_reminder"/>
+                        </group>
+                    </group>
+                    
+                    <group string="إعدادات التوليد">
+                        <field name="generation_type" widget="radio"/>
+                        <field name="periods_to_generate" 
+                               invisible="generation_type != 'periods'"
+                               help="مثال: 12 للشهري = سنة كاملة، 4 للربعي = سنة كاملة"/>
+                        <field name="generation_months" 
+                               invisible="generation_type != 'months'"
+                               help="سيتم توليد الإقرارات لهذا العدد من الشهور القادمة"/>
+                        <field name="generation_years" 
+                               invisible="generation_type != 'years'"
+                               help="سيتم توليد الإقرارات لهذا العدد من السنوات القادمة"/>
+                    </group>
+                    
+                    <group string="آخر توليد" invisible="not last_generated_year">
+                        <field name="last_generated_year" readonly="1"/>
+                        <field name="last_generated_period" readonly="1"/>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">أمثلة على التوليد:</h4>
+                        <ul>
+                            <li><strong>عدد الفترات:</strong> ضريبة شهرية + 12 فترة = توليد 12 شهر قادم</li>
+                            <li><strong>بالشهور:</strong> ضريبة ربعية + 6 شهور = توليد ربعين قادمين</li>
+                            <li><strong>بالسنوات:</strong> ضريبة سنوية + 3 سنوات = توليد 3 إقرارات سنوية</li>
+                        </ul>
+                    </div>
+                    
+                    <footer>
+                        <button name="generate_next_declarations" type="object" 
+                                string="توليد الإقرارات الآن" 
+                                class="btn-primary"
+                                confirm="هل تريد توليد الإقرارات الآن؟"/>
+                        <button string="إلغاء" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard for Advanced Generation -->
+    <record id="wizard_advanced_generate" model="ir.ui.view">
+        <field name="name">wizard.advanced.generate</field>
+        <field name="model">tax.client.settings</field>
+        <field name="arch" type="xml">
+            <form string="توليد متقدم للإقرارات">
+                <group>
+                    <field name="client_id" readonly="1"/>
+                    <field name="tax_type" readonly="1"/>
+                    <field name="period_type" readonly="1"/>
+                </group>
+                <group string="خيارات التوليد">
+                    <field name="generation_type" widget="radio"/>
+                    <field name="periods_to_generate" invisible="generation_type != 'periods'"/>
+                    <field name="generation_months" invisible="generation_type != 'months'"/>
+                    <field name="generation_years" invisible="generation_type != 'years'"/>
+                </group>
+                <div class="text-warning">
+                    <p>سيتم توليد الإقرارات بناءً على الإعدادات المحددة</p>
+                </div>
+                <footer>
+                    <button name="generate_next_declarations" type="object" 
+                            string="توليد" 
+                            class="btn-primary"/>
+                    <button string="إلغاء" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
