@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ FORM VIEW ============ -->
+    <record id="view_cod_collection_form" model="ir.ui.view">
+        <field name="name">cod.collection.form</field>
+        <field name="model">cod.collection</field>
+        <field name="arch" type="xml">
+            <form string="COD Collection">
+                <header>
+                    <button name="action_mark_delivered"
+                            string="Mark Delivered"
+                            type="object"
+                            class="btn-primary"
+                            invisible="collection_state != 'pending'"
+                            groups="cod_management_system.group_cod_user"/>
+
+                    <button name="action_mark_collected"
+                            string="Mark Collected"
+                            type="object"
+                            class="btn-success"
+                            invisible="collection_state not in ['delivered', 'disputed']"
+                            groups="cod_management_system.group_cod_user"/>
+
+                    <button name="action_add_to_batch"
+                            string="Add to Settlement"
+                            type="object"
+                            class="btn-warning"
+                            invisible="collection_state != 'collected' or settlement_batch_id"
+                            groups="cod_management_system.group_cod_user"/>
+
+                    <button name="action_mark_disputed"
+                            string="Mark Disputed"
+                            type="object"
+                            invisible="collection_state not in ['delivered', 'collected']"
+                            groups="cod_management_system.group_cod_user"/>
+
+                    <button name="action_resolve_dispute"
+                            string="Resolve Dispute"
+                            type="object"
+                            class="btn-info"
+                            invisible="not is_disputed"
+                            groups="cod_management_system.group_cod_user"/>
+
+                    <field name="collection_state" widget="statusbar"
+                           statusbar_visible="pending,delivered,collected,in_settlement,settled,reconciled"/>
+                </header>
+
+                <sheet>
+                    <!-- Ribbons -->
+                    <widget name="web_ribbon" title="Disputed"
+                            invisible="not is_disputed"
+                            bg_color="text-bg-danger"/>
+
+                    <widget name="web_ribbon" title="Overdue"
+                            invisible="not is_overdue"
+                            bg_color="text-bg-warning"/>
+
+                    <widget name="web_ribbon" title="Reconciled"
+                            invisible="collection_state != 'reconciled'"
+                            bg_color="text-bg-success"/>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-truck"
+                                type="action"
+                                name="%(shipping_management_system.action_shipment_order)d"
+                                context="{'search_default_id': shipment_id}">
+                            <field name="shipment_id" widget="statinfo" string="Shipment"/>
+                        </button>
+
+                        <button class="oe_stat_button" icon="fa-calendar"
+                                invisible="not settlement_batch_id">
+                            <field name="settlement_batch_id" widget="statinfo" string="Batch"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="shipment_id"
+                                   readonly="collection_state != 'pending'"
+                                   options="{'no_create': True}"/>
+                            <field name="shipping_company_id"/>
+                            <field name="sender_id"/>
+                            <field name="order_date"/>
+                        </group>
+
+                        <group string="Status">
+                            <field name="collection_state" readonly="1" widget="badge"
+                                   decoration-success="collection_state == 'reconciled'"
+                                   decoration-warning="collection_state == 'in_settlement'"
+                                   decoration-danger="collection_state == 'disputed'"
+                                   decoration-info="collection_state == 'collected'"/>
+                            <field name="days_since_delivery" invisible="collection_state == 'pending'"/>
+                            <field name="days_overdue" invisible="not is_overdue"
+                                   decoration-danger="days_overdue > 7"
+                                   decoration-warning="days_overdue > 3"/>
+                            <field name="is_overdue" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- Tab 1: Financial Details -->
+                        <page string="Financial Details" name="financial">
+                            <group>
+                                <group string="COD Amounts">
+                                    <field name="cod_amount"
+                                           widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           readonly="collection_state != 'pending'"/>
+                                    <field name="shipping_cost"
+                                           widget="monetary"
+                                           invisible="shipping_cost == 0"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+
+                                <group string="Commission &amp; Net">
+                                    <field name="commission_amount"
+                                           widget="monetary"
+                                           readonly="1"
+                                           help="Commission calculated based on shipping company settings"/>
+                                    <separator/>
+                                    <field name="net_amount"
+                                           widget="monetary"
+                                           readonly="1"
+                                           class="fw-bold text-primary"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Tab 2: Settlement Details -->
+                        <page string="Settlement" name="settlement">
+                            <group>
+                                <group string="Settlement Dates">
+                                    <field name="delivered_date"
+                                           readonly="collection_state not in ['pending', 'delivered']"/>
+                                    <field name="collected_date" readonly="1"/>
+                                    <field name="expected_settlement_date" readonly="1"/>
+                                    <field name="actual_settlement_date" readonly="1"/>
+                                </group>
+
+                                <group string="Settlement Information">
+                                    <field name="settlement_batch_id" readonly="1"
+                                           options="{'no_create': True}"/>
+                                    <field name="payment_reference"
+                                           readonly="collection_state not in ['settled', 'reconciled']"/>
+                                    <field name="payment_method_used"
+                                           readonly="collection_state not in ['settled', 'reconciled']"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Tab 3: Dispute Management -->
+                        <page string="Dispute" name="dispute" invisible="not is_disputed">
+                            <group>
+                                <field name="dispute_reason"
+                                       readonly="collection_state == 'reconciled'"
+                                       placeholder="Describe the dispute reason..."/>
+                                <field name="dispute_resolution"
+                                       readonly="collection_state != 'disputed'"
+                                       placeholder="Resolution details..."/>
+                            </group>
+                        </page>
+
+                        <!-- Tab 4: Notes -->
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ TREE VIEW ============ -->
+    <record id="view_cod_collection_tree" model="ir.ui.view">
+        <field name="name">cod.collection.tree</field>
+        <field name="model">cod.collection</field>
+        <field name="arch" type="xml">
+            <list string="COD Collections"
+                  decoration-danger="is_disputed or collection_state == 'cancelled'"
+                  decoration-warning="is_overdue"
+                  decoration-success="collection_state == 'reconciled'"
+                  decoration-info="collection_state == 'collected'"
+                  sample="1">
+
+                <field name="display_name"/>
+                <field name="shipment_id" widget="many2one_clickable"/>
+                <field name="shipping_company_id" optional="show"/>
+                <field name="sender_id" optional="show"/>
+                <field name="cod_amount" widget="monetary" sum="Total COD"/>
+                <field name="commission_amount" widget="monetary" optional="show" sum="Total Commission"/>
+                <field name="net_amount" widget="monetary" sum="Total Net" class="fw-bold"/>
+                <field name="collection_state" widget="badge"
+                       decoration-success="collection_state == 'reconciled'"
+                       decoration-warning="collection_state == 'in_settlement'"
+                       decoration-danger="collection_state == 'disputed'"
+                       decoration-info="collection_state == 'collected'"/>
+                <field name="delivered_date" optional="show"/>
+                <field name="expected_settlement_date" optional="show"/>
+                <field name="settlement_batch_id" optional="show" widget="many2one_clickable"/>
+                <field name="is_disputed" invisible="1"/>
+                <field name="is_overdue" invisible="1"/>
+                <field name="days_overdue" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ KANBAN VIEW ============ -->
+    <record id="view_cod_collection_kanban" model="ir.ui.view">
+        <field name="name">cod.collection.kanban</field>
+        <field name="model">cod.collection</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="collection_state" sample="1" quick_create="false">
+                <field name="display_name"/>
+                <field name="shipment_id"/>
+                <field name="shipping_company_id"/>
+                <field name="sender_id"/>
+                <field name="cod_amount"/>
+                <field name="net_amount"/>
+                <field name="collection_state"/>
+                <field name="delivered_date"/>
+                <field name="expected_settlement_date"/>
+                <field name="is_disputed"/>
+                <field name="is_overdue"/>
+                <field name="days_overdue"/>
+                <field name="currency_id"/>
+
+                <progressbar field="collection_state"
+                            colors='{"disputed": "danger", "reconciled": "success", "in_settlement": "warning"}'/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <!-- Badges -->
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="display_name"/>
+                                        </strong>
+                                        <div class="text-muted">
+                                            <field name="shipping_company_id"/>
+                                        </div>
+                                    </div>
+                                    <div t-if="record.is_disputed.raw_value" class="o_dropdown_kanban dropdown">
+                                        <span class="badge rounded-pill text-bg-danger">Disputed</span>
+                                    </div>
+                                </div>
+
+                                <!-- Body -->
+                                <div class="o_kanban_record_body mt-2">
+                                    <div>
+                                        <span class="text-muted">Customer:</span>
+                                        <strong><field name="sender_id"/></strong>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="text-muted">COD:</span>
+                                        <strong><field name="cod_amount" widget="monetary"/></strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Net:</span>
+                                        <strong class="text-primary"><field name="net_amount" widget="monetary"/></strong>
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="o_kanban_record_bottom mt-2">
+                                    <div class="oe_kanban_bottom_left">
+                                        <small>
+                                            <i class="fa fa-calendar"/>
+                                            <t t-if="record.expected_settlement_date.raw_value">
+                                                <field name="expected_settlement_date"/>
+                                            </t>
+                                            <t t-else="">Not scheduled</t>
+                                        </small>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="collection_state" widget="label_selection"
+                                               options="{'classes': {'reconciled': 'success', 'disputed': 'danger', 'collected': 'info'}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============ PIVOT VIEW ============ -->
+    <record id="view_cod_collection_pivot" model="ir.ui.view">
+        <field name="name">cod.collection.pivot</field>
+        <field name="model">cod.collection</field>
+        <field name="arch" type="xml">
+            <pivot string="COD Analysis" sample="1">
+                <field name="shipping_company_id" type="row"/>
+                <field name="collection_state" type="col"/>
+                <field name="cod_amount" type="measure" widget="monetary"/>
+                <field name="commission_amount" type="measure" widget="monetary"/>
+                <field name="net_amount" type="measure" widget="monetary"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============ GRAPH VIEW ============ -->
+    <record id="view_cod_collection_graph" model="ir.ui.view">
+        <field name="name">cod.collection.graph</field>
+        <field name="model">cod.collection</field>
+        <field name="arch" type="xml">
+            <graph string="COD Collections" type="bar" sample="1">
+                <field name="delivered_date" interval="week"/>
+                <field name="net_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============ SEARCH VIEW ============ -->
+    <record id="view_cod_collection_search" model="ir.ui.view">
+        <field name="name">cod.collection.search</field>
+        <field name="model">cod.collection</field>
+        <field name="arch" type="xml">
+            <search string="Search COD Collections">
+                <field name="display_name"/>
+                <field name="shipment_id"/>
+                <field name="shipping_company_id"/>
+                <field name="sender_id"/>
+                <field name="settlement_batch_id"/>
+
+                <separator/>
+
+                <!-- Quick Filters -->
+                <filter name="pending" string="Pending"
+                        domain="[('collection_state', '=', 'pending')]"/>
+                <filter name="delivered" string="Delivered"
+                        domain="[('collection_state', '=', 'delivered')]"/>
+                <filter name="collected" string="Collected"
+                        domain="[('collection_state', '=', 'collected')]"/>
+                <filter name="in_settlement" string="In Settlement"
+                        domain="[('collection_state', '=', 'in_settlement')]"/>
+                <filter name="settled" string="Settled"
+                        domain="[('collection_state', '=', 'settled')]"/>
+                <filter name="reconciled" string="Reconciled"
+                        domain="[('collection_state', '=', 'reconciled')]"/>
+
+                <separator/>
+
+
+
+                <separator/>
+
+                <!-- Date Filters -->
+                <filter name="today_delivery" string="Delivered Today"
+                        domain="[('delivered_date', '&gt;=', datetime.datetime.now().replace(hour=0, minute=0, second=0)),
+                                ('delivered_date', '&lt;=', datetime.datetime.now().replace(hour=23, minute=59, second=59))]"/>
+                <filter name="this_week" string="This Week"
+                        domain="[('delivered_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_month" string="This Month"
+                        domain="[('delivered_date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'collection_state'}"/>
+                    <filter name="group_company" string="Shipping Company"
+                            context="{'group_by': 'shipping_company_id'}"/>
+                    <filter name="group_customer" string="Customer"
+                            context="{'group_by': 'sender_id'}"/>
+                    <filter name="group_batch" string="Settlement Batch"
+                            context="{'group_by': 'settlement_batch_id'}"/>
+                    <filter name="group_delivered_date" string="Delivered Date"
+                            context="{'group_by': 'delivered_date:day'}"/>
+                    <filter name="group_settlement_date" string="Expected Settlement"
+                            context="{'group_by': 'expected_settlement_date:week'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ ACTION ============ -->
+    <record id="action_cod_collection" model="ir.actions.act_window">
+        <field name="name">COD Collections</field>
+        <field name="res_model">cod.collection</field>
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+        <field name="context">{'search_default_collected': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No COD collections found
+            </p>
+            <p>
+                COD collections are automatically created when COD shipments are confirmed.
+                Track collection status, settlements, and reconciliation here.
+            </p>
+        </field>
+    </record>
+
+</odoo>

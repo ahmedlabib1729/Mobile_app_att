@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Report Action -->
+    <record id="action_report_cod_settlement" model="ir.actions.report">
+        <field name="name">Settlement Statement</field>
+        <field name="model">cod.settlement.batch</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">cod_management_system.report_cod_settlement_document</field>
+        <field name="report_file">cod_management_system.report_cod_settlement_document</field>
+        <field name="print_report_name">'COD Settlement - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_cod_settlement_batch"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="report_cod_settlement_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="oe_structure"/>
+                        <h2 class="text-center">COD Settlement Statement</h2>
+
+                        <!-- Settlement Info -->
+                        <div class="row mt-4 mb-4">
+                            <div class="col-6">
+                                <strong>Settlement Reference:</strong> <span t-field="doc.name"/><br/>
+                                <strong>Settlement Date:</strong> <span t-field="doc.settlement_date"/><br/>
+                                <strong>Shipping Company:</strong> <span t-field="doc.shipping_company_id"/><br/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Status:</strong> <span t-field="doc.state" class="badge badge-pill badge-info"/><br/>
+                                <strong>Total Shipments:</strong> <span t-field="doc.shipment_count"/><br/>
+                                <strong>Created:</strong> <span t-field="doc.create_date" widget="date"/><br/>
+                            </div>
+                        </div>
+
+                        <!-- Collections Table -->
+                        <table class="table table-sm table-bordered mt-4">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Shipment #</th>
+                                    <th>Customer</th>
+                                    <th>Delivered Date</th>
+                                    <th class="text-right">COD Amount</th>
+                                    <th class="text-right">Commission</th>
+                                    <th class="text-right">Net Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.collection_ids" t-as="collection">
+                                    <tr>
+                                        <td><span t-field="collection.shipment_id.order_number"/></td>
+                                        <td><span t-field="collection.sender_id.name"/></td>
+                                        <td><span t-field="collection.delivered_date" widget="date"/></td>
+                                        <td class="text-right"><span t-field="collection.cod_amount" widget="monetary"/></td>
+                                        <td class="text-right"><span t-field="collection.commission_amount" widget="monetary"/></td>
+                                        <td class="text-right"><span t-field="collection.net_amount" widget="monetary"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot class="bg-light">
+                                <tr>
+                                    <th colspan="3">Total</th>
+                                    <th class="text-right"><span t-field="doc.total_cod_amount" widget="monetary"/></th>
+                                    <th class="text-right"><span t-field="doc.total_commission" widget="monetary"/></th>
+                                    <th class="text-right"><span t-field="doc.total_net_amount" widget="monetary"/></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Payment Info if exists -->
+                        <t t-if="doc.payment_amount">
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <h5>Payment Information</h5>
+                                    <strong>Payment Date:</strong> <span t-field="doc.payment_date"/><br/>
+                                    <strong>Payment Method:</strong> <span t-field="doc.payment_method"/><br/>
+                                    <strong>Reference:</strong> <span t-field="doc.payment_reference"/><br/>
+                                </div>
+                                <div class="col-6">
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>Expected Amount:</td>
+                                            <td class="text-right"><span t-field="doc.total_net_amount" widget="monetary"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Paid Amount:</td>
+                                            <td class="text-right"><span t-field="doc.payment_amount" widget="monetary"/></td>
+                                        </tr>
+                                        <tr t-if="doc.payment_difference">
+                                            <td>Difference:</td>
+                                            <td class="text-right"><span t-field="doc.payment_difference" widget="monetary"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Notes -->
+                        <t t-if="doc.notes">
+                            <div class="mt-4">
+                                <h5>Notes</h5>
+                                <p t-field="doc.notes"/>
+                            </div>
+                        </t>
+
+                        <!-- Footer -->
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
