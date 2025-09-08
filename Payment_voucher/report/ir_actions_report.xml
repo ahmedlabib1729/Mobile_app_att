@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <record id="action_report_invoice" model="ir.actions.report">
+       <field name="name">Payment Receipt سندات الصرف</field>
+       <field name="model">account.payment</field>
+       <field name="report_type">qweb-pdf</field>
+       <field name="report_name">Payment_voucher.payment_receipt_form</field>
+       <field name="report_file">Payment_voucher.payment_receipt_form</field>
+       <field name="print_report_name">'Receipt - %s' % (object.name)</field>
+      <field name="binding_model_id" ref="account.model_account_payment"/>
+       <field name="binding_type">report</field>
+   </record>
+
+    <record id="action_report_invoice2" model="ir.actions.report">
+       <field name="name">Cash Receipt سندات القبض</field>
+       <field name="model">account.payment</field>
+       <field name="report_type">qweb-pdf</field>
+       <field name="report_name">Payment_voucher.Cash_receipt_form</field>
+       <field name="report_file">Payment_voucher.Cash_receipt_form</field>
+       <field name="print_report_name">'Receipt - %s' % (object.name)</field>
+      <field name="binding_model_id" ref="account.model_account_payment"/>
+       <field name="binding_type">report</field>
+   </record>
+
+    <record id="action_report_invoice3" model="ir.actions.report">
+       <field name="name">Cash Receipt سندات القبض المركز</field>
+       <field name="model">account.payment</field>
+       <field name="report_type">qweb-pdf</field>
+       <field name="report_name">Payment_voucher.Cash_receipt_form2</field>
+       <field name="report_file">Payment_voucher.Cash_receipt_form2</field>
+       <field name="print_report_name">'Receipt - %s' % (object.name)</field>
+      <field name="binding_model_id" ref="account.model_account_payment"/>
+       <field name="binding_type">report</field>
+   </record>
+</odoo>

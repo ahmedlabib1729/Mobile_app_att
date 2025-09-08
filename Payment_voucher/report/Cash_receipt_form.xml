@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="Cash_receipt_form">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="o">
+        <t t-call="Payment_voucher.custom_external_layout_cash">
+          <t t-set="company" t-value="o.company_id"/>
+          <div class="page">
+            <!-- معلومات التاريخ ورقم السند -->
+            <div class="row" >
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+                <span t-field="o.date"/>
+              </div>
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 20px;">
+                <span style="color: #273A6F;">: التاريـخ </span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+                <span t-field="o.name"/>
+              </div>
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 20px;">
+                <span style="color: #273A6F;">: رقم السنــد</span>
+              </div>
+            </div>
+
+
+            <!-- الجدول الرئيسي -->
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0; direction: rtl; font-family: 'Almarai', sans-serif; border: 0px solid #002857; border-radius: 10px; background-color: #f2f2f2; filter: contrast(20%);">
+              <tr>
+                <!-- العمود الجديد المدمج على الصفين -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 12%; border-top-right-radius: 10px; border-bottom-right-radius: 10px; " rowspan="2">
+
+                    <span style="color: #273A6F;">تم استلام مبلغ وقدره</span>
+                </td>
+                <!-- الأعمدة الأصلية للصف الأول -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+
+                    <span style="color: #273A6F; ">رقمــاً</span>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px; border-top-left-radius: 10px; ">
+                  <span t-field="o.amount"/>
+                </td>
+              </tr>
+              <tr>
+                <!-- الأعمدة الأصلية للصف الثاني -->
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">كتـابـة</span>
+
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px;  border-bottom-left-radius: 10px;">
+                  <span t-field="o.amount_in_words_arabic"/>
+                </td>
+              </tr>
+            </table>
+
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0; direction: rtl; font-family: 'Almarai', sans-serif; border: 0px solid #002857; border-radius: 10px; background-color: #f2f2f2; filter: contrast(20%);">
+            <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 10%; height: 15px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; ">
+
+                    <span style="color: #273A6F; ">من السيد / ة</span>
+                </td>
+            <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: right; font-size: 14px; width: 50%; height: 15px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; ">
+                  <span t-field="o.partner_id"/>
+                </td>
+            </table>
+
+             <!-- ///////////////////////////////////////////// -->
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0; direction: rtl; font-family: 'Almarai', sans-serif; border: 0px solid #002857; border-radius: 10px; background-color: #f2f2f2; filter: contrast(20%);">
+              <tr>
+                <!-- العمود الجديد المدمج على الصفين -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 12%; border-top-right-radius: 10px; border-bottom-right-radius: 10px; " rowspan="3">
+
+                    <span style="color: #273A6F;">وذلك عن</span>
+                </td>
+                <!-- الأعمدة الأصلية للصف الأول -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 100%; height: 15px; border-top-left-radius: 10px; " colspan="8">
+
+                    <span t-field="o.ref"/>
+                </td>
+
+              </tr>
+              <tr>
+                <!-- الأعمدة الأصلية للصف الثاني -->
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">البناية</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px;  ">
+                  <span t-field="o.Building"/>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">الطابق</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px;  ">
+                  <span t-field="o.Floor"/>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">الشقة</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px; ">
+                  <span t-field="o.Apartment"/>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">المساحة</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px;  ">
+                  <span t-field="o.Area"/>
+                </td>
+              </tr>
+
+              <tr>
+                <!-- الأعمدة الأصلية للصف الثاني -->
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; " colspan="2">
+                    <span style="color: #273A6F;">رقم الدفعة</span>
+
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px;  " colspan="2">
+                  <span t-field="o.Payment_Number"/>
+                </td>
+
+                 <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; " colspan="2">
+                    <span style="color: #273A6F;">المبلغ المتبقى</span>
+
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px; border-bottom-left-radius: 10px;" colspan="2">
+                  <span t-field="o.Remaining_Amount"/>
+                </td>
+
+              </tr>
+            </table>
+
+
+          <!-- ///////////////////////////////////////////// -->
+
+
+            <div class="row" style="margin-top: 10px; ">
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; ">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+                <span style="color: #273A6F;">أمين الصندوق </span>
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 20px;">
+                <span style="color: #273A6F;">المستلم </span>
+              </div>
+            </div>
+
+
+            <div class="row" style="margin-top: 90px; background-color: #273A6F;">
+
+              <div class="col-1" style="font-family: 'Almarai', sans-serif; ">
+
+              </div>
+
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; font-size: 12px; ">
+                    <span style="color: #ffffff;">Al Wafi Residence </span>
+              </div>
+
+              <div class="col-1" style="font-family: 'Almarai', sans-serif;">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif; font-size: 12px;">
+                <span style="color: #ffffff;">Baghdad - Iraq</span>
+              </div>
+
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; font-size: 12px;">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 12px;">
+                <span style="color: #ffffff;">Tel: 07880993025 </span>
+              </div>
+            </div>
+
+            <hr style="border: none; border-top: 2px solid #273A6F; width: 100%; margin-top: 10px; "></hr>
+
+            <div class="o_clean_header">
+                               <div class="row">
+
+
+                           <div class="col-8" style="text-align: right; padding: 10px">
+                                <img src="Payment_voucher/static/src/img/Receipt Voucher.png" alt="Logo" style="max-height: 100px;"/>
+                           </div>
+
+                            <div class="col-4" style="text-align: right; padding: 10px">
+                                <img src="Payment_voucher/static/src/img/logo.png" alt="Logo" style="max-height: 100px;"/>
+                            </div>
+
+                        </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+                <span t-field="o.date"/>
+              </div>
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 20px;">
+                <span style="color: #273A6F;">: التاريـخ </span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+                <span t-field="o.name"/>
+              </div>
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 20px;">
+                <span style="color: #273A6F;">: رقم السنــد</span>
+              </div>
+            </div>
+
+
+            <!-- الجدول الرئيسي -->
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0; direction: rtl; font-family: 'Almarai', sans-serif; border: 0px solid #002857; border-radius: 10px; background-color: #f2f2f2; filter: contrast(20%);">
+              <tr>
+                <!-- العمود الجديد المدمج على الصفين -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 12%; border-top-right-radius: 10px; border-bottom-right-radius: 10px; " rowspan="2">
+
+                    <span style="color: #273A6F;">تم استلام مبلغ وقدره</span>
+                </td>
+                <!-- الأعمدة الأصلية للصف الأول -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+
+                    <span style="color: #273A6F; ">رقمــاً</span>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px; border-top-left-radius: 10px; ">
+                  <span t-field="o.amount"/>
+                </td>
+              </tr>
+              <tr>
+                <!-- الأعمدة الأصلية للصف الثاني -->
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">كتـابـة</span>
+
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px;  border-bottom-left-radius: 10px;">
+                  <span t-field="o.amount_in_words_arabic"/>
+                </td>
+              </tr>
+            </table>
+
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0; direction: rtl; font-family: 'Almarai', sans-serif; border: 0px solid #002857; border-radius: 10px; background-color: #f2f2f2; filter: contrast(20%);">
+            <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 10%; height: 15px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; ">
+
+                    <span style="color: #273A6F; ">من السيد / ة</span>
+                </td>
+            <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: right; font-size: 14px; width: 50%; height: 15px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; ">
+                  <span t-field="o.partner_id"/>
+                </td>
+            </table>
+
+
+
+                         <!-- ///////////////////////////////////////////// -->
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin: 10px 0; direction: rtl; font-family: 'Almarai', sans-serif; border: 0px solid #002857; border-radius: 10px; background-color: #f2f2f2; filter: contrast(20%);">
+             <tr>
+                <!-- العمود الجديد المدمج على الصفين -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 12%; border-top-right-radius: 10px; border-bottom-right-radius: 10px; " rowspan="3">
+
+                    <span style="color: #273A6F;">وذلك عن</span>
+                </td>
+                <!-- الأعمدة الأصلية للصف الأول -->
+                <td style=" border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 100%; height: 15px; border-top-left-radius: 10px; " colspan="8">
+
+                    <span t-field="o.ref"/>
+                </td>
+
+              </tr>
+              <tr>
+                <!-- الأعمدة الأصلية للصف الثاني -->
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">البناية</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px;  ">
+                  <span t-field="o.Building"/>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">الطابق</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px;  ">
+                  <span t-field="o.Floor"/>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">الشقة</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px; ">
+                  <span t-field="o.Apartment"/>
+                </td>
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; ">
+                    <span style="color: #273A6F;">المساحة</span>
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 15%; height: 15px;  ">
+                  <span t-field="o.Area"/>
+                </td>
+              </tr>
+
+              <tr>
+                <!-- الأعمدة الأصلية للصف الثاني -->
+                <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; " colspan="2">
+                    <span style="color: #273A6F;">رقم الدفعة</span>
+
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px;  " colspan="2">
+                  <span t-field="o.Payment_Number"/>
+                </td>
+
+                 <td style="border: 1px solid #002857; padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 7%; height: 15px; " colspan="2">
+                    <span style="color: #273A6F;">المبلغ المتبقى</span>
+
+                </td>
+                <td style="border: 1px solid #002857;  padding: 8px; vertical-align: middle; text-align: center; font-size: 14px; width: 50%; height: 15px; border-bottom-left-radius: 10px; " colspan="2">
+                  <span t-field="o.Remaining_Amount"/>
+                </td>
+
+              </tr>
+            </table>
+
+
+          <!-- ///////////////////////////////////////////// -->
+
+
+            <div class="row" style="margin-top: 10px; ">
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; ">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+                <span style="color: #273A6F;">أمين الصندوق </span>
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif;">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 20px;">
+                <span style="color: #273A6F;">المستلم </span>
+              </div>
+            </div>
+
+
+          </div>
+        </t>
+      </t>
+    </t>
+  </template>
+</odoo>

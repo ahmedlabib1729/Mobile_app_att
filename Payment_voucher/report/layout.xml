@@ -1,0 +1,63 @@
+<odoo>
+    <template id="custom_external_layout">
+        <!-- نسخ القالب الأصلي -->
+                 <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+                           <div class="o_clean_header">
+                               <div class="row" style="margin-top: 5px;">
+
+
+                           <div class="col-8" style="text-align: right; padding: 10px">
+                                <img src="Payment_voucher/static/src/img/sarf.png" alt="Logo" style="max-height: 100px;"/>
+                           </div>
+
+                            <div class="col-4" style="text-align: right; padding: 10px">
+                                <img src="Payment_voucher/static/src/img/logo.png" alt="Logo" style="max-height: 100px;"/>
+                            </div>
+
+                        </div>
+
+                    </div>
+         </div>
+
+
+
+        <!-- محتوى القالب الأصلي هنا -->
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout {{  'o_report_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}" t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else ''}});" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+            <div t-call="web.address_layout"/>
+            <div t-raw="0"/>
+        </div>
+
+<div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout" style="position: relative; min-height: 20px;">
+    <div class="text-center" style="border-top: 1px solid white;">
+    <div class="row" style=" background-color: #273A6F; margin-top: 100px;">
+
+              <div class="col-1" style="font-family: 'Almarai', sans-serif; ">
+
+              </div>
+
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; font-size: 12px; ">
+                    <span style="color: #ffffff;">Al Wafi Residence </span>
+              </div>
+
+              <div class="col-1" style="font-family: 'Almarai', sans-serif;">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif; font-size: 12px;">
+                <span style="color: #ffffff;">Baghdad - Iraq</span>
+              </div>
+
+              <div class="col-2" style="font-family: 'Almarai', sans-serif; font-size: 12px;">
+
+              </div>
+
+              <div class="col-3" style="font-family: 'Almarai', sans-serif; align-items: left; font-size: 12px;">
+                <span style="color: #ffffff;">Tel: 07880993025 </span>
+              </div>
+            </div>
+            </div>
+
+
+        </div>
+    </template>
+</odoo>
