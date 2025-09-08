@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة إعدادات Pickup في Settings -->
+    <record id="res_config_settings_view_form_pickup" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pickup</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Shipment Settings" name="shipping_management_system">
+                    <block title="Pickup Schedule Settings">
+                        <setting>
+                            <field name="pickup_cutoff_time" widget="float_time"/>
+                            <div class="text-muted">
+                                Daily cutoff time - Orders placed after this time will be scheduled for next working day
+                            </div>
+                        </setting>
+
+                        <setting>
+                            <field name="pickup_buffer_days"/>
+                            <div class="text-muted">
+                                Additional days to add for pickup preparation
+                            </div>
+                        </setting>
+
+                        <setting title="Non-Working Days">
+                            <div class="mt8">
+                                <div>
+                                    <field name="pickup_skip_friday" class="oe_inline"/>
+                                    <label for="pickup_skip_friday" string="Skip Friday"/>
+                                </div>
+                                <div>
+                                    <field name="pickup_skip_saturday" class="oe_inline"/>
+                                    <label for="pickup_skip_saturday" string="Skip Saturday"/>
+                                </div>
+                                <div>
+                                    <field name="pickup_skip_sunday" class="oe_inline"/>
+                                    <label for="pickup_skip_sunday" string="Skip Sunday"/>
+                                </div>
+                            </div>
+                        </setting>
+
+                        <setting>
+                            <field name="pickup_use_advanced"/>
+                            <div class="text-muted">
+                                Enable different cutoff times for each day of the week
+                            </div>
+                            <div class="content-group mt16" invisible="not pickup_use_advanced">
+                                <group>
+                                    <group string="Weekdays">
+                                        <field name="pickup_monday_cutoff" widget="float_time" string="Monday"/>
+                                        <field name="pickup_tuesday_cutoff" widget="float_time" string="Tuesday"/>
+                                        <field name="pickup_wednesday_cutoff" widget="float_time" string="Wednesday"/>
+                                        <field name="pickup_thursday_cutoff" widget="float_time" string="Thursday"/>
+                                    </group>
+                                    <group string="Weekend">
+                                        <field name="pickup_friday_cutoff" widget="float_time" string="Friday"/>
+                                        <field name="pickup_saturday_cutoff" widget="float_time" string="Saturday"/>
+                                        <field name="pickup_sunday_cutoff" widget="float_time" string="Sunday"/>
+                                    </group>
+                                </group>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- تحديث فورم الشحنة لإظهار معلومات الحساب -->
+    <record id="view_shipment_order_form_pickup_info" model="ir.ui.view">
+        <field name="name">shipment.order.form.pickup.info</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة زر إعادة حساب بجانب حقل pickup_date -->
+            <field name="pickup_date" position="after">
+                <button name="action_recalculate_pickup_date"
+                        type="object"
+                        string="↻ Recalculate"
+                        class="btn-link"
+                        icon="fa-refresh"
+                        invisible="state != 'draft'"
+                        help="Recalculate pickup date based on configuration"/>
+
+                <!-- إظهار ملاحظة الحساب -->
+                <field name="pickup_date_calculated" invisible="1"/>
+                <div class="text-muted" invisible="not pickup_date_calculated">
+                    <i class="fa fa-info-circle"/> <field name="pickup_calculation_note" readonly="1" nolabel="1"/>
+                </div>
+            </field>
+
+        </field>
+    </record>
+
+    <!-- Pickup Schedule Rules Views (اختياري) -->
+    <record id="view_pickup_schedule_rule_tree" model="ir.ui.view">
+        <field name="name">pickup.schedule.rule.tree</field>
+        <field name="model">pickup.schedule.rule</field>
+        <field name="arch" type="xml">
+            <list string="Pickup Rules">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="governorate_ids" widget="many2many_tags"/>
+                <field name="customer_category_ids" widget="many2many_tags"/>
+                <field name="additional_days"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pickup_schedule_rule_form" model="ir.ui.view">
+        <field name="name">pickup.schedule.rule.form</field>
+        <field name="model">pickup.schedule.rule</field>
+        <field name="arch" type="xml">
+            <form string="Pickup Rule">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived"
+                            invisible="active"
+                            bg_color="text-bg-danger"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Rule Name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Conditions">
+                            <field name="governorate_ids" widget="many2many_tags"/>
+                            <field name="customer_category_ids" widget="many2many_tags"/>
+                            <field name="min_weight"/>
+                            <field name="max_weight"/>
+                        </group>
+                        <group string="Actions">
+                            <field name="additional_days"/>
+                            <field name="cutoff_time_override" widget="float_time"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <group string="Note">
+                        <field name="note" nolabel="1" placeholder="Explanation for this rule..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pickup_schedule_rule" model="ir.actions.act_window">
+        <field name="name">Pickup Schedule Rules</field>
+        <field name="res_model">pickup.schedule.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create pickup scheduling rules
+            </p>
+            <p>
+                Define special rules for pickup scheduling based on conditions.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items
+    <menuitem id="menu_pickup_schedule_rules"
+              name="Pickup Rules"
+              parent="shipping_management_system.menu_shipment_config"
+              action="action_pickup_schedule_rule"
+              sequence="70"/> -->
+
+</odoo>
