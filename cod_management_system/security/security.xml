@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============ Module Category ============ -->
+        <record id="module_category_cod_management" model="ir.module.category">
+            <field name="name">COD Management</field>
+            <field name="description">Manage Cash on Delivery Collections and Settlements</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- ============ Groups ============ -->
+
+        <!-- COD Viewer Group -->
+        <record id="group_cod_viewer" model="res.groups">
+            <field name="name">COD Viewer</field>
+            <field name="category_id" ref="module_category_cod_management"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Can view COD collections and settlements</field>
+        </record>
+
+        <!-- COD User Group -->
+        <record id="group_cod_user" model="res.groups">
+            <field name="name">COD User</field>
+            <field name="category_id" ref="module_category_cod_management"/>
+            <field name="implied_ids" eval="[(4, ref('group_cod_viewer'))]"/>
+            <field name="comment">Can manage COD collections and create settlements</field>
+        </record>
+
+        <!-- COD Manager Group -->
+        <record id="group_cod_manager" model="res.groups">
+            <field name="name">COD Manager</field>
+            <field name="category_id" ref="module_category_cod_management"/>
+            <field name="implied_ids" eval="[(4, ref('group_cod_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+            <field name="comment">Full access to COD management including reconciliation and configuration</field>
+        </record>
+
+        <!-- ============ Record Rules ============ -->
+
+        <!-- COD Collection Rules -->
+        <record id="cod_collection_rule_viewer" model="ir.rule">
+            <field name="name">COD Collection: Viewer can see all</field>
+            <field name="model_id" ref="model_cod_collection"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_cod_viewer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="cod_collection_rule_user" model="ir.rule">
+            <field name="name">COD Collection: User can manage</field>
+            <field name="model_id" ref="model_cod_collection"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_cod_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="cod_collection_rule_manager" model="ir.rule">
+            <field name="name">COD Collection: Manager full access</field>
+            <field name="model_id" ref="model_cod_collection"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_cod_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Settlement Batch Rules -->
+        <record id="cod_settlement_batch_rule_viewer" model="ir.rule">
+            <field name="name">Settlement Batch: Viewer can see all</field>
+            <field name="model_id" ref="model_cod_settlement_batch"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_cod_viewer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="cod_settlement_batch_rule_user" model="ir.rule">
+            <field name="name">Settlement Batch: User can manage draft</field>
+            <field name="model_id" ref="model_cod_settlement_batch"/>
+            <field name="domain_force">[('state', 'in', ['draft', 'confirmed', 'sent'])]</field>
+            <field name="groups" eval="[(4, ref('group_cod_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="cod_settlement_batch_rule_manager" model="ir.rule">
+            <field name="name">Settlement Batch: Manager full access</field>
+            <field name="model_id" ref="model_cod_settlement_batch"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_cod_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Multi-company Rules -->
+        <record id="cod_collection_company_rule" model="ir.rule">
+            <field name="name">COD Collection: Multi-company</field>
+            <field name="model_id" ref="model_cod_collection"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="cod_settlement_batch_company_rule" model="ir.rule">
+            <field name="name">Settlement Batch: Multi-company</field>
+            <field name="model_id" ref="model_cod_settlement_batch"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

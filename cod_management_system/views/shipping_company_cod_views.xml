@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ INHERIT FORM VIEW ============ -->
+    <record id="view_shipping_company_form_cod" model="ir.ui.view">
+        <field name="name">shipping.company.form.cod</field>
+        <field name="model">shipping.company</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipping_company_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add COD buttons in button box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" icon="fa-money"
+                        name="action_view_cod_collections" type="object"
+                        groups="cod_management_system.group_cod_viewer">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="cod_collection_count"/>
+                        </span>
+                        <span class="o_stat_text">COD Collections</span>
+                    </div>
+                </button>
+
+                <button class="oe_stat_button" icon="fa-file-text-o"
+                        name="action_view_settlement_batches" type="object"
+                        groups="cod_management_system.group_cod_viewer">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="cod_batch_count"/>
+                        </span>
+                        <span class="o_stat_text">Settlements</span>
+                    </div>
+                </button>
+
+                <button class="oe_stat_button" icon="fa-dollar"
+                        groups="cod_management_system.group_cod_viewer">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="pending_cod_amount" widget="monetary"/>
+                        </span>
+                        <span class="o_stat_text">Pending COD</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- Add COD tab in notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="COD Settlement" name="cod_settlement" groups="cod_management_system.group_cod_viewer">
+                    <group string="Settlement Schedule">
+                        <group>
+                            <field name="cod_settlement_frequency"/>
+                            <field name="cod_settlement_day"
+                                   required="cod_settlement_frequency != 'custom'"/>
+                            <field name="cod_settlement_time" widget="float_time"/>
+                            <field name="cod_payment_delay_days"/>
+                        </group>
+                        <group>
+                            <field name="next_settlement_date" readonly="1" class="fw-bold text-primary"/>
+                            <field name="last_settlement_date" readonly="1"/>
+                            <field name="cod_auto_create_settlement"/>
+                            <field name="cod_auto_send_statement"
+                                   invisible="not cod_auto_create_settlement"/>
+                        </group>
+                    </group>
+
+                    <group string="COD Contact Information">
+                        <group>
+                            <field name="cod_contact_person"/>
+                            <field name="cod_contact_phone" widget="phone"/>
+                            <field name="cod_notification_emails"
+                                   placeholder="email1@example.com, email2@example.com"/>
+                        </group>
+                        <group>
+                            <field name="cod_bank_name"/>
+                            <field name="cod_bank_account"/>
+                        </group>
+                    </group>
+
+                    <group string="COD Statistics" groups="cod_management_system.group_cod_user">
+                        <group>
+                            <field name="total_cod_collections" widget="monetary" readonly="1"/>
+                            <field name="settled_cod_amount" widget="monetary" readonly="1"/>
+                        </group>
+                        <group>
+                            <button name="action_create_settlement_batch"
+                                    string="Create Settlement Batch"
+                                    type="object"
+                                    class="btn-primary"
+                                    groups="cod_management_system.group_cod_user"/>
+                        </group>
+                    </group>
+
+                    <group string="Accounting Configuration" groups="account.group_account_manager">
+                        <group>
+                            <field name="cod_reconciliation_account_id"/>
+                            <field name="cod_commission_account_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============ INHERIT LIST VIEW ============ -->
+    <record id="view_shipping_company_tree_cod" model="ir.ui.view">
+        <field name="name">shipping.company.tree.cod</field>
+        <field name="model">shipping.company</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipping_company_list"/>
+        <field name="arch" type="xml">
+
+            <field name="success_rate" position="after">
+                <field name="cod_settlement_day" optional="show" groups="cod_management_system.group_cod_viewer"/>
+                <field name="next_settlement_date" optional="show" groups="cod_management_system.group_cod_viewer"/>
+                <field name="pending_cod_amount" widget="monetary" optional="show"
+                       groups="cod_management_system.group_cod_viewer"/>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>
