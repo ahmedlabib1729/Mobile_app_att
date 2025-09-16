@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============ Member Profile Views ============ -->
+        <!-- Member Profile Form View -->
+        <record id="view_charity_member_profile_form" model="ir.ui.view">
+            <field name="name">charity.member.profile.form</field>
+            <field name="model">charity.member.profile</field>
+            <field name="arch" type="xml">
+                <form string="ملف العضوة">
+                    <sheet>
+                        <widget name="web_ribbon" title="مؤرشفة" bg_color="text-bg-danger" invisible="active"/>
+                        <widget name="web_ribbon" title="موقوفة" bg_color="text-bg-warning" invisible="membership_status != 'suspended'"/>
+
+                        <div class="oe_button_box" name="button_box">
+                            <!-- زر الاشتراكات -->
+                            <button name="action_view_subscriptions"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-calendar-check-o">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="active_subscription_count" class="me-1"/>
+                                        <span class="text-muted">/</span>
+                                        <field name="subscriptions_count" class="ms-1"/>
+                                    </span>
+                                    <span class="o_stat_text">الاشتراكات</span>
+                                </div>
+                            </button>
+
+                            <!-- زر إنشاء اشتراك جديد -->
+                            <button name="action_create_subscription"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-plus-circle"
+                                    string="اشتراك جديد"/>
+                        </div>
+
+                        <field name="member_number" readonly="1" class="oe_read_only"/>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="full_name" placeholder="الاسم الثلاثي..."/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات شخصية">
+                                <field name="birth_date"/>
+                                <field name="age" readonly="1"/>
+                                <field name="nationality" options="{'no_create': True}"/>
+                                <field name="membership_status" widget="badge" readonly="1"/>
+                            </group>
+                            <group string="معلومات التواصل">
+                                <field name="mobile" widget="phone"/>
+                                <field name="whatsapp" widget="phone"/>
+                                <field name="email" widget="email"/>
+                                <field name="lady_type" required="1" widget="selection"/>
+                            </group>
+                        </group>
+
+                        <group string="العنوان">
+                            <field name="address" nolabel="1" placeholder="أدخل عنوان السكن..."/>
+                        </group>
+
+                        <notebook>
+                            <page string="الاشتراكات" name="subscriptions">
+                                <group string="معلومات الاشتراك الحالي" invisible="not current_subscription_end">
+                                    <group>
+                                        <field name="last_subscription_date" readonly="1"/>
+                                        <field name="current_subscription_end" readonly="1"/>
+                                    </group>
+                                </group>
+
+                                <field name="subscription_ids" nolabel="1" readonly="1">
+                                    <list decoration-success="state == 'active'"
+                                          decoration-warning="state == 'expired'"
+                                          decoration-muted="state == 'cancelled'">
+                                        <field name="subscription_number" string="رقم الاشتراك"/>
+                                        <field name="department_id" string="القسم"/>
+                                        <field name="subscription_type" string="النوع"/>
+                                        <field name="start_date" string="البداية"/>
+                                        <field name="end_date" string="النهاية"/>
+                                        <field name="days_remaining" string="الأيام المتبقية"/>
+                                        <field name="amount" string="المبلغ" widget="monetary"/>
+                                        <field name="state" string="الحالة" widget="badge"/>
+                                        <button name="action_renew"
+                                                string="تجديد"
+                                                type="object"
+                                                class="btn-sm btn-primary"
+                                                invisible="state != 'expired'"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="المستندات" name="documents">
+                                <group>
+                                    <group string="الهوية">
+                                        <field name="id_card_file" filename="id_card_filename"/>
+                                        <field name="id_card_filename" invisible="1"/>
+                                    </group>
+                                    <group string="جواز السفر">
+                                        <field name="passport_file" filename="passport_filename"/>
+                                        <field name="passport_filename" invisible="1"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="الإقامة">
+                                        <field name="residence_file" filename="residence_filename"/>
+                                        <field name="residence_filename" invisible="1"/>
+                                    </group>
+                                    <group>
+                                        <!-- مساحة فارغة للتوازن -->
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="معلومات إضافية" name="info">
+                                <group>
+                                    <group>
+                                        <field name="registration_date" readonly="1"/>
+                                        <field name="create_uid" readonly="1" string="تم التسجيل بواسطة"/>
+                                    </group>
+                                    <group>
+                                        <field name="company_id" groups="base.group_multi_company"/>
+                                        <field name="active" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Member Profile List View -->
+        <record id="view_charity_member_profile_list" model="ir.ui.view">
+            <field name="name">charity.member.profile.list</field>
+            <field name="model">charity.member.profile</field>
+            <field name="arch" type="xml">
+                <list string="ملفات العضوات">
+                    <field name="member_number" string="رقم العضوية"/>
+                    <field name="full_name" string="اسم العضوة"/>
+                    <field name="mobile" string="رقم الهاتف" widget="phone"/>
+                    <field name="whatsapp" string="الواتساب" widget="phone" optional="show"/>
+                    <field name="age" string="العمر" optional="show"/>
+                    <field name="membership_status" string="حالة العضوية" widget="badge"
+                           decoration-success="membership_status == 'active'"
+                           decoration-warning="membership_status == 'suspended'"
+                           decoration-danger="membership_status == 'inactive'"/>
+                    <field name="current_subscription_end" string="انتهاء الاشتراك" optional="show"/>
+                    <field name="active_subscription_count" string="الاشتراكات النشطة" sum="Total"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Member Profile Search View -->
+        <record id="view_charity_member_profile_search" model="ir.ui.view">
+            <field name="name">charity.member.profile.search</field>
+            <field name="model">charity.member.profile</field>
+            <field name="arch" type="xml">
+                <search string="البحث في العضوات">
+                    <field name="member_number" string="رقم العضوية"/>
+                    <field name="full_name" string="اسم العضوة"/>
+                    <field name="mobile" string="رقم الهاتف"/>
+                    <field name="whatsapp" string="الواتساب"/>
+
+                    <filter string="عضوات نشطات" name="active_members"
+                            domain="[('membership_status', '=', 'active')]"/>
+                    <filter string="عضوات غير نشطات" name="inactive_members"
+                            domain="[('membership_status', '=', 'inactive')]"/>
+                    <filter string="عضوات موقوفات" name="suspended_members"
+                            domain="[('membership_status', '=', 'suspended')]"/>
+
+                    <separator/>
+
+                    <!-- تم إزالة فلاتر active_subscription_count لأنها غير قابلة للبحث -->
+
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="حالة العضوية" name="group_status"
+                                context="{'group_by': 'membership_status'}"/>
+                        <filter string="الجنسية" name="group_nationality"
+                                context="{'group_by': 'nationality'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Member Profile Kanban View -->
+        <record id="view_charity_member_profile_kanban" model="ir.ui.view">
+            <field name="name">charity.member.profile.kanban</field>
+            <field name="model">charity.member.profile</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="id"/>
+                    <field name="member_number"/>
+                    <field name="full_name"/>
+                    <field name="mobile"/>
+                    <field name="membership_status"/>
+                    <field name="current_subscription_end"/>
+                    <field name="active_subscription_count"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="full_name"/>
+                                        </strong>
+                                        <div class="text-muted">
+                                            <field name="member_number"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_dropdown_kanban dropdown">
+                                        <span class="badge rounded-pill"
+                                              t-attf-class="#{record.membership_status.raw_value == 'active' ? 'text-bg-success' : 'text-bg-secondary'}">
+                                            <field name="membership_status"/>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <i class="fa fa-phone" title="الهاتف"/>
+                                        <field name="mobile" widget="phone"/>
+                                    </div>
+                                    <div t-if="record.current_subscription_end.raw_value">
+                                        <i class="fa fa-calendar" title="انتهاء الاشتراك"/>
+                                        <field name="current_subscription_end"/>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge rounded-pill text-bg-info">
+                                            <field name="active_subscription_count"/> اشتراك نشط
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <button name="action_create_subscription"
+                                                type="object"
+                                                class="btn btn-sm btn-primary"
+                                                title="اشتراك جديد">
+                                            <i class="fa fa-plus"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ============ Member Subscription Views ============ -->
+        <!-- Subscription Form View -->
+        <record id="view_charity_member_subscription_form" model="ir.ui.view">
+            <field name="name">charity.member.subscription.form</field>
+            <field name="model">charity.member.subscription</field>
+            <field name="arch" type="xml">
+                <form string="اشتراك العضوة">
+                    <header>
+                        <button name="action_confirm" string="تأكيد" type="object"
+                                class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_activate" string="تفعيل" type="object"
+                                class="oe_highlight" invisible="state != 'confirmed'"/>
+                        <button name="action_renew" string="تجديد" type="object"
+                                invisible="state != 'expired'"/>
+                        <button name="action_cancel" string="إلغاء" type="object"
+                                invisible="state not in ('draft', 'confirmed')"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,confirmed,active,expired"/>
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" title="منتهي" bg_color="text-bg-warning"
+                                invisible="state != 'expired'"/>
+                        <widget name="web_ribbon" title="ملغي" bg_color="text-bg-danger"
+                                invisible="state != 'cancelled'"/>
+
+                        <field name="subscription_number" readonly="1" class="oe_read_only"/>
+
+                        <div class="oe_title">
+                            <h1>اشتراك في قسم السيدات</h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات العضوة">
+                                <field name="member_id"
+                                       options="{'no_create': True}"
+                                       readonly="state != 'draft'"/>
+                                <field name="member_mobile" readonly="1"/>
+                            </group>
+                            <group string="معلومات الاشتراك">
+                                <field name="subscription_type" widget="radio"
+                                       options="{'horizontal': true}"
+                                       readonly="state != 'draft'"/>
+                                <field name="amount" widget="monetary"
+                                       readonly="state != 'draft'"/>
+                                <field name="programs_count" readonly="1" invisible="programs_count == 0"/>
+                            </group>
+                        </group>
+
+                        <group string="القسم والمقر">
+                            <field name="headquarters_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="department_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <separator string="البرامج المختارة" colspan="2"/>
+                                <field name="program_ids"
+                                       widget="many2many_checkboxes"
+                                       readonly="state != 'draft'"
+                                       colspan="2">
+                                    <list>
+                                        <field name="name" string="البرنامج"/>
+                                        <field name="schedule" string="الموعد"/>
+                                        <field name="available_seats" string="المقاعد المتاحة"/>
+                                    </list>
+                                </field>
+                                <div class="text-muted" colspan="2">
+                                    <i class="fa fa-info-circle"/> يمكنك اختيار برنامج واحد أو أكثر
+                                </div>
+
+                        </group>
+
+                        <group>
+                            <group string="التواريخ">
+                                <field name="payment_date" readonly="state != 'draft'"/>
+                                <field name="start_date" readonly="state != 'draft'"/>
+                                <field name="end_date" readonly="1"/>
+                            </group>
+                            <group string="معلومات إضافية">
+                                <field name="days_remaining" readonly="1"
+                                       invisible="state != 'active'"/>
+                                <div class="alert alert-warning" role="alert"
+                                     invisible="days_remaining > 30 or state != 'active'">
+                                    <i class="fa fa-warning"/> الاشتراك سينتهي خلال
+                                    <field name="days_remaining" readonly="1" nolabel="1"/> يوم
+                                </div>
+                            </group>
+                        </group>
+
+                        <group string="ملاحظات">
+                            <field name="notes" nolabel="1" placeholder="أي ملاحظات إضافية..."/>
+                        </group>
+
+                        <notebook>
+
+
+                            <page string="البرامج المختارة" name="programs" invisible="not program_ids">
+                                <field name="program_ids" nolabel="1" mode="kanban" readonly="1">
+                                    <kanban>
+                                        <field name="name"/>
+                                        <field name="instructor_id"/>
+                                        <field name="schedule"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_card oe_kanban_global_click_edit">
+                                                    <div class="oe_kanban_details">
+                                                        <strong><field name="name"/></strong>
+                                                        <div class="text-muted">
+                                                            <i class="fa fa-user"/> <field name="instructor_id"/>
+                                                        </div>
+                                                        <div>
+                                                            <i class="fa fa-clock-o"/> <field name="schedule"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                </field>
+                            </page>
+
+                            <page string="المستندات" name="documents">
+                                <group>
+                                    <group string="الهوية">
+                                        <field name="id_card_file" filename="id_card_filename"/>
+                                        <field name="id_card_filename" invisible="1"/>
+                                    </group>
+                                    <group string="جواز السفر">
+                                        <field name="passport_file" filename="passport_filename"/>
+                                        <field name="passport_filename" invisible="1"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="الإقامة">
+                                        <field name="residence_file" filename="residence_filename"/>
+                                        <field name="residence_filename" invisible="1"/>
+                                    </group>
+                                    <group>
+                                        <!-- مساحة فارغة للتوازن -->
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Subscription List View -->
+        <record id="view_charity_member_subscription_list" model="ir.ui.view">
+            <field name="name">charity.member.subscription.list</field>
+            <field name="model">charity.member.subscription</field>
+            <field name="arch" type="xml">
+                <list string="اشتراكات العضوات"
+                      decoration-success="state == 'active'"
+                      decoration-warning="state == 'expired' or (state == 'active' and days_remaining &lt;= 30)"
+                      decoration-muted="state == 'cancelled'">
+                    <field name="subscription_number" string="رقم الاشتراك"/>
+                    <field name="member_name" string="اسم العضوة"/>
+                    <field name="member_mobile" string="رقم الهاتف" widget="phone"/>
+                    <field name="department_id" string="القسم"/>
+                    <field name="programs_count" string="عدد البرامج" optional="show"/>
+                    <field name="subscription_type" string="نوع الاشتراك"/>
+                    <field name="start_date" string="البداية"/>
+                    <field name="end_date" string="النهاية"/>
+                    <field name="days_remaining" string="الأيام المتبقية"
+                           decoration-danger="days_remaining &lt;= 7 and state == 'active'"/>
+                    <field name="amount" string="المبلغ" widget="monetary" sum="Total"/>
+                    <field name="state" string="الحالة" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Subscription Search View -->
+        <record id="view_charity_member_subscription_search" model="ir.ui.view">
+            <field name="name">charity.member.subscription.search</field>
+            <field name="model">charity.member.subscription</field>
+            <field name="arch" type="xml">
+                <search string="البحث في الاشتراكات">
+                    <field name="subscription_number" string="رقم الاشتراك"/>
+                    <field name="member_id" string="العضوة"/>
+                    <field name="department_id" string="القسم"/>
+
+                    <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="مؤكد" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                    <filter string="نشط" name="active" domain="[('state', '=', 'active')]"/>
+                    <filter string="منتهي" name="expired" domain="[('state', '=', 'expired')]"/>
+                    <filter string="ملغي" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+
+
+
+
+
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="العضوة" name="group_member"
+                                context="{'group_by': 'member_id'}"/>
+                        <filter string="القسم" name="group_department"
+                                context="{'group_by': 'department_id'}"/>
+                        <filter string="نوع الاشتراك" name="group_type"
+                                context="{'group_by': 'subscription_type'}"/>
+                        <filter string="الحالة" name="group_state"
+                                context="{'group_by': 'state'}"/>
+                        <filter string="تاريخ البداية" name="group_start_date"
+                                context="{'group_by': 'start_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_charity_member_profiles" model="ir.actions.act_window">
+            <field name="name">ملفات العضوات</field>
+            <field name="res_model">charity.member.profile</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء ملف عضوة جديدة
+                </p>
+                <p>
+                    يمكنك إنشاء ملفات للعضوات وإدارة اشتراكاتهن
+                </p>
+            </field>
+        </record>
+
+        <record id="action_charity_member_subscriptions" model="ir.actions.act_window">
+            <field name="name">اشتراكات العضوات</field>
+            <field name="res_model">charity.member.subscription</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء اشتراك جديد
+                </p>
+                <p>
+                    يمكنك إنشاء وإدارة اشتراكات العضوات
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

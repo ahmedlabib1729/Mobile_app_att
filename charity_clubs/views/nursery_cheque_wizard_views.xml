@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View للـ Wizard -->
+        <record id="view_nursery_cheque_wizard_form" model="ir.ui.view">
+            <field name="name">nursery.cheque.wizard.form</field>
+            <field name="model">nursery.cheque.wizard</field>
+            <field name="arch" type="xml">
+                <form string="إدخال بيانات الشيكات">
+                    <sheet>
+                        <div class="oe_title">
+                            <h2>بيانات الشيكات للأقساط</h2>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="child_name"/>
+                                <field name="total_amount" widget="monetary"/>
+                            </group>
+                            <group>
+                                <field name="installments_count"/>
+                            </group>
+                        </group>
+
+                        <separator string="تفاصيل الشيكات"/>
+                        <field name="cheque_line_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="installment_no" readonly="1"/>
+                                <field name="amount" widget="monetary" force_save="1"/>
+                                <field name="cheque_no" required="1"/>
+                                <field name="bank_name" required="1"/>
+                                <field name="cheque_date" required="1"/>
+                            </list>
+                        </field>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="fa fa-info-circle"/>
+                            تأكد من إدخال أرقام الشيكات بشكل صحيح، لا يمكن استخدام نفس رقم الشيك مرتين
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm"
+                                string="تأكيد واعتماد"
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="إلغاء"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action للـ Wizard -->
+        <record id="action_nursery_cheque_wizard" model="ir.actions.act_window">
+            <field name="name">إدخال بيانات الشيكات</field>
+            <field name="res_model">nursery.cheque.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="model_nursery_child_registration"/>
+            <field name="binding_view_types">form</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_charity_club_registration_form" model="ir.ui.view">
+            <field name="name">charity.club.registrations.form</field>
+            <field name="model">charity.club.registrations</field>
+            <field name="arch" type="xml">
+                <form string="تسجيل في النوادي">
+                    <header>
+                        <!-- زر التأكيد -->
+                        <button name="action_confirm"
+                                string="تأكيد"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'draft'"/>
+
+                        <!-- أزرار خاصة بإسعاد عند المراجعة -->
+                        <button name="action_approve_esaad"
+                                string="اعتماد بطاقة إسعاد"
+                                type="object"
+                                class="btn-info"
+                                invisible="state != 'pending_review' or not esaad_discount"
+                                icon="fa-check-circle"
+                                confirm="هل أنت متأكد من اعتماد بطاقة إسعاد؟"/>
+
+
+
+                        <!-- زر إنشاء الفاتورة مع خصم إسعاد -->
+                        <button name="action_create_invoice_with_esaad"
+                                string="إنشاء فاتورة مع خصم إسعاد"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'confirmed' or not esaad_discount or esaad_verification_status != 'approved' or invoice_id"
+                                icon="fa-file-invoice-dollar"
+                                confirm="سيتم إنشاء فاتورة مع خصم إسعاد 20%. هل أنت متأكد؟"/>
+
+                        <!-- زر التأكيد بعد المراجعة -->
+                        <button name="action_confirm_after_review"
+                                string="تأكيد بعد المراجعة"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'pending_review'"
+                                confirm="هل أنت متأكد من تأكيد هذا التسجيل؟"/>
+
+                        <!-- زر الرفض -->
+                        <button name="action_reject_after_review"
+                                string="رفض"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state != 'pending_review'"
+                                confirm="هل أنت متأكد من رفض هذا التسجيل؟"/>
+
+                        <!-- زر الاعتماد -->
+                        <button name="action_approve"
+                                string="اعتماد"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'confirmed'"/>
+
+                        <!-- زر الإلغاء -->
+                        <button name="action_cancel"
+                                string="إلغاء"
+                                type="object"
+                                invisible="state not in ['draft', 'confirmed', 'pending_review']"/>
+
+                        <!-- زر إعادة للمسودة -->
+                        <button name="action_reset_draft"
+                                string="إعادة للمسودة"
+                                type="object"
+                                invisible="state not in ['cancelled', 'rejected']"/>
+
+                        <!-- زر عرض الفاتورة -->
+                        <button name="action_view_invoice"
+                                string="عرض الفاتورة"
+                                type="object"
+                                class="btn-info"
+                                invisible="not invoice_id"
+                                icon="fa-file-text-o"/>
+
+                        <!-- زر عرض ملف الطالب -->
+                        <button name="action_view_student_profile"
+                                string="ملف الطالب"
+                                type="object"
+                                class="btn-info"
+                                invisible="not student_profile_id"
+                                icon="fa-user"/>
+
+                        <!-- زر إنشاء ملف طالب يدوياً -->
+                        <button name="action_create_student_profile"
+                                string="إنشاء ملف طالب"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="registration_type != 'new' or student_profile_id"
+                                confirm="هل تريد إنشاء ملف طالب لهذا التسجيل؟"/>
+
+                        <!-- شريط الحالة -->
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,pending_review,confirmed,approved"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <!-- زر عرض ملف الطالب -->
+                            <button name="action_view_student_profile"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-user"
+                                    invisible="not student_profile_id">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">ملف الطالب</span>
+                                </div>
+                            </button>
+
+                            <!-- زر عرض الفاتورة -->
+                            <button name="action_view_invoice"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-file-text-o"
+                                    invisible="not invoice_id">
+                                <div class="o_stat_info">
+                                    <field name="invoice_payment_state" widget="badge"
+                                           decoration-success="invoice_payment_state == 'paid'"
+                                           decoration-warning="invoice_payment_state == 'partial'"
+                                           decoration-danger="invoice_payment_state == 'not_paid'"/>
+                                    <span class="o_stat_text">الفاتورة</span>
+                                </div>
+                            </button>
+                        </div>
+                                                    <field name="registration_number" readonly="1" class="oe_inline" style="font-size: 24px; font-weight: bold; color: #2c3e50;"/>
+                        <div class="oe_title">
+                            <h1>تسجيل في النوادي</h1>
+                        </div>
+
+                        <div class="alert alert-success" role="alert"
+                             invisible="not esaad_discount or esaad_verification_status != 'approved' or invoice_id">
+                            <h4 class="alert-heading">
+                                <i class="fa fa-check-circle"/> بطاقة إسعاد معتمدة
+                            </h4>
+                            <p>
+                                تم اعتماد بطاقة إسعاد. يمكنك الآن إنشاء الفاتورة مع خصم 20%
+                            </p>
+                        </div>
+
+                        <!-- رسالة تنبيه للدفع -->
+                        <div class="alert alert-info" role="alert"
+                             invisible="invoice_payment_state == 'paid'">
+                            <i class="fa fa-info-circle"/> في انتظار دفع الفاتورة - سعر الترم:
+                            <field name="term_price" widget="monetary" nolabel="1" readonly="1"/>
+                        </div>
+                             <div class="alert alert-warning" role="alert"
+                                 invisible="state != 'pending_review'">
+                                <h4 class="alert-heading">
+                                    <i class="fa fa-exclamation-triangle"/> يحتاج مراجعة الإدارة
+                                </h4>
+                                <field name="review_reason" readonly="1" nolabel="1"/>
+                            </div>
+                           <!-- اختيار نوع التسجيل -->
+                        <group col="4">
+                            <field name="registration_type" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'" nolabel="1" colspan="4"/>
+                        </group>
+
+                        <!-- رسالة توضيحية -->
+                        <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                            <p class="mb-0">
+                                <strong>تسجيل جديد:</strong> للطلاب الذين يسجلون لأول مرة - أدخل جميع البيانات المطلوبة<br/>
+                                <strong>طالب مسجل:</strong> للطلاب المسجلين سابقاً - اختر الطالب من القائمة
+                            </p>
+                        </div>
+
+                        <!-- عرض اسم الطالب -->
+                        <div class="oe_title" invisible="not full_name">
+                            <h2>
+                                <field name="full_name" readonly="1" nolabel="1"/>
+                            </h2>
+                        </div>
+
+                        <!-- زر إنشاء ملف الطالب والعائلة -->
+                        <div class="alert alert-warning text-center" role="alert"
+                             invisible="registration_type != 'new' or student_profile_id or state != 'draft'">
+                            <button name="action_create_student_profile"
+                                    type="object"
+                                    string="إنشاء ملف الطالب والعائلة"
+                                    class="btn btn-primary"
+                                    icon="fa-user-plus"/>
+                            <p class="mb-0 mt-2">
+                                <i class="fa fa-info-circle"/> يجب ملء جميع البيانات الأساسية قبل الضغط على هذا الزر
+                            </p>
+                        </div>
+
+                        <!-- رسالة نجاح -->
+                        <div class="alert alert-success" role="alert"
+                             invisible="registration_type != 'new' or not student_profile_id">
+                            <p class="mb-0">
+                                <i class="fa fa-check-circle"/> تم إنشاء ملف الطالب والعائلة بنجاح
+                            </p>
+                        </div>
+
+                        <!-- للطلاب المسجلين -->
+                        <group invisible="registration_type != 'existing'">
+                            <field name="student_profile_id"
+                                   options="{'no_quick_create': False, 'no_create_edit': False}"
+                                   context="{'form_view_ref': 'charity_clubs.view_charity_student_profile_form'}"
+                                   readonly="state != 'draft'"
+                                   required="registration_type == 'existing'"/>
+                            <div class="text-muted" colspan="2">
+                                <i class="fa fa-info-circle"/> ابحث عن الطالب بالاسم أو رقم الهوية أو رقم الهاتف
+                            </div>
+                        </group>
+
+                        <!-- معلومات الطالب - للتسجيل الجديد -->
+                        <group invisible="registration_type != 'new'">
+                            <group string="معلومات الطالب">
+                                <field name="full_name" placeholder="الاسم الثلاثي كما في الهوية..." readonly="state != 'draft' or student_profile_id" required="registration_type == 'new' and state != 'draft'"/>
+                                <field name="birth_date" readonly="state != 'draft' or student_profile_id" required="registration_type == 'new' and state != 'draft'"/>
+                                <field name="age" readonly="1"/>
+                                <field name="gender" widget="radio" options="{'horizontal': true}" readonly="state != 'draft' or student_profile_id" required="registration_type == 'new' and state != 'draft'"/>
+                                <field name="nationality" options="{'no_create': True, 'no_open': True}" readonly="state != 'draft' or student_profile_id" required="registration_type == 'new' and state != 'draft'"/>
+                                <field name="student_grade_id"  required="registration_type == 'new'"/>
+                                <field name="arabic_education_type" widget="radio" readonly="state != 'draft'" required="registration_type == 'new'"/>
+                            </group>
+                            <group string="معلومات الهوية">
+                                <field name="id_type" widget="radio" options="{'horizontal': true}" readonly="state != 'draft' or student_profile_id" required="registration_type == 'new' and state != 'draft'"/>
+                                <field name="id_number" placeholder="أدخل رقم الهوية أو الجواز..." readonly="state != 'draft' or student_profile_id" required="registration_type == 'new' and state != 'draft'"/>
+                                <field name="registration_date" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!-- معلومات التسجيل الأكاديمي - للطلاب المسجلين -->
+                        <group string="معلومات التسجيل الأكاديمي" invisible="registration_type != 'existing'">
+                            <field name="student_grade_id"  readonly="state != 'draft'"/>
+                            <field name="arabic_education_type" widget="radio" readonly="state != 'draft'"/>
+                        </group>
+
+                        <group string="اختيار النادي">
+                            <group>
+                                <field name="headquarters_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                                <field name="department_id"
+                                       options="{'no_create': True}"
+                                       readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="club_id"
+                                       options="{'no_create': True}"
+                                       readonly="state != 'draft'"/>
+                                <field name="term_id"
+                                       options="{'no_create': True, 'no_open': True}"
+                                       readonly="state != 'draft'"/>
+                                <field name="term_price" readonly="1" invisible="not term_id"/>
+                            </group>
+                        </group>
+
+                        <!-- بعد حقل photo_consent -->
+                        <group string="خصم إسعاد" >
+                            <group>
+                                <field name="esaad_discount" readonly="state != 'draft'"/>
+                            </group>
+
+                            <group invisible="not esaad_discount">
+
+                                <field name="esaad_card_file" filename="esaad_card_filename" readonly="state != 'draft'" required="esaad_discount"/>
+                                <field name="esaad_card_filename" invisible="1"/>
+                                <field name="esaad_verification_status" invisible="not esaad_discount"/>
+                            </group>
+                         </group>
+
+                        <!-- قسم الخصومات -->
+                        <group string="الخصومات" invisible="not term_id" class="alert alert-info">
+                            <group>
+                                <field name="discount_policy" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <label for="sibling_order" string="ترتيب الطفل"/>
+                                <div class="o_row">
+                                    <field name="sibling_order" readonly="1" nolabel="1"/>
+                                    <span invisible="sibling_order == 0"> في العائلة</span>
+                                    <span invisible="sibling_discount_rate == 0" class="text-success">
+                                        (خصم <field name="sibling_discount_rate" readonly="1" nolabel="1"/>%)
+                                    </span>
+                                </div>
+
+                                <label for="has_multi_club" string="نوادي متعددة"/>
+                                <div class="o_row">
+                                    <field name="has_multi_club" readonly="1" widget="boolean" nolabel="1"/>
+                                    <span invisible="not has_multi_club" class="text-success">
+                                        (خصم <field name="multi_club_discount_rate" readonly="1" nolabel="1"/>%)
+                                    </span>
+                                </div>
+
+                                <label for="is_half_term" string="نصف الترم"/>
+                                <div class="o_row">
+                                    <field name="is_half_term" readonly="1" widget="boolean" nolabel="1"/>
+                                    <span invisible="not is_half_term" class="text-success">
+                                        (خصم <field name="half_term_discount_rate" readonly="1" nolabel="1"/>%)
+                                    </span>
+                                </div>
+
+                                <!-- إضافة خصم إسعاد في قسم الخصومات -->
+                                <label for="esaad_discount" string="بطاقة إسعاد"/>
+                                <div class="o_row">
+                                    <field name="esaad_discount" readonly="1" widget="boolean" nolabel="1"/>
+                                    <span invisible="not esaad_discount or esaad_verification_status != 'approved'" class="text-success">
+                                        (خصم <field name="esaad_discount_rate" readonly="1" nolabel="1"/>%)
+                                    </span>
+                                    <span invisible="not esaad_discount or esaad_verification_status != 'pending'" class="text-warning">
+                                        (في انتظار الاعتماد)
+                                    </span>
+                                    <span invisible="not esaad_discount or esaad_verification_status != 'rejected'" class="text-danger">
+                                        (مرفوض)
+                                    </span>
+                                </div>
+                            </group>
+                            <separator/>
+                            <group class="oe_subtotal_footer">
+                                <field name="term_price" widget="monetary" string="السعر الأصلي"/>
+                                <label for="total_discount_rate" string="إجمالي الخصم"/>
+                                <div class="text-left">
+                                    <span class="oe_form_field oe_form_field_float" style="margin-right: 8px;">
+                                        <field name="total_discount_rate" readonly="1" nolabel="1" style="width: 60px; display: inline-block;"/> %
+                                    </span>
+                                    <span style="margin: 0 10px;">=</span>
+                                    <span class="oe_form_field">
+                                        <field name="discount_amount" widget="monetary" readonly="1" nolabel="1" style="display: inline-block;"/>
+                                    </span>
+                                </div>
+                                <div class="oe_subtotal_footer_separator"/>
+                                <field name="final_amount" widget="monetary" string="المبلغ النهائي" class="oe_subtotal_footer_separator" style="font-weight: bold;"/>
+                            </group>
+                        </group>
+
+
+                        <notebook>
+                            <page string="الخبرات السابقة" name="previous_experience">
+                                <group>
+                                    <field name="previous_roayati_member" readonly="state != 'draft'"/>
+                                    <field name="previous_arabic_club" readonly="state != 'draft'"/>
+                                    <field name="previous_qaida_noorania" readonly="state != 'draft'"/>
+                                </group>
+                                <group string="حفظ القرآن الكريم">
+                                    <field name="quran_memorization" nolabel="1" placeholder="اكتب مقدار حفظ الطالب من القرآن الكريم..." readonly="state != 'draft'"/>
+                                </group>
+                            </page>
+
+                            <page string="معلومات الوالدين" name="parents_info" invisible="registration_type != 'new'">
+                                <group>
+                                    <group string="معلومات الأم">
+                                        <field name="mother_name" readonly="state != 'draft' or student_profile_id"/>
+                                        <field name="mother_mobile" widget="phone" readonly="state != 'draft' or student_profile_id"/>
+                                        <field name="mother_whatsapp" widget="phone" readonly="state != 'draft' or student_profile_id"/>
+                                    </group>
+                                    <group string="معلومات الأب">
+                                        <field name="father_name" readonly="state != 'draft' or student_profile_id"/>
+                                        <field name="father_mobile" widget="phone" readonly="state != 'draft' or student_profile_id"/>
+                                    </group>
+                                </group>
+                                <group string="البريد الإلكتروني">
+                                    <field name="email" placeholder="example@email.com" readonly="state != 'draft' or student_profile_id"/>
+                                </group>
+                            </page>
+
+                            <page string="معلومات العائلة" name="family_info" invisible="registration_type != 'existing'">
+                                <group>
+                                    <group string="معلومات الأب">
+                                        <field name="father_name" readonly="1"/>
+                                        <field name="father_mobile" widget="phone" readonly="1"/>
+                                    </group>
+                                    <group string="معلومات الأم">
+                                        <field name="mother_name" readonly="1"/>
+                                        <field name="mother_mobile" widget="phone" readonly="1"/>
+                                        <field name="mother_whatsapp" widget="phone" readonly="1"/>
+                                    </group>
+                                </group>
+                                <group string="البريد الإلكتروني">
+                                    <field name="email" readonly="1"/>
+                                </group>
+                                <div class="text-muted">
+                                    <i class="fa fa-info-circle"/> لتحديث معلومات العائلة، يجب التعديل من ملف العائلة
+                                </div>
+                            </page>
+
+                            <page string="المتطلبات الصحية" name="health_requirements">
+                                <group>
+                                    <field name="has_health_requirements" readonly="state != 'draft' or registration_type == 'existing'"/>
+                                    <field name="health_requirements"
+                                           nolabel="1"
+                                           placeholder="يرجى كتابة تفاصيل المتطلبات الصحية أو الاحتياجات الخاصة أو الحساسيات..."
+                                           invisible="not has_health_requirements"
+                                           required="has_health_requirements"
+                                           readonly="state != 'draft' or registration_type == 'existing'"/>
+                                </group>
+                                <div class="text-muted" invisible="registration_type != 'existing'">
+                                    <i class="fa fa-info-circle"/> لتحديث المتطلبات الصحية، يجب التعديل من ملف الطالب
+                                </div>
+                            </page>
+
+                            <page string="معلومات إضافية" name="additional_info">
+                                <group>
+                                    <field name="how_know_us" readonly="state != 'draft'"/>
+                                </group>
+                            </page>
+
+                            <page string="المستندات والموافقات" name="documents">
+                                <group>
+                                    <group string="صور الهوية">
+                                        <field name="id_front_file" filename="id_front_filename" readonly="state != 'draft'"/>
+                                        <field name="id_front_filename" invisible="1"/>
+                                        <field name="id_back_file" filename="id_back_filename" readonly="state != 'draft'"/>
+                                        <field name="id_back_filename" invisible="1"/>
+                                    </group>
+                                    <group string="الموافقات">
+                                        <field name="photo_consent" readonly="state != 'draft'"/>
+                                        <div class="text-muted" colspan="2">
+                                            <i class="fa fa-camera"/> ملاحظة: يتم تصوير الطلاب خلال فعاليات النوادي وتوضع في مواقع التواصل الاجتماعي للجمعية
+                                        </div>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <!-- صفحة الفاتورة -->
+                            <page string="الفاتورة" name="invoice" invisible="not invoice_id">
+                                <group>
+                                    <group>
+                                        <field name="invoice_id" readonly="1"/>
+                                        <field name="invoice_state" widget="badge" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="invoice_payment_state" widget="badge" readonly="1"
+                                               decoration-success="invoice_payment_state == 'paid'"
+                                               decoration-warning="invoice_payment_state == 'partial'"
+                                               decoration-danger="invoice_payment_state == 'not_paid'"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_school_grade_tree" model="ir.ui.view">
+                <field name="name">school.grade.tree</field>
+                <field name="model">school.grade</field>
+                <field name="arch" type="xml">
+                    <list>
+                        <field name="name"/>
+                    </list>
+                </field>
+            </record>
+
+            <record id="view_school_grade_form" model="ir.ui.view">
+                <field name="name">school.grade.form</field>
+                <field name="model">school.grade</field>
+                <field name="arch" type="xml">
+                    <form>
+                        <sheet>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+        <!-- Club Registrations List View - Updated -->
+        <record id="view_charity_club_registrations_list" model="ir.ui.view">
+            <field name="name">charity.club.registrations.list</field>
+            <field name="model">charity.club.registrations</field>
+            <field name="arch" type="xml">
+                <list string="تسجيلات النوادي">
+                    <field name="full_name" string="اسم الطالب"/>
+                    <field name="id_number" string="رقم الهوية/الجواز" optional="hide"/>
+                    <field name="age" string="العمر" optional="hide"/>
+                    <field name="gender" string="الجنس" optional="hide"/>
+                    <field name="student_grade_id" string="الصف"/>
+                    <field name="student_grade_display" string="الصف"/>
+                    <field name="headquarters_id" string="المقر" optional="hide"/>
+                    <field name="department_id" string="القسم" optional="hide"/>
+                    <field name="club_id" string="النادي"/>
+                    <field name="term_id" string="الترم"/>
+                    <field name="sibling_order" string="ترتيب الأخوة" optional="show"/>
+                    <field name="term_price" string="السعر الأصلي" widget="monetary" optional="show"/>
+                    <field name="total_discount_rate" string="الخصم %" optional="show"/>
+                    <field name="discount_amount" string="قيمة الخصم" widget="monetary" optional="show"/>
+                    <field name="final_amount" string="المبلغ النهائي" widget="monetary" optional="show"/>
+                    <field name="invoice_id" string="الفاتورة" optional="show"/>
+                    <field name="invoice_payment_state" string="حالة الدفع" widget="badge"
+                           decoration-success="invoice_payment_state == 'paid'"
+                           decoration-warning="invoice_payment_state == 'partial'"
+                           decoration-danger="invoice_payment_state == 'not_paid'"
+                           optional="show"/>
+                    <field name="registration_type" string="نوع التسجيل" widget="badge"
+                           decoration-info="registration_type == 'new'"
+                           decoration-success="registration_type == 'existing'"
+                           optional="hide"/>
+                    <field name="state" string="الحالة" widget="badge"
+                           decoration-success="state == 'approved'"
+                           decoration-info="state == 'confirmed'"
+                           decoration-warning="state == 'draft'"
+                           decoration-danger="state == 'rejected'"/>
+                    <field name="father_mobile" string="رقم هاتف الأب" optional="show"/>
+                    <field name="mother_mobile" string="رقم هاتف الأم" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Club Registrations Search View -->
+        <record id="view_charity_club_registrations_search" model="ir.ui.view">
+            <field name="name">charity.club.registrations.search</field>
+            <field name="model">charity.club.registrations</field>
+            <field name="arch" type="xml">
+                <search string="البحث في التسجيلات">
+                    <field name="full_name" string="اسم الطالب"/>
+                    <field name="id_number" string="رقم الهوية"/>
+                    <field name="father_mobile" string="هاتف الأب"/>
+                    <field name="mother_mobile" string="هاتف الأم"/>
+
+                    <filter string="تسجيلات جديدة" name="new_reg" domain="[('registration_type', '=', 'new')]"/>
+                    <filter string="طلاب مسجلين" name="existing_reg" domain="[('registration_type', '=', 'existing')]"/>
+
+                    <separator/>
+
+                    <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="مؤكد" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                    <filter string="معتمد" name="approved" domain="[('state', '=', 'approved')]"/>
+
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="المقر" name="group_headquarters" context="{'group_by': 'headquarters_id'}"/>
+                        <filter string="القسم" name="group_department" context="{'group_by': 'department_id'}"/>
+                        <filter string="النادي" name="group_club" context="{'group_by': 'club_id'}"/>
+                        <filter string="الترم" name="group_term" context="{'group_by': 'term_id'}"/>
+                        <filter string="نوع التسجيل" name="group_type" context="{'group_by': 'registration_type'}"/>
+                        <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_school_grade" model="ir.actions.act_window">
+            <field name="name">الصفوف الدراسية</field>
+            <field name="res_model">school.grade</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <!-- Club Registrations Action -->
+        <record id="action_charity_club_registrations" model="ir.actions.act_window">
+            <field name="name">تسجيلات النوادي</field>
+            <field name="res_model">charity.club.registrations</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    تسجيل طالب جديد في النوادي
+                </p>
+                <p>
+                    يمكنك تسجيل طلاب جدد أو اختيار طلاب مسجلين سابقاً
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

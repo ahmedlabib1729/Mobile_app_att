@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for Member Number -->
+        <record id="seq_charity_member_profile" model="ir.sequence">
+            <field name="name">رقم العضوية</field>
+            <field name="code">charity.member.profile</field>
+            <field name="prefix">MEM/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="use_date_range">True</field>
+        </record>
+
+        <!-- Sequence for Subscription Number -->
+        <record id="seq_charity_member_subscription" model="ir.sequence">
+            <field name="name">رقم الاشتراك</field>
+            <field name="code">charity.member.subscription</field>
+            <field name="prefix">SUB/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="use_date_range">True</field>
+        </record>
+
+       <record id="seq_club_registration" model="ir.sequence">
+            <field name="name">تسجيلات النوادي</field>
+            <field name="code">charity.club.registrations</field>
+            <field name="prefix">REG/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+            <field name="use_date_range">True</field>
+            <field name="implementation">no_gap</field>
+        </record>
+
+    </data>
+</odoo>

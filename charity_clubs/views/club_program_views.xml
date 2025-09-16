@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_club_program_list" model="ir.ui.view">
+        <field name="name">club.program.list</field>
+        <field name="model">club.program</field>
+        <field name="arch" type="xml">
+            <list string="البرامج" decoration-success="state == 'open'"
+                  decoration-info="state == 'ongoing'"
+                  decoration-muted="not active or state in ('done', 'cancelled')"
+                  decoration-danger="is_full">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="club_id"/>
+                <field name="schedule_display" string="الجدول"/>
+                <field name="age_from" string="من عمر"/>
+                <field name="age_to" string="إلى عمر"/>
+                <field name="gender" widget="badge"/>
+                <field name="registration_count" string="المسجلين"/>
+                <field name="max_capacity" string="السعة"/>
+                <field name="available_seats" string="متاح"/>
+                <field name="state" widget="badge"/>
+                <field name="active" invisible="1"/>
+                <field name="is_full" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_club_program_form" model="ir.ui.view">
+        <field name="name">club.program.form</field>
+        <field name="model">club.program</field>
+        <field name="arch" type="xml">
+            <form string="برنامج">
+                <header>
+                    <button name="action_open_registration" type="object"
+                            string="فتح التسجيل" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_program" type="object"
+                            string="بدء البرنامج" class="btn-primary"
+                            invisible="state != 'open'"/>
+                    <button name="action_end_program" type="object"
+                            string="إنهاء البرنامج"
+                            invisible="state != 'ongoing'"/>
+                    <button name="action_cancel_program" type="object"
+                            string="إلغاء البرنامج"
+                            invisible="state in ('done', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,ongoing,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_registrations" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="confirmed_count"/> / <field name="registration_count"/>
+                                </span>
+                                <span class="o_stat_text">تسجيلات</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-chair"
+                                invisible="not is_full">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value text-danger">ممتلئ</span>
+                                <span class="o_stat_text">الحالة</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="ممتلئ" bg_color="bg-danger"
+                            invisible="not is_full"/>
+                    <widget name="web_ribbon" title="غير نشط" bg_color="bg-warning"
+                            invisible="active or is_full"/>
+                    <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image'}"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="اسم البرنامج" required="1"/>
+                        </h1>
+                        <h3>
+                            <field name="club_id" options="{'no_create': True}"/>
+                        </h3>
+                    </div>
+
+                    <group>
+                        <group string="معلومات البرنامج">
+                            <field name="instructor_id" placeholder="اختر المدرب"/>
+                            <field name="active" invisible="1"/>
+                            <field name="is_full" invisible="1"/>
+                        </group>
+                        <group string="الفترة الزمنية">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="الوصف والأهداف" name="description">
+                            <group>
+                                <field name="description" placeholder="وصف البرنامج..."/>
+                                <field name="vision" placeholder="الرؤية والأهداف التعليمية والتربوية..." required="1"/>
+                            </group>
+                        </page>
+
+                        <page string="التفاصيل" name="details">
+                            <group>
+                                <group string="الفئة المستهدفة">
+                                    <label for="age_from" string="الفئة العمرية"/>
+                                    <div class="o_row">
+                                        <field name="age_from" style="width: 60px;"/>
+                                        <span> إلى </span>
+                                        <field name="age_to" style="width: 60px;"/>
+                                        <span> سنة</span>
+                                    </div>
+                                    <field name="gender"/>
+                                </group>
+                                <group string="الجدول الزمني">
+                                    <field name="schedule_day"/>
+                                    <label for="time_from" string="الوقت"/>
+                                    <div class="o_row">
+                                        <field name="time_from" widget="float_time"/>
+                                        <span> إلى </span>
+                                        <field name="time_to" widget="float_time"/>
+                                    </div>
+                                    <field name="schedule_display" string="الجدول الكامل"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="السعة">
+                                    <field name="max_capacity"/>
+                                    <field name="available_seats" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="الأسعار" name="pricing">
+                            <group>
+                                <group string="أسعار الترمات">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="term1_price" widget="monetary"/>
+                                    <field name="term2_price" widget="monetary"/>
+                                    <field name="term3_price" widget="monetary"/>
+                                </group>
+                                <group string="الإجمالي">
+                                    <field name="term1_price" invisible="1"/>
+                                    <field name="term2_price" invisible="1"/>
+                                    <field name="term3_price" invisible="1"/>
+                                    <label for="total_year_price" string="إجمالي السنة الكاملة"/>
+                                    <div>
+                                        <span class="fw-bold" style="font-size: 1.2em;">
+                                            <field name="total_year_price" widget="monetary" readonly="1"/>
+                                        </span>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="التسجيلات" name="registrations">
+                            <field name="registration_ids" mode="list">
+                                <list string="التسجيلات"
+                                      decoration-success="state == 'confirmed'"
+                                      decoration-warning="state == 'waitlist'"
+                                      decoration-muted="state == 'cancelled'">
+                                    <field name="registration_number"/>
+                                    <field name="student_name"/>
+                                    <field name="age" string="العمر"/>
+                                    <field name="gender"/>
+                                    <field name="parent_mobile" widget="phone"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="payment_state" widget="badge"
+                                           decoration-success="payment_state == 'paid'"
+                                           decoration-warning="payment_state == 'partial'"
+                                           decoration-danger="payment_state == 'not_paid'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_club_program_kanban" model="ir.ui.view">
+        <field name="name">club.program.kanban</field>
+        <field name="model">club.program</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="club_id" group_create="false" group_delete="false" group_edit="false" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="club_id"/>
+                <field name="color"/>
+                <field name="image"/>
+                <field name="vision"/>
+                <field name="schedule_display"/>
+                <field name="age_from"/>
+                <field name="age_to"/>
+                <field name="gender"/>
+                <field name="term1_price"/>
+                <field name="currency_id"/>
+                <field name="registration_count"/>
+                <field name="confirmed_count"/>
+                <field name="max_capacity"/>
+                <field name="available_seats"/>
+                <field name="is_full"/>
+                <field name="state"/>
+                <progressbar field="state"
+                             colors='{"open": "success", "ongoing": "info", "done": "muted", "cancelled": "danger"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <br/>
+                                        <small class="text-muted">
+                                            <field name="club_id"/>
+                                        </small>
+                                    </div>
+                                    <field name="state" widget="label_selection"
+                                           options="{'classes': {'open': 'success', 'ongoing': 'info', 'done': 'default', 'cancelled': 'danger'}}"/>
+                                </div>
+
+                                <div class="o_kanban_record_body mt-2">
+                                    <div t-if="record.image.raw_value" class="o_kanban_image float-end ms-2">
+                                        <img t-att-src="kanban_image('club.program', 'image', record.id.raw_value)"
+                                             alt="Program" width="64" height="64" class="rounded"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-calendar me-1" title="الجدول"/>
+                                        <field name="schedule_display"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-child me-1" title="العمر"/>
+                                        <span>
+                                            <t t-esc="record.age_from.value"/> - <t t-esc="record.age_to.value"/> سنة
+                                            <t t-if="record.gender.raw_value != 'both'">
+                                                (<field name="gender"/>)
+                                            </t>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-money me-1" title="السعر"/>
+                                        <field name="term1_price"/> <field name="currency_id" invisible="1"/>
+                                        <span class="text-muted"> / ترم</span>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_bottom mt-2">
+                                    <div class="oe_kanban_bottom_left">
+                                        <div t-attf-class="badge rounded-pill #{record.is_full.raw_value ? 'text-bg-danger' : 'text-bg-success'}">
+                                            <i class="fa fa-users me-1"/>
+                                            <field name="registration_count"/> / <field name="max_capacity"/>
+                                        </div>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <t t-if="!record.is_full.raw_value">
+                                            <span class="badge text-bg-primary">
+                                                <field name="available_seats"/> مقعد متاح
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge text-bg-danger">ممتلئ</span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_club_program_calendar" model="ir.ui.view">
+        <field name="name">club.program.calendar</field>
+        <field name="model">club.program</field>
+        <field name="arch" type="xml">
+            <calendar string="جدول البرامج" date_start="start_date" date_stop="end_date"
+                      color="club_id" mode="month">
+                <field name="name"/>
+                <field name="club_id"/>
+                <field name="schedule_display"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_club_program_search" model="ir.ui.view">
+        <field name="name">club.program.search</field>
+        <field name="model">club.program</field>
+        <field name="arch" type="xml">
+            <search string="البحث في البرامج">
+                <field name="name" string="البرنامج"/>
+                <field name="club_id"/>
+                <field name="instructor_id"/>
+                <filter string="التسجيل مفتوح" name="open"
+                        domain="[('state', '=', 'open')]"/>
+                <filter string="جاري حالياً" name="ongoing"
+                        domain="[('state', '=', 'ongoing')]"/>
+                <filter string="متاح للتسجيل" name="available"
+                        domain="[('is_full', '=', False), ('state', '=', 'open')]"/>
+                <filter string="ممتلئ" name="full"
+                        domain="[('is_full', '=', True)]"/>
+                <separator/>
+                <filter string="للجميع" name="both_gender"
+                        domain="[('gender', '=', 'both')]"/>
+                <filter string="ذكور فقط" name="male_only"
+                        domain="[('gender', '=', 'male')]"/>
+                <filter string="إناث فقط" name="female_only"
+                        domain="[('gender', '=', 'female')]"/>
+                <separator/>
+                <filter string="نشط" name="active" domain="[('active', '=', True)]"/>
+                <filter string="مؤرشف" name="archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="النادي" name="group_club" context="{'group_by': 'club_id'}"/>
+                    <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="اليوم" name="group_day" context="{'group_by': 'schedule_day'}"/>
+                    <filter string="الجنس" name="group_gender" context="{'group_by': 'gender'}"/>
+                    <filter string="المدرب" name="group_instructor" context="{'group_by': 'instructor_id'}"/>
+                </group>
+                <searchpanel>
+                    <field name="club_id" icon="fa-building"/>
+                    <field name="state" select="multi" icon="fa-tasks"/>
+                    <field name="gender" select="multi" icon="fa-venus-mars"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_club_program" model="ir.actions.act_window">
+        <field name="name">البرامج</field>
+        <field name="res_model">club.program</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="search_view_id" ref="view_club_program_search"/>
+        <field name="context">{
+            'search_default_open': 1,
+            'search_default_active': 1,
+            'group_by': 'club_id'
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء أول برنامج
+            </p>
+            <p>
+                قم بإنشاء البرامج التعليمية والتربوية للنوادي
+            </p>
+            <p>
+                <strong>ملاحظة:</strong> النوادي الفارغة (بدون برامج) لن تظهر في العرض
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_club_programs"
+              name="البرامج"
+              parent="menu_charity_root"
+              action="action_club_program"
+              sequence="20"/>
+</odoo>

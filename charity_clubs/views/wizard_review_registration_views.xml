@@ -1,0 +1,54 @@
+
+<odoo>
+    <!-- Wizard Form View -->
+    <record id="view_club_registration_review_wizard_form" model="ir.ui.view">
+        <field name="name">charity.club.registration.review.wizard.form</field>
+        <field name="model">charity.club.registration.review.wizard</field>
+        <field name="arch" type="xml">
+            <form string="مراجعة التسجيل">
+                <sheet>
+                    <group>
+                        <group string="معلومات التسجيل الحالي">
+                            <field name="registration_id" invisible="1"/>
+                            <field name="current_name"/>
+                            <field name="current_id_number"/>
+                        </group>
+                        <group string="الطالب الموجود">
+                            <field name="existing_student_id" invisible="1"/>
+                            <field name="existing_student_name"/>
+                        </group>
+                    </group>
+
+                    <group string="قرار الإدارة">
+                        <field name="action" widget="radio"/>
+                        <field name="new_id_number"
+                               invisible="action != 'update_id'"
+                               required="action == 'update_id'"/>
+                    </group>
+
+                    <group string="ملاحظات">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_apply"
+                            string="تطبيق القرار"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="إلغاء"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_club_registration_review_wizard" model="ir.actions.act_window">
+        <field name="name">مراجعة التسجيل</field>
+        <field name="res_model">charity.club.registration.review.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_registration_id': active_id}</field>
+    </record>
+</odoo>

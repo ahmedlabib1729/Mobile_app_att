@@ -1,0 +1,1345 @@
+# Translation of Odoo Module.
+# This file contains the translation of the following modules:
+# * charity_clubs
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Module 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00:00\n"
+"PO-Revision-Date: 2024-01-01 00:00:00\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_headquarters
+msgid ""
+"<i class=\"fa fa-pencil-square-o me-2\"/>\n"
+"                                Registration for Programs and Activities"
+msgstr ""
+"<i class=\"fa fa-pencil-square-o me-2\"/>\n"
+"                                التسجيل فى البرامج و الأنشطة"
+
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_headquarters
+msgid "Choose the headquarters you want to register in"
+msgstr "اختر المقر الذي ترغب في التسجيل فيه"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_headquarters
+msgid "Departments"
+msgstr "أقسام"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_departments
+msgid "Choose the appropriate department"
+msgstr "اختر القسم المناسب للتسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_departments
+msgid "Ladies Department"
+msgstr "قسم سيدات"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_departments
+msgid "Clubs Department"
+msgstr "قسم نوادي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_departments
+msgid "Nursery Department"
+msgstr "قسم حضانة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_departments
+msgid "Club"
+msgstr "نادي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_clubs
+msgid "Choose the suitable club for your child"
+msgstr "اختر النادي المناسب لطفلك"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_clubs
+msgid "Goal:"
+msgstr "الهدف:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_clubs
+msgid "Register Now"
+msgstr "سجل الآن"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_clubs
+msgid "Males Only"
+msgstr "ذكور فقط"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_clubs
+msgid "Females Only"
+msgstr "إناث فقط"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_clubs
+msgid "Mixed"
+msgstr "مختلط"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Choose registration type"
+msgstr "اختر نوع التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Programs"
+msgstr "البرامج"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Workshops"
+msgstr "الورش"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Registration in various programs for ladies"
+msgstr "التسجيل في البرامج المتنوعة للسيدات"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Registration in specialized training workshops"
+msgstr "التسجيل في الورش التدريبية المتخصصة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "You can choose one or more programs"
+msgstr "يمكنك اختيار برنامج واحد أو أكثر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Continuous programs throughout the period"
+msgstr "برامج مستمرة طوال الفترة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Unified price for the department"
+msgstr "سعر موحد للقسم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "One specific workshop"
+msgstr "ورشة واحدة محددة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Short and specific duration"
+msgstr "مدة قصيرة ومحددة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Special price for each workshop"
+msgstr "سعر خاص لكل ورشة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Prices vary by workshop"
+msgstr "الأسعار تختلف حسب الورشة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Choose Programs"
+msgstr "اختر البرامج"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "Choose Workshops"
+msgstr "اختر الورش"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_selection_page
+msgid "AED"
+msgstr "درهم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Registration"
+msgstr "التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Please fill all required fields"
+msgstr "يرجى ملء جميع البيانات المطلوبة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Choose Term"
+msgstr "اختر الفصل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "From"
+msgstr "من"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "To"
+msgstr "إلى"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Available"
+msgstr "متاح"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "seat"
+msgstr "مقعد"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Full"
+msgstr "ممتلئ"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Student Information"
+msgstr "معلومات الطالب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Full name as in ID"
+msgstr "الاسم الثلاثي كما في الهوية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Birth Date"
+msgstr "تاريخ الميلاد"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Gender"
+msgstr "الجنس"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Choose..."
+msgstr "اختر..."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Male"
+msgstr "ذكر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Female"
+msgstr "أنثى"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Nationality"
+msgstr "الجنسية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "ID Type"
+msgstr "نوع الهوية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Emirates ID"
+msgstr "الهوية الإماراتية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Emirates ID Number"
+msgstr "رقم الهوية الإماراتية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "School Grade"
+msgstr "الصف الدراسي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "-- Choose Grade --"
+msgstr "-- اختر الصف --"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Arabic Language Study at School"
+msgstr "تعلم اللغة العربية بالمدرسة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Arabic for non-native speakers"
+msgstr "لغة عربية لغير الناطقين"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Arabic for native speakers"
+msgstr "لغة عربية للناطقين"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Parents Information"
+msgstr "معلومات الوالدين"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Father's Name"
+msgstr "اسم الأب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Father's Mobile"
+msgstr "هاتف الأب المتحرك"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Mother's Name"
+msgstr "اسم الأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Mother's Mobile"
+msgstr "هاتف الأم المتحرك"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Mother's WhatsApp"
+msgstr "الواتس اب للأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Student's Journey in Roayati"
+msgstr "رحلة المشترك في رؤيتي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Student was registered in Roayati clubs"
+msgstr "المشترك كان مسجلاً في نوادي رؤيتي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Student was registered in Arabic language clubs"
+msgstr "المشترك كان مسجلاً بنوادي اللغة العربية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Student learned Qaida Noorania"
+msgstr "المشترك تعلم القاعدة النورانية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Quran Memorization Amount"
+msgstr "مقدار حفظ القرآن"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Health Requirements"
+msgstr "المتطلبات الصحية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Has health requirements or special needs"
+msgstr "يوجد متطلبات صحية أو احتياجات خاصة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Health Requirements Details"
+msgstr "تفاصيل المتطلبات الصحية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Required ID Photos"
+msgstr "صور الهوية المطلوبة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Note:"
+msgstr "ملاحظة:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Clear photos of both sides of ID must be uploaded"
+msgstr "يجب رفع صورة واضحة للوجه الأول والثاني من الهوية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "ID Photo - Front Side"
+msgstr "صورة الهوية - الوجه الأول"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "ID Photo - Back Side"
+msgstr "صورة الهوية - الوجه الثاني"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Click to choose front side photo or drag file here"
+msgstr "اضغط لاختيار صورة الوجه الأول أو اسحب الملف هنا"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Click to choose back side photo or drag file here"
+msgstr "اضغط لاختيار صورة الوجه الثاني أو اسحب الملف هنا"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Allowed files: JPG, PNG, PDF (Max size 5MB)"
+msgstr "الملفات المسموحة: JPG, PNG, PDF (حجم أقصى 5MB)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "How did you know about Roayati Association?"
+msgstr "كيف تعرفتم على جمعية رؤيتي؟"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Through a friend / acquaintance"
+msgstr "من خلال صديق / أحد المعارف"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Through social media"
+msgstr "من خلال وسائل التواصل الاجتماعي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Through advertisements"
+msgstr "من خلال الإعلانات"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Through Google or online search"
+msgstr "عن طريق جوجل أو البحث عبر الإنترنت"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Attended previous activity"
+msgstr "حضرت/حضر طفلي نشاط سابق"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Through school or nursery"
+msgstr "من خلال المدرسة أو الحضانة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Other"
+msgstr "أخرى"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Esaad Card Discount"
+msgstr "خصم بطاقة إسعاد"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "If you have a valid Esaad card in the child's name, you can get a special discount"
+msgstr "إذا كان لديك بطاقة إسعاد صالحة باسم الطفل، يمكنك الحصول على خصم خاص"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "I have a valid Esaad card in the registered child's name"
+msgstr "لدي بطاقة إسعاد صالحة باسم الطفل المسجل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Important Notice"
+msgstr "تنبيه مهم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Esaad card must be:"
+msgstr "يجب أن تكون بطاقة إسعاد:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Valid and not expired"
+msgstr "صالحة وغير منتهية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "In the name of the registered child's father or mother (same name entered in the form)"
+msgstr "باسم اب او أم الطفل المسجل (نفس الاسم المدخل في النموذج)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Clear and readable in the uploaded image"
+msgstr "واضحة ومقروءة في الصورة المرفقة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Warning:"
+msgstr "تحذير:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Submitting an incorrect card or a card in someone else's name may subject you to legal accountability"
+msgstr "تقديم بطاقة غير صحيحة أو باسم شخص آخر قد يعرضك للمساءلة القانونية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Esaad Card Photo"
+msgstr "صورة بطاقة إسعاد"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Click to choose Esaad card photo or drag file here"
+msgstr "اضغط لاختيار صورة بطاقة إسعاد أو اسحب الملف هنا"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "When choosing Esaad discount, the card will be reviewed first and you will be contacted to complete the payment process after verifying the card validity."
+msgstr "عند اختيار خصم إسعاد، سيتم مراجعة البطاقة أولاً وسيتم التواصل معك لاستكمال عملية الدفع بعد التحقق من صحة البطاقة."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Registration includes club book worth"
+msgstr "يشمل التسجيل كتاب النادي بقيمة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "(for new students only)"
+msgstr "(للطلاب الجدد فقط)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Agreements"
+msgstr "الموافقات"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "I agree to photograph the student during club activities and publish them on the association's social media"
+msgstr "أوافق على تصوير الطالب خلال فعاليات النوادي ونشرها في مواقع التواصل الاجتماعي للجمعية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.club_registration_form
+msgid "Submit Registration"
+msgstr "إرسال التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Register a child in"
+msgstr "تسجيل طفل في"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Roayati Nursery"
+msgstr "حضانة رؤيتي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Register your child with us for a journey of fun and learning"
+msgstr "سجل طفلك معنا في رحلة من المرح والتعلم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Age Groups Available for Registration"
+msgstr "الفئات العمرية المتاحة للتسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Click to view age details accepted in each class"
+msgstr "اضغط لعرض تفاصيل الأعمار المقبولة في كل صف"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Before KG"
+msgstr "قبل الروضة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Nursery Class 2-3"
+msgstr "صف الحضانة 2-3"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Nursery Class 1-2"
+msgstr "صف الحضانة 1-2"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Nursery Class 0-1"
+msgstr "صف الحضانة 0-1"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "The appropriate class for your child will be determined automatically based on the entered birth date"
+msgstr "سيتم تحديد الصف المناسب لطفلك تلقائياً بناءً على تاريخ الميلاد المدخل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "New Child Registration Form"
+msgstr "نموذج تسجيل طفل جديد"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Please fill all required data accurately"
+msgstr "يرجى ملء جميع البيانات المطلوبة بدقة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Choose suitable attendance system"
+msgstr "اختر نظام الدوام المناسب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "5 days:"
+msgstr "5 أيام:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "4 days:"
+msgstr "4 أيام:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "3 days:"
+msgstr "3 أيام:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Weekly attendance days"
+msgstr "عدد أيام الحضور الأسبوعية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Please choose attendance plan first..."
+msgstr "يرجى اختيار نظام الدوام أولاً..."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Choose attendance plan first to show available options"
+msgstr "اختر خطة الدوام أولاً لتظهر الخيارات المتاحة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Join Date"
+msgstr "تاريخ الالتحاق"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Child Data"
+msgstr "بيانات الطفل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "First Name"
+msgstr "الاسم الأول"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father Name"
+msgstr "اسم الأب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Family Name"
+msgstr "العائلة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Religion"
+msgstr "الديانة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother Language"
+msgstr "اللغة الأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Passport Number"
+msgstr "رقم جواز السفر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Identity Number"
+msgstr "رقم الهوية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Child's order among siblings"
+msgstr "ترتيب الطفل بين إخوته"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Example: 1 (First), 2 (Second)"
+msgstr "مثال: 1 (الأول)، 2 (الثاني)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Required Documents"
+msgstr "المستندات المطلوبة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Important:"
+msgstr "مهم:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Clear photos of IDs must be uploaded (Max size 5MB per file)"
+msgstr "يجب رفع صور واضحة للهويات (الحجم الأقصى 5MB لكل ملف)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Child ID Photos"
+msgstr "صور هوية الطفل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Child ID Front Side"
+msgstr "الوجه الأمامي لهوية الطفل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Child ID Back Side"
+msgstr "الوجه الخلفي لهوية الطفل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Guardian ID Photos"
+msgstr "صور هوية ولي الأمر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Guardian ID Front Side"
+msgstr "الوجه الأمامي لهوية ولي الأمر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Guardian ID Back Side"
+msgstr "الوجه الخلفي لهوية ولي الأمر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Click to choose front side photo"
+msgstr "اضغط لاختيار صورة الوجه الأمامي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Click to choose back side photo"
+msgstr "اضغط لاختيار صورة الوجه الخلفي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "JPG, PNG, PDF (Max size 5MB)"
+msgstr "JPG, PNG, PDF (حجم أقصى 5MB)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Brothers and Sisters"
+msgstr "الأخوة والأخوات"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Has siblings registered in nursery"
+msgstr "له أخوة مسجلين في الحضانة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Add Brother/Sister"
+msgstr "إضافة أخ/أخت"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother's Data"
+msgstr "بيانات الأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother's Nationality"
+msgstr "جنسية الأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother's Job"
+msgstr "مهنة الأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother's Company"
+msgstr "شركة الأم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother's Landline"
+msgstr "هاتف الأم الثابت"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Mother's Email"
+msgstr "بريد الأم الإلكتروني"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Home Address"
+msgstr "عنوان السكن"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Data"
+msgstr "بيانات الأب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Full Name"
+msgstr "اسم الأب الكامل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Nationality"
+msgstr "جنسية الأب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Job"
+msgstr "مهنة الأب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Company"
+msgstr "شركة الأب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's/Guardian's Education Level"
+msgstr "المستوى التعليمي للأب/ولي الأمر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Choose education level..."
+msgstr "اختر المستوى التعليمي..."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Diploma"
+msgstr "دبلوم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Higher Diploma"
+msgstr "دبلوم عالي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Bachelor"
+msgstr "بكالوريوس"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Master"
+msgstr "ماجستير"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "PhD"
+msgstr "دكتوراه"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's/Guardian's Work Status"
+msgstr "حالة عمل الأب/ولي الأمر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Choose work status..."
+msgstr "اختر حالة العمل..."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Employee"
+msgstr "موظف"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Self-employed"
+msgstr "عامل لحسابه الخاص"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Not working"
+msgstr "لا يعمل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Landline"
+msgstr "هاتف الأب الثابت"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Father's Email"
+msgstr "بريد الأب الإلكتروني"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Emergency Contacts"
+msgstr "جهات الاتصال في حالة الطوارئ"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "At least one emergency contact must be added"
+msgstr "يجب إضافة جهة اتصال واحدة على الأقل للطوارئ"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Add Emergency Contact"
+msgstr "إضافة جهة اتصال"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "How did you know about Roayati Nursery?"
+msgstr "كيف تعرفت على حضانة رؤيتي؟"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Instagram"
+msgstr "إنستغرام"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Facebook"
+msgstr "فيس بوك"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Google"
+msgstr "جوجل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "People"
+msgstr "أشخاص"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Other"
+msgstr "أخرى"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "I confirm that all the information mentioned above is correct and under my personal responsibility"
+msgstr "أؤكد أن جميع المعلومات المذكورة أعلاه صحيحة وعلى مسؤوليتي الشخصية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_form
+msgid "Submit Registration"
+msgstr "إرسال التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Registration Successful!"
+msgstr "تم التسجيل بنجاح!"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "was successfully registered in nursery"
+msgstr "تم تسجيله في الحضانة بنجاح"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Department:"
+msgstr "القسم:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Attendance Plan:"
+msgstr "نظام الدوام:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Registration Number:"
+msgstr "رقم التسجيل:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Registration Under Review"
+msgstr "التسجيل قيد المراجعة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Registration request has been received successfully and will be reviewed by management."
+msgstr "تم استلام طلب التسجيل بنجاح وسيتم مراجعته من قبل الإدارة."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "You will be contacted soon to confirm registration and inform you of required fees."
+msgstr "سيتم التواصل معك قريباً لتأكيد التسجيل وإبلاغك بالرسوم المطلوبة."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Register Another Child"
+msgstr "تسجيل طفل آخر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.nursery_registration_success
+msgid "Home Page"
+msgstr "الصفحة الرئيسية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Registration in"
+msgstr "التسجيل في"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "programs"
+msgstr "برامج"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "workshops"
+msgstr "ورش"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Please fill all required data"
+msgid "Please fill all required data"
+msgstr "يرجى ملء البيانات المطلوبة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Beneficiary Information"
+msgstr "معلومات المستفيدة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Full Name"
+msgstr "الاسم الثلاثي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Contact Number"
+msgstr "رقم التواصل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "WhatsApp Number"
+msgstr "رقم الواتساب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Lady Type"
+msgstr "صفة السيدة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Pioneer"
+msgstr "رائدة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Volunteer"
+msgstr "متطوعة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Member"
+msgstr "عضوة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Required Documents"
+msgstr "المستندات المطلوبة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Warning:"
+msgstr "تنبيه:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "All following documents are required to complete registration"
+msgstr "جميع المستندات التالية مطلوبة لإتمام التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "ID Card Photo"
+msgstr "صورة الهوية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Click to choose ID card photo or drag file here"
+msgstr "اضغط لاختيار صورة الهوية أو اسحب الملف هنا"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Passport Photo"
+msgstr "صورة جواز السفر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Click to choose passport photo or drag file here"
+msgstr "اضغط لاختيار صورة جواز السفر أو اسحب الملف هنا"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Residence Photo"
+msgstr "صورة الإقامة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Click to choose residence photo or drag file here"
+msgstr "اضغط لاختيار صورة الإقامة أو اسحب الملف هنا"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Available Programs (Optional)"
+msgstr "البرامج المتاحة (اختياري)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Instructor"
+msgstr "المدرب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Choose Workshop"
+msgstr "اختر الورشة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "Submit Booking"
+msgstr "إرسال الحجز"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "UAE Dirham"
+msgstr "درهم إماراتي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Payment Confirmation"
+msgstr "تأكيد الدفع"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Payment Successful!"
+msgstr "تم الدفع بنجاح!"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Thank you, your payment has been received successfully"
+msgstr "شكراً لك، تم استلام دفعتك بنجاح"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Continue"
+msgstr "متابعة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Waiting for Payment"
+msgstr "في انتظار الدفع"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Payment has not been received yet"
+msgstr "لم يتم استلام الدفع بعد"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Pay Now"
+msgstr "الدفع الآن"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.payment_confirmation
+msgid "Back to Registration"
+msgstr "العودة للتسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Registration Under Review"
+msgstr "التسجيل قيد المراجعة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Needs Management Review"
+msgstr "يحتاج مراجعة الإدارة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Registration request has been received successfully, but needs management review."
+msgstr "تم استلام طلب التسجيل بنجاح، لكن يحتاج إلى مراجعة من قبل الإدارة."
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Reason:"
+msgstr "السبب:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "ID number conflict found"
+msgstr "وجود تعارض في رقم الهوية المدخل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Registration Information"
+msgstr "معلومات التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Registration Number"
+msgstr "رقم التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Student Name"
+msgstr "اسم الطالب"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Club"
+msgstr "النادي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Term"
+msgstr "الترم"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Registration Date"
+msgstr "تاريخ التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Next Steps"
+msgstr "الخطوات التالية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Management team will review the entered data"
+msgstr "سيقوم فريق الإدارة بمراجعة البيانات المدخلة"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "You may be contacted to verify some information"
+msgstr "قد يتم التواصل معك للتحقق من بعض المعلومات"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "You will be notified of management decision (approval or data modification request)"
+msgstr "سيتم إشعارك بقرار الإدارة (الموافقة أو طلب تعديل البيانات)"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "If approved, you can complete payment process"
+msgstr "في حالة الموافقة، ستتمكن من إكمال عملية الدفع"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "For Inquiries"
+msgstr "للاستفسار"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "You can contact management on:"
+msgstr "يمكنك التواصل مع الإدارة على:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Phone:"
+msgstr "الهاتف:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Email:"
+msgstr "البريد:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Mentioning registration number:"
+msgstr "مع ذكر رقم التسجيل:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_pending
+msgid "Back to Home Page"
+msgstr "العودة للصفحة الرئيسية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "Registration Successful!"
+msgstr "تم التسجيل بنجاح!"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "registration request"
+msgstr "طلب التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "received successfully"
+msgstr "تم استلامه بنجاح"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "Name:"
+msgstr "الاسم:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "Department:"
+msgstr "القسم:"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "You will be contacted soon to confirm registration"
+msgstr "سيتم التواصل معك قريباً لتأكيد التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "Register Another"
+msgstr "تسجيل آخر"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.registration_success
+msgid "Home Page"
+msgstr "الصفحة الرئيسية"
+
+#. module: charity_clubs
+#: common
+msgid "English"
+msgstr "English"
+
+#. module: charity_clubs
+#: common
+msgid "Arabic"
+msgstr "العربية"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.breadcrumb
+msgid "Registration"
+msgstr "التسجيل"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.various
+msgid "AED"
+msgstr "درهم إماراتي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.various
+msgid "UAE Dirham"
+msgstr "درهم إماراتي"
+
+#. module: charity_clubs
+#: model_terms:ir.ui.view,arch_db:charity_clubs.ladies_registration_form
+msgid "ID Card Photo"
+msgstr "صورة الهوية"

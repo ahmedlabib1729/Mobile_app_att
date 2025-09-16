@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_nursery_payment_schedule_list" model="ir.ui.view">
+            <field name="name">nursery.payment.schedule.list</field>
+            <field name="model">nursery.payment.schedule</field>
+            <field name="arch" type="xml">
+                <list string="جدول الأقساط" create="0">
+                    <field name="registration_id"/>
+                    <field name="child_name"/>
+                    <field name="installment_no"/>
+                    <field name="amount" widget="monetary" sum="المجموع"/>
+                    <field name="due_date"/>
+                    <field name="payment_method"/>
+                    <field name="invoice_id"/>
+                    <field name="is_overdue" invisible="1"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'paid'"
+                           decoration-warning="state == 'invoiced'"
+                           decoration-danger="state == 'overdue' or is_overdue"/>
+                    <button name="action_create_invoice"
+                            string="إنشاء فاتورة"
+                            type="object"
+                            class="btn-sm btn-primary"
+                            invisible="invoice_id or state == 'paid'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_nursery_payment_schedule_form" model="ir.ui.view">
+            <field name="name">nursery.payment.schedule.form</field>
+            <field name="model">nursery.payment.schedule</field>
+            <field name="arch" type="xml">
+                <form string="قسط الحضانة">
+                    <header>
+                        <button name="action_create_invoice"
+                                string="إنشاء فاتورة"
+                                type="object"
+                                class="oe_highlight"
+                                invisible="invoice_id or state == 'paid'"/>
+                        <button name="action_edit_cheque"
+                                string="بيانات الشيك"
+                                type="object"
+                                class="btn-sm btn-secondary"
+                                icon="fa-edit"
+                                invisible="payment_method != 'cheque'"/>
+
+                        <field name="state" widget="statusbar" statusbar_visible="draft,invoiced,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="display_name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="معلومات القسط">
+                                <field name="registration_id" readonly="1"/>
+                                <field name="child_name" readonly="1"/>
+                                <field name="installment_no" readonly="1"/>
+                                <field name="amount" widget="monetary" readonly="1"/>
+                                <field name="due_date" readonly="state != 'draft'"/>
+                            </group>
+                            <group string="معلومات الدفع">
+                                <field name="payment_method" readonly="state != 'draft'"/>
+                                <field name="invoice_id" readonly="1"/>
+                                <field name="is_overdue" invisible="1"/>
+                            </group>
+                        </group>
+
+                        <group string="بيانات الشيك" invisible="payment_method != 'cheque'">
+                            <group>
+                                <field name="cheque_no" required="payment_method == 'cheque'"
+                                       readonly="state != 'draft'"/>
+                                <field name="bank_name" required="payment_method == 'cheque'"
+                                       readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="cheque_date" required="payment_method == 'cheque'"
+                                       readonly="state != 'draft'"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_nursery_payment_schedule_cheque_form" model="ir.ui.view">
+    <field name="name">nursery.payment.schedule.cheque.form</field>
+    <field name="model">nursery.payment.schedule</field>
+    <field name="arch" type="xml">
+        <form string="بيانات الشيك">
+            <sheet>
+                <div class="oe_title">
+                    <h2>
+                        شيك القسط رقم <field name="installment_no" readonly="1" class="oe_inline"/>
+                    </h2>
+                </div>
+
+                <group>
+                    <group>
+                        <field name="child_name" readonly="1"/>
+                        <field name="amount" widget="monetary" readonly="1"/>
+                        <field name="due_date" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="payment_method" invisible="1"/>
+                    </group>
+                </group>
+
+                <separator string="بيانات الشيك"/>
+                <group>
+                    <group>
+                        <field name="cheque_no" required="1"/>
+                        <field name="bank_name" required="1"/>
+                    </group>
+                    <group>
+                        <field name="cheque_date" required="1"/>
+                    </group>
+                </group>
+            </sheet>
+            <footer>
+                <button string="حفظ" class="btn-primary" special="save"/>
+                <button string="إلغاء" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+        <!-- Search View -->
+        <record id="view_nursery_payment_schedule_search" model="ir.ui.view">
+            <field name="name">nursery.payment.schedule.search</field>
+            <field name="model">nursery.payment.schedule</field>
+            <field name="arch" type="xml">
+                <search string="بحث الأقساط">
+                    <field name="child_name"/>
+                    <field name="registration_id"/>
+                    <field name="invoice_id"/>
+
+                    <filter string="مستحق اليوم" name="due_today"
+                            domain="[('due_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="متأخر" name="overdue"
+                            domain="[('is_overdue', '=', True)]"/>
+                    <separator/>
+                    <filter string="مسودة" name="draft"
+                            domain="[('state', '=', 'draft')]"/>
+                    <filter string="تم إصدار الفاتورة" name="invoiced"
+                            domain="[('state', '=', 'invoiced')]"/>
+                    <filter string="مدفوع" name="paid"
+                            domain="[('state', '=', 'paid')]"/>
+
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="التسجيل" name="group_registration"
+                                context="{'group_by': 'registration_id'}"/>
+                        <filter string="الحالة" name="group_state"
+                                context="{'group_by': 'state'}"/>
+                        <filter string="طريقة الدفع" name="group_payment"
+                                context="{'group_by': 'payment_method'}"/>
+                        <filter string="شهر الاستحقاق" name="group_month"
+                                context="{'group_by': 'due_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Calendar View -->
+        <record id="view_nursery_payment_schedule_calendar" model="ir.ui.view">
+            <field name="name">nursery.payment.schedule.calendar</field>
+            <field name="model">nursery.payment.schedule</field>
+            <field name="arch" type="xml">
+                <calendar string="استحقاقات الأقساط"
+                          date_start="due_date"
+                          color="state"
+                          mode="month">
+                    <field name="display_name"/>
+                    <field name="amount"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_nursery_payment_schedule" model="ir.actions.act_window">
+            <field name="name">جدول أقساط الحضانة</field>
+            <field name="res_model">nursery.payment.schedule</field>
+            <field name="view_mode">list,form,calendar</field>
+            <field name="search_view_id" ref="view_nursery_payment_schedule_search"/>
+            <field name="context">{'search_default_overdue': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    لا توجد أقساط
+                </p>
+                <p>
+                    يتم إنشاء جدول الأقساط تلقائياً عند اعتماد تسجيلات الحضانة
+                </p>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

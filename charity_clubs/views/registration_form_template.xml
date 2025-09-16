@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- فورم التسجيل -->
+    <template id="registration_form" name="فورم التسجيل">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <!-- Breadcrumb -->
+                <div class="breadcrumb-section">
+                    <div class="container">
+                        <nav class="py-3">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="/clubs">النوادي</a></li>
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="'/clubs/%s' % slug(club)">
+                                        <t t-esc="club.name"/>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="'/programs/%s' % slug(program)">
+                                        <t t-esc="program.name"/>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active">التسجيل</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="container py-5">
+                    <div class="row">
+                        <div class="col-lg-10 mx-auto">
+                            <h1 class="text-center mb-4">
+                                تسجيل في <span class="text-primary"><t t-esc="program.name"/></span>
+                            </h1>
+
+                            <t t-if="error.get('general')">
+                                <div class="alert alert-danger">
+                                    <t t-esc="error['general']"/>
+                                </div>
+                            </t>
+
+                            <form t-att-action="'/programs/%s/register/submit' % slug(program)"
+                                  method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <!-- معلومات الطالب -->
+                                <div class="form-card mb-4">
+                                    <div class="form-card-header">
+                                        <h3>معلومات الطالب</h3>
+                                    </div>
+                                    <div class="form-card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">اسم الطالب (كما في الهوية)</label>
+                                                <input type="text" name="student_name"
+                                                       class="form-control"
+                                                       t-att-value="values.get('student_name')"
+                                                       required="required"/>
+                                                <t t-if="error.get('student_name')">
+                                                    <small class="text-danger" t-esc="error['student_name']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">تاريخ الميلاد</label>
+                                                <input type="date" name="birth_date"
+                                                       class="form-control"
+                                                       t-att-value="values.get('birth_date')"
+                                                       required="required"/>
+                                                <t t-if="error.get('birth_date')">
+                                                    <small class="text-danger" t-esc="error['birth_date']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">الجنس</label>
+                                                <select name="gender" class="form-control" required="required">
+                                                    <option value="">-- اختر --</option>
+                                                    <option value="male" t-att-selected="values.get('gender') == 'male'">ذكر</option>
+                                                    <option value="female" t-att-selected="values.get('gender') == 'female'">أنثى</option>
+                                                </select>
+                                                <t t-if="error.get('gender')">
+                                                    <small class="text-danger" t-esc="error['gender']"/>
+                                                </t>
+                                            </div>
+
+
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">الجنسية</label>
+                                                <select name="nationality_id" class="form-control" required="required">
+                                                    <option value="">-- اختر الدولة --</option>
+                                                    <t t-foreach="countries" t-as="country">
+                                                        <option t-att-value="country.id"
+                                                                t-att-selected="str(country.id) == values.get('nationality_id')">
+                                                            <t t-esc="country.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                                <t t-if="error.get('nationality_id')">
+                                                    <small class="text-danger" t-esc="error['nationality_id']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">تعلم اللغة العربية بالمدرسة</label>
+                                                <select name="native_language" class="form-control" required="required">
+                                                    <option value="">-- اختر --</option>
+                                                    <option value="arabic" t-att-selected="values.get('native_language') == 'arabic'">Arabic A : Native speakers / لغة عربية للناطقين</option>
+                                                    <option value="english" t-att-selected="values.get('native_language') == 'english'">Arabic B : Non Native speakers  / لغة عربية لغير الناطقين</option>
+                                                </select>
+                                                <t t-if="error.get('native_language')">
+                                                    <small class="text-danger" t-esc="error['native_language']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label>المدرسة</label>
+                                                <input type="text" name="school_name"
+                                                       class="form-control"
+                                                       t-att-value="values.get('school_name')"/>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label>الصف الدراسي</label>
+                                                <input type="text" name="class_level"
+                                                       class="form-control"
+                                                       t-att-value="values.get('class_level')"/>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label>مقدار حفظ القرآن</label>
+                                                <input type="text" name="quran_memorisation"
+                                                       class="form-control"
+                                                       t-att-value="values.get('quran_memorisation')"/>
+                                            </div>
+                                        </div>
+
+                                        <!-- أسئلة بسيطة -->
+                                        <div class="simple-questions mt-4">
+                                            <h5>معلومات إضافية</h5>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="question-box">
+                                                        <label>هل كان مشترك بنادي لغة عربية سابقا ؟</label>
+                                                        <div class="radio-group">
+                                                            <label class="radio-option">
+                                                                <input type="radio" name="attended_arabic_club" value="yes"
+                                                                       t-att-checked="values.get('attended_arabic_club') == 'yes'"/>
+                                                                <span>نعم</span>
+                                                            </label>
+                                                            <label class="radio-option">
+                                                                <input type="radio" name="attended_arabic_club" value="no"
+                                                                       t-att-checked="values.get('attended_arabic_club', 'no') == 'no'"/>
+                                                                <span>لا</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="question-box">
+                                                        <label>هل كان مشترك بنوادي رؤيتي سابقا</label>
+                                                        <div class="radio-group">
+                                                            <label class="radio-option">
+                                                                <input type="radio" name="attended_summer_activities" value="yes"
+                                                                       t-att-checked="values.get('attended_summer_activities') == 'yes'"/>
+                                                                <span>نعم</span>
+                                                            </label>
+                                                            <label class="radio-option">
+                                                                <input type="radio" name="attended_summer_activities" value="no"
+                                                                       t-att-checked="values.get('attended_summer_activities', 'no') == 'no'"/>
+                                                                <span>لا</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="question-box">
+                                                        <label>هل اخذ القاعدة النورانية سابقا</label>
+                                                        <div class="radio-group">
+                                                            <label class="radio-option">
+                                                                <input type="radio" name="interested_quran" value="yes"
+                                                                       t-att-checked="values.get('interested_quran') == 'yes'"/>
+                                                                <span>نعم</span>
+                                                            </label>
+                                                            <label class="radio-option">
+                                                                <input type="radio" name="interested_quran" value="no"
+                                                                       t-att-checked="values.get('interested_quran', 'no') == 'no'"/>
+                                                                <span>لا</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- معلومات ولي الأمر -->
+                                <div class="form-card mb-4">
+                                    <div class="form-card-header">
+                                        <h3>معلومات ولي الأمر</h3>
+                                    </div>
+                                    <div class="form-card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">اسم الأب</label>
+                                                <input type="text" name="father_name"
+                                                       class="form-control"
+                                                       t-att-value="values.get('father_name')"
+                                                       required="required"/>
+                                                <t t-if="error.get('father_name')">
+                                                    <small class="text-danger" t-esc="error['father_name']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">اسم الأم</label>
+                                                <input type="text" name="mother_name"
+                                                       class="form-control"
+                                                       t-att-value="values.get('mother_name')"
+                                                       required="required"/>
+                                                <t t-if="error.get('mother_name')">
+                                                    <small class="text-danger" t-esc="error['mother_name']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">رقم جوال ولي الأمر</label>
+                                                <input type="tel" name="parent_mobile"
+                                                       class="form-control"
+                                                       placeholder="+971501234567"
+                                                       t-att-value="values.get('parent_mobile')"
+                                                       required="required"/>
+                                                <t t-if="error.get('parent_mobile')">
+                                                    <small class="text-danger" t-esc="error['parent_mobile']"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label>WhatsApp الأم</label>
+                                                <input type="tel" name="mother_whatsapp"
+                                                       class="form-control"
+                                                       placeholder="+971501234567"
+                                                       t-att-value="values.get('mother_whatsapp')"/>
+                                            </div>
+
+                                            <div class="col-md-12 mb-3">
+                                                <label>البريد الإلكتروني</label>
+                                                <input type="email" name="parent_email"
+                                                       class="form-control"
+                                                       t-att-value="values.get('parent_email')"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- الترمات المطلوبة -->
+                                <div class="form-card mb-4">
+                                    <div class="form-card-header">
+                                        <h3>اختر الترمات</h3>
+                                    </div>
+                                    <div class="form-card-body">
+                                        <div class="terms-selection">
+                                            <label class="term-option">
+                                                <input type="radio" name="selected_terms" value="term1"
+                                                       t-att-checked="values.get('selected_terms') == 'term1'"/>
+                                                <div class="term-content">
+                                                    <span class="term-name">الترم الأول</span>
+                                                    <span class="term-price">
+                                                        <t t-esc="program.term1_price"/> درهم
+                                                    </span>
+                                                </div>
+                                            </label>
+
+                                            <label class="term-option">
+                                                <input type="radio" name="selected_terms" value="term2"
+                                                       t-att-checked="values.get('selected_terms') == 'term2'"/>
+                                                <div class="term-content">
+                                                    <span class="term-name">الترم الثاني</span>
+                                                    <span class="term-price">
+                                                        <t t-esc="program.term2_price"/> درهم
+                                                    </span>
+                                                </div>
+                                            </label>
+
+                                            <label class="term-option">
+                                                <input type="radio" name="selected_terms" value="term3"
+                                                       t-att-checked="values.get('selected_terms') == 'term3'"/>
+                                                <div class="term-content">
+                                                    <span class="term-name">الترم الثالث</span>
+                                                    <span class="term-price">
+                                                        <t t-esc="program.term3_price"/> درهم
+                                                    </span>
+                                                </div>
+                                            </label>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- المستندات -->
+                                <div class="form-card mb-4">
+                                    <div class="form-card-header">
+                                        <h3>المستندات المطلوبة</h3>
+                                    </div>
+                                    <div class="form-card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="required">نسخة من الهوية الإماراتية صورة للوجه الأمامى و الخلفى </label>
+                                                <input type="file" name="emirates_id_copy"
+                                                       class="form-control"
+                                                       accept="image/*,.pdf"
+                                                       required="required"/>
+                                                <small class="text-muted">صيغ مقبولة: JPG, PNG, PDF</small>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label>صورة الطالب (اختياري)</label>
+                                                <input type="file" name="student_photo"
+                                                       class="form-control"
+                                                       accept="image/*"/>
+                                                <small class="text-muted">لأغراض التعريف</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- معلومات طبية -->
+                                <div class="form-card mb-4">
+                                    <div class="form-card-header">
+                                        <h3>معلومات إضافية (اختياري)</h3>
+
+                                    </div>
+                                    <div class="form-card-body">
+                                        <div class="mb-3">
+                                            <h5>في حال وجود أي متطلبات صحية او احتياجات خاصة او حساسيات لدى الطالب يرجى ابلاغ الإدارة لأخذ الاحتياطات اللازمة</h5>
+                                            <label>حالات طبية خاصة</label>
+                                            <textarea name="medical_conditions"
+                                                      class="form-control"
+                                                      rows="2"
+                                                      placeholder="أي حالات طبية يجب أن نكون على علم بها..."><t t-esc="values.get('medical_conditions')"/></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>الحساسية</label>
+                                            <textarea name="allergies"
+                                                      class="form-control"
+                                                      rows="2"
+                                                      placeholder="أي حساسية من الطعام أو الأدوية..."><t t-esc="values.get('allergies')"/></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label>ملاحظات</label>
+                                            <textarea name="notes"
+                                                      class="form-control"
+                                                      rows="2"
+                                                      placeholder="أي معلومات إضافية..."><t t-esc="values.get('notes')"/></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- الموافقات -->
+                                <div class="form-card mb-4">
+                                    <div class="form-card-body">
+                                        <div class="agreements">
+                                            <label class="checkbox-option">
+                                                <input type="checkbox" name="photo_permission" value="1"
+                                                       t-att-checked="values.get('photo_permission')"/>
+                                                <span>ملاحظة : يتم تصوير الطلاب خلال فعاليات النوادي وتوضع في مواقع التواصل الاجتماعي للجمعية</span>
+                                            </label>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- أزرار الإرسال -->
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fa fa-check me-2"></i>
+                                        إرسال طلب التسجيل
+                                    </button>
+                                    <a t-att-href="'/programs/%s' % slug(program)"
+                                       class="btn btn-secondary btn-lg ms-2">
+                                        إلغاء
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- رسالة النجاح -->
+    <template id="registration_success" name="نجاح التسجيل">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container py-5">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto text-center">
+                            <div class="success-message">
+                                <div class="success-icon">
+                                    <i class="fa fa-check"></i>
+                                </div>
+                                <h2>تم استلام طلب التسجيل بنجاح!</h2>
+                                <div class="registration-number">
+                                    رقم التسجيل: <strong><t t-esc="registration.registration_number"/></strong>
+                                </div>
+                                <p class="mt-3">
+                                    تم تسجيل <strong><t t-esc="registration.student_name"/></strong>
+                                    في برنامج <strong><t t-esc="program.name"/></strong>
+                                </p>
+                                <p>سيتم مراجعة طلبكم وإرسال تأكيد على البريد الإلكتروني.</p>
+                                <div class="mt-4">
+                                    <a href="/clubs" class="btn btn-primary">
+                                        العودة للنوادي
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- البرنامج ممتلئ -->
+    <template id="program_full" name="البرنامج ممتلئ">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container py-5">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto text-center">
+                            <div class="alert-message warning">
+                                <div class="alert-icon">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                </div>
+                                <h2>عذراً، البرنامج ممتلئ!</h2>
+                                <p class="lead">
+                                    برنامج <strong><t t-esc="program.name"/></strong> ممتلئ حالياً
+                                </p>
+                                <p>يمكنك التواصل معنا أو الاطلاع على البرامج الأخرى المتاحة.</p>
+                                <div class="mt-4">
+                                    <a t-att-href="'/clubs/%s' % slug(program.club_id)" class="btn btn-primary">
+                                        عرض البرامج الأخرى
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

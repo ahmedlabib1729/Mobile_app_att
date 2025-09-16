@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_nursery_child_sibling_list" model="ir.ui.view">
+            <field name="name">nursery.child.sibling.list</field>
+            <field name="model">nursery.child.sibling</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sibling_name"/>
+                    <field name="sibling_age"/>
+                    <field name="sibling_class"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_nursery_emergency_contact_list" model="ir.ui.view">
+            <field name="name">nursery.emergency.contact.list</field>
+            <field name="model">nursery.emergency.contact</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="person_name"/>
+                    <field name="mobile"/>
+                    <field name="relationship"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View محسن -->
+        <record id="view_nursery_child_registration_form" model="ir.ui.view">
+            <field name="name">nursery.child.registration.form</field>
+            <field name="model">nursery.child.registration</field>
+            <field name="arch" type="xml">
+                <form string="تسجيل طفل الحضانة">
+                    <header>
+                        <button name="action_confirm" string="تأكيد" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="اعتماد" type="object" class="oe_highlight" invisible="state != 'confirmed'" groups="base.group_system"/>
+                        <button name="action_reject" string="رفض" type="object" invisible="state != 'confirmed'" groups="base.group_system"/>
+                        <button name="action_reset_draft" string="إعادة للمسودة" type="object" invisible="state not in ['confirmed','rejected']"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved"/>
+                    </header>
+                    <sheet>
+
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_invoice"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-file-text-o"
+                                    invisible="not invoice_id">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">الفاتورة</span>
+                                </div>
+                            </button>
+
+                            <button name="action_view_installments"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-calendar-check-o"
+                                    invisible="not payment_schedule_ids">
+                                <field name="installments_count" widget="statinfo" string="الأقساط"/>
+                            </button>
+
+                            <button name="action_view_registration_fee_invoice"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-file-text-o"
+                                    invisible="not registration_fee_invoice_id">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">فاتورة رسوم التسجيل</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <widget name="web_ribbon" title="معتمد" bg_color="bg-success" invisible="state != 'approved'"/>
+                        <widget name="web_ribbon" title="مرفوض" bg_color="bg-danger" invisible="state != 'rejected'"/>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="child_full_name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <!-- إضافة قسم اختيار نوع التسجيل -->
+                        <group>
+                            <field name="registration_type" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
+                        </group>
+
+                        <!-- إظهار اختيار الطفل الموجود -->
+                        <group invisible="registration_type != 'existing'" colspan="4">
+                            <field name="child_profile_id"
+                                   string="اختر الطفل المسجل"
+                                   options="{'no_create': True, 'no_open': False}"
+                                   required="registration_type == 'existing'"
+                                   readonly="state != 'draft'"/>
+                            <!-- إظهار بيانات الطفل المختار -->
+                            <group invisible="not child_profile_id" colspan="4">
+                                <group>
+                                    <field name="first_name" readonly="1"/>
+                                    <field name="father_name" readonly="1"/>
+                                    <field name="family_name" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="birth_date" readonly="1"/>
+                                    <field name="gender" readonly="1"/>
+                                    <field name="identity_number" readonly="1"/>
+
+                                </group>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="بيانات الطفل" invisible="registration_type == 'existing'">
+                                <group>
+                                    <group string="المعلومات الأساسية">
+                                        <field name="first_name" placeholder="الاسم الأول" required="registration_type == 'new'" readonly="state != 'draft'"/>
+                                        <field name="father_name" placeholder="اسم الأب" required="registration_type == 'new'" readonly="state != 'draft'"/>
+                                        <field name="family_name" placeholder="العائلة" required="registration_type == 'new'" readonly="state != 'draft'"/>
+                                        <field name="birth_date" required="registration_type == 'new'" readonly="state != 'draft'"/>
+                                        <field name="gender" widget="radio" options="{'horizontal': true}" required="registration_type == 'new'" readonly="state != 'draft'"/>
+                                    </group>
+                                    <group string="معلومات إضافية">
+                                        <field name="religion" placeholder="الديانة" readonly="state != 'draft'"/>
+                                        <field name="nationality" options="{'no_create': True}" readonly="state != 'draft'"/>
+                                        <field name="mother_language" placeholder="اللغة الأم" readonly="state != 'draft'"/>
+                                        <field name="passport_number" placeholder="رقم جواز السفر" readonly="state != 'draft'"/>
+                                        <field name="identity_number" placeholder="رقم الهوية" required="registration_type == 'new'" readonly="state != 'draft'"/>
+                                        <field name="child_order" placeholder="مثال: 1، 2، 3..." readonly="state != 'draft'"/>
+                                        <field name="child_age_display" readonly="1"/>
+                                        <field name="nursery_class_id" readonly="1"/>
+                                    </group>
+                                </group>
+
+                                <separator string="بيانات الأخوة المسجلين" class="mt-3"/>
+                                <group>
+                                    <field name="has_siblings" widget="boolean_toggle" readonly="state != 'draft'"/>
+                                </group>
+                                <group invisible="not has_siblings">
+                                    <field name="sibling_ids" nolabel="1" readonly="state != 'draft'">
+                                        <list editable="bottom">
+                                            <field name="sibling_name"/>
+                                            <field name="sibling_age"/>
+                                            <field name="sibling_class"/>
+                                        </list>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="بيانات العائلة">
+                                <group string="بيانات الأم">
+                                    <group>
+                                        <field name="mother_name" placeholder="اسم الأم" readonly="state != 'draft'"/>
+                                        <field name="mother_nationality" options="{'no_create': True}" readonly="state != 'draft'"/>
+                                        <field name="mother_job" placeholder="المهنة" readonly="state != 'draft'"/>
+                                        <field name="mother_company" placeholder="الشركة" readonly="state != 'draft'"/>
+                                    </group>
+                                    <group>
+                                        <field name="mother_mobile" widget="phone" placeholder="الهاتف المتحرك" readonly="state != 'draft'"/>
+                                        <field name="mother_phone" widget="phone" placeholder="الهاتف الثابت" readonly="state != 'draft'"/>
+                                        <field name="mother_email" widget="email" placeholder="البريد الإلكتروني" readonly="state != 'draft'"/>
+                                    </group>
+                                </group>
+
+                                <separator string="عنوان السكن"/>
+                                <group>
+                                    <field name="home_address" nolabel="1" widget="text" readonly="state != 'draft'"/>
+                                </group>
+
+                                <group string="بيانات الأب">
+                                    <group>
+                                        <field name="father_full_name" placeholder="اسم الأب الكامل" readonly="state != 'draft'"/>
+                                        <field name="father_nationality" options="{'no_create': True}" readonly="state != 'draft'"/>
+                                        <field name="father_job" placeholder="المهنة" readonly="state != 'draft'"/>
+                                        <field name="father_company" placeholder="الشركة" readonly="state != 'draft'"/>
+                                        <field name="father_education_level" readonly="state != 'draft'"/>
+                                        <field name="father_work_status" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
+                                    </group>
+                                    <group>
+                                        <field name="father_mobile" widget="phone" placeholder="الهاتف المتحرك" readonly="state != 'draft'"/>
+                                        <field name="father_phone" widget="phone" placeholder="الهاتف الثابت" readonly="state != 'draft'"/>
+                                        <field name="father_email" widget="email" placeholder="البريد الإلكتروني" readonly="state != 'draft'"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="التواصل في حالة الطوارئ">
+                                <field name="emergency_contact_ids" nolabel="1" readonly="state != 'draft'">
+                                    <list editable="bottom">
+                                        <field name="person_name"/>
+                                        <field name="mobile" widget="phone"/>
+                                        <field name="relationship"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="معلومات التسجيل">
+                                <group>
+                                    <group string="بيانات التسجيل">
+                                        <field name="join_date"/>
+                                        <field name="department_id" options="{'no_create': True}"/>
+                                        <field name="nursery_plan_id" domain="[('department_id', '=', department_id)]" options="{'no_create': True}"/>
+                                        <field name="attendance_days" widget="radio" options="{'horizontal': true}"/>
+                                        <field name="registration_price" readonly="1" widget="monetary"/>
+                                    </group>
+                                    <group string="كيف تعرفت علينا">
+                                        <field name="how_know_us" widget="radio"/>
+                                    </group>
+                                </group>
+                                <separator string="التأكيد" class="mt-4"/>
+                                <group>
+                                    <field name="confirm_info"/>
+                                    <div class="text-muted">
+                                        <i class="fa fa-info-circle"/> يجب تأكيد صحة المعلومات قبل الحفظ
+                                    </div>
+                                </group>
+                            </page>
+                            <!-- بعد page "معلومات التسجيل" أضف: -->
+                            <page string="المستندات المرفقة" name="documents">
+                                <group>
+                                    <group string="صور هوية الطفل">
+                                        <field name="child_id_front" widget="binary" filename="child_id_front_filename"
+                                               string="الوجه الأمامي" readonly="state != 'draft'"/>
+                                        <field name="child_id_front_filename" invisible="1"/>
+                                        <field name="child_id_back" widget="binary" filename="child_id_back_filename"
+                                               string="الوجه الخلفي" readonly="state != 'draft'"/>
+                                        <field name="child_id_back_filename" invisible="1"/>
+                                    </group>
+                                    <group string="صور هوية ولي الأمر">
+                                        <field name="guardian_id_front" widget="binary" filename="guardian_id_front_filename"
+                                               string="الوجه الأمامي" readonly="state != 'draft'"/>
+                                        <field name="guardian_id_front_filename" invisible="1"/>
+                                        <field name="guardian_id_back" widget="binary" filename="guardian_id_back_filename"
+                                               string="الوجه الخلفي" readonly="state != 'draft'"/>
+                                        <field name="guardian_id_back_filename" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                                            <page string="طريقة الدفع والأقساط" name="payment_installments">
+                                                <group>
+                                                    <group string="طريقة السداد">
+                                                        <field name="payment_type" widget="radio"
+                                                               options="{'horizontal': true}"
+                                                               readonly="state != 'draft'"/>
+                                                        <field name="installments_count"
+                                                               invisible="payment_type != 'installments'"
+                                                               required="payment_type == 'installments'"
+                                                               readonly="state != 'draft'"/>
+                                                        <field name="payment_method"
+                                                               widget="radio"
+                                                               readonly="state != 'draft'"/>
+                                                    </group>
+                                                    <group string="معلومات الدفع">
+                                                        <field name="registration_price" readonly="1" widget="monetary"/>
+                                                        <field name="installment_amount"
+                                                               invisible="payment_type != 'installments'"
+                                                               readonly="1" widget="monetary"/>
+                                                        <field name="registration_fee_invoice_id"
+                                                               readonly="1"
+                                                               invisible="not registration_fee_invoice_id"/>
+                                                    </group>
+                                                </group>
+
+                                                <!-- قسم الخصومات الجديد -->
+                                                <separator string="الخصومات" class="mt-3"/>
+                                                <group>
+                                                    <group string="نوع الخصم">
+                                                        <field name="discount_type"
+                                                               widget="radio"
+                                                               options="{'horizontal': true}"
+                                                               readonly="state != 'draft'"/>
+                                                        <field name="discount_percentage"
+                                                               invisible="discount_type != 'percentage'"
+                                                               required="discount_type == 'percentage'"
+                                                               readonly="state != 'draft'"/>
+                                                        <field name="discount_amount"
+                                                               widget="monetary"
+                                                               invisible="discount_type != 'amount'"
+                                                               required="discount_type == 'amount'"
+                                                               readonly="state != 'draft'"/>
+                                                    </group>
+                                                    <group string="الإجمالي">
+                                                        <field name="total_discount"
+                                                               widget="monetary"
+                                                               readonly="1"
+                                                               invisible="discount_type == 'none'"/>
+                                                        <field name="final_price"
+                                                               widget="monetary"
+                                                               readonly="1"
+                                                               class="oe_highlight"/>
+                                                        <field name="installment_amount"
+                                                               widget="monetary"
+                                                               readonly="1"
+                                                               invisible="payment_type != 'installments'"
+                                                               string="قيمة القسط بعد الخصم"/>
+                                                    </group>
+                                                </group>
+
+                                                <div class="alert alert-info" role="alert" invisible="discount_type == 'none'">
+                                                    <p>
+                                                        <i class="fa fa-info-circle"/>
+                                                        سيتم توزيع الخصم على جميع الأقساط بالتساوي
+                                                    </p>
+                                                </div>
+
+                                                <separator string="جدول الأقساط" invisible="not payment_schedule_ids" class="mt-3"/>
+                                                <field name="payment_schedule_ids"
+                                                       readonly="1"
+                                                       invisible="not payment_schedule_ids"
+                                                       context="{'default_registration_id': id}">
+                                                    <list create="0" delete="0">
+                                                        <field name="installment_no"/>
+                                                        <field name="amount" widget="monetary"/>
+                                                        <field name="due_date"/>
+                                                        <field name="payment_method"/>
+                                                        <field name="invoice_id"/>
+                                                        <field name="state" widget="badge"
+                                                               decoration-success="state == 'paid'"
+                                                               decoration-warning="state == 'invoiced'"
+                                                               decoration-danger="state == 'overdue'"/>
+                                                        <button name="action_create_invoice"
+                                                                string="إنشاء فاتورة"
+                                                                type="object"
+                                                                class="btn-sm btn-primary"
+                                                                invisible="invoice_id"/>
+                                                    </list>
+                                                </field>
+                                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_nursery_child_registration_list" model="ir.ui.view">
+            <field name="name">nursery.child.registration.list</field>
+            <field name="model">nursery.child.registration</field>
+            <field name="arch" type="xml">
+                <list string="تسجيلات الحضانة">
+                    <field name="child_full_name"/>
+                    <field name="birth_date"/>
+                    <field name="gender"/>
+                    <field name="mother_name"/>
+                    <field name="father_full_name"/>
+                    <field name="department_id"/>
+                    <field name="nursery_plan_id"/>
+                    <field name="join_date"/>
+                    <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-warning="state == 'confirmed'" decoration-danger="state == 'rejected'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_nursery_child_registration_search" model="ir.ui.view">
+            <field name="name">nursery.child.registration.search</field>
+            <field name="model">nursery.child.registration</field>
+            <field name="arch" type="xml">
+                <search string="بحث التسجيلات">
+                    <field name="child_full_name"/>
+                    <field name="mother_name"/>
+                    <field name="father_full_name"/>
+                    <field name="department_id"/>
+                    <filter string="ذكور" name="male" domain="[('gender', '=', 'male')]"/>
+                    <filter string="إناث" name="female" domain="[('gender', '=', 'female')]"/>
+                    <separator/>
+                    <filter string="مسودة" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="مؤكد" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                    <filter string="معتمد" name="approved" domain="[('state', '=', 'approved')]"/>
+                    <filter string="مرفوض" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                    <group expand="0" string="تجميع حسب">
+                        <filter string="القسم" name="group_department" context="{'group_by': 'department_id'}"/>
+                        <filter string="الدوام" name="group_plan" context="{'group_by': 'nursery_plan_id'}"/>
+                        <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="الجنس" name="group_gender" context="{'group_by': 'gender'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_nursery_child_registration" model="ir.actions.act_window">
+            <field name="name">تسجيلات الحضانة</field>
+            <field name="res_model">nursery.child.registration</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_nursery_child_registration_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    إنشاء تسجيل جديد
+                </p>
+                <p>
+                    يمكنك تسجيل الأطفال في الحضانة من هنا
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu -->
+
+    </data>
+</odoo>
