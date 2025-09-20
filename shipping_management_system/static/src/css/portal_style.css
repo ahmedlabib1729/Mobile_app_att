@@ -1,0 +1,435 @@
+/* Portal Shipment Styles */
+
+/* General Portal Enhancements */
+.o_portal {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* Portal Cards Animation */
+.o_portal_docs .o_portal_doc_card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.o_portal_docs .o_portal_doc_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Shipment Portal Specific */
+/* Shipment Portal Header Enhanced */
+.shipment-portal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+    border-radius: 0 0 30px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.shipment-portal-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    bottom: -50%;
+    left: -50%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.shipment-portal-header .container {
+    position: relative;
+    z-index: 1;
+}
+
+.shipment-portal-header h2 {
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    margin-bottom: 15px;
+    animation: fadeInDown 0.8s ease;
+}
+
+.shipment-portal-header p {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    animation: fadeInUp 0.8s ease;
+}
+
+.shipment-portal-header i {
+    font-size: 3rem;
+    vertical-align: middle;
+    margin-right: 20px;
+    animation: bounceIn 1s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Table Styling */
+.portal-shipment-table {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.portal-shipment-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.portal-shipment-table thead th {
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+}
+
+.portal-shipment-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.portal-shipment-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: scale(1.01);
+}
+
+.portal-shipment-table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Status Badges */
+.tx_status .badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #36D1DC 0%, #5B86E5 100%);
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+/* Shipment Detail Page */
+.shipment-detail-container {
+    padding: 30px 0;
+}
+
+.shipment-detail-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.shipment-detail-header h3 {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Cards Styling */
+.shipment-info-card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.shipment-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.shipment-info-card .card-header {
+    border: none;
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+.shipment-info-card .card-body {
+    padding: 20px;
+}
+
+/* Tracking Alert */
+.tracking-alert {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(252, 182, 159, 0.4);
+}
+
+.tracking-alert strong {
+    color: #e67e22;
+    font-size: 1.1rem;
+}
+
+/* Products Table */
+.products-table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.products-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.products-table th {
+    border: none;
+    padding: 12px;
+}
+
+.products-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Pricing Card Special */
+.pricing-card {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.pricing-card .card-header {
+    background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+    color: white;
+    border: none;
+}
+
+.pricing-total {
+    font-size: 1.5rem;
+    color: #e67e22;
+    font-weight: bold;
+}
+
+/* Action Buttons */
+.portal-action-buttons {
+    margin-top: 30px;
+}
+
+.portal-action-buttons .btn {
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+}
+
+.portal-action-buttons .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.portal-action-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .shipment-detail-header {
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .portal-action-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .portal-shipment-table {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation Classes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease;
+}
+
+/* Search Bar Styling */
+.o_portal_search_panel {
+    background: white;
+    border-radius: 50px;
+    padding: 10px 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.o_portal_search_panel input {
+    border: none;
+    outline: none;
+    padding: 10px;
+}
+
+.o_portal_search_panel .btn {
+    border-radius: 50px;
+    padding: 10px 25px;
+}
+
+/* Filter Pills */
+.nav-pills .nav-link {
+    border-radius: 25px;
+    padding: 10px 20px;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Empty State */
+.portal-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.portal-empty-state i {
+    font-size: 5rem;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+/* Loading Animation */
+.portal-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.portal-loading:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid #667eea;
+    border-color: #667eea transparent #667eea transparent;
+    animation: portal-loading 1.2s linear infinite;
+}
+
+@keyframes portal-loading {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+#wrapwrap.o_portal,
+#wrap.o_portal_wrap,
+.o_portal,
+.o_portal_wrap,
+.o_portal_index,
+body.o_connected_user {
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    min-height: auto !important;
+    padding-top: 20px !important;
+}
+
+/* Remove the pseudo elements causing gray bg */
+.o_portal::before,
+.o_portal::after,
+#wrap::before,
+#wrap::after {
+    display: none !important;
+}
+
+/* Fix container spacing */
+.o_portal .container:first-of-type {
+    padding-top: 20px !important;
+    margin-top: 0 !important;
+}
+
+
+
