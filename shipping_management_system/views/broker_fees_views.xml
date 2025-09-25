@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View بسيط -->
+    <record id="view_broker_additional_fee_tree" model="ir.ui.view">
+        <field name="name">broker.additional.fee.tree</field>
+        <field name="model">broker.additional.fee</field>
+        <field name="arch" type="xml">
+            <list string="Additional Services" editable="top">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="fee_amount" widget="monetary"/>
+                <field name="auto_apply" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View بسيط -->
+    <record id="view_broker_additional_fee_form" model="ir.ui.view">
+        <field name="name">broker.additional.fee.form</field>
+        <field name="model">broker.additional.fee</field>
+        <field name="arch" type="xml">
+            <form string="Additional Service">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="fee_amount" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="auto_apply"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Description" invisible="1">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_broker_additional_fee" model="ir.actions.act_window">
+        <field name="name">Additional Services</field>
+        <field name="res_model">broker.additional.fee</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your additional services
+            </p>
+            <p>
+                Simply define service name and price.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+
+</odoo>
