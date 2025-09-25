@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- تحديث Form View للشحنة -->
+    <record id="view_shipment_order_cod_form" model="ir.ui.view">
+        <field name="name">shipment.order.cod.form</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة حقل COD Status في الهيدر -->
+            <field name="state" position="after">
+                <field name="cod_status"
+                       widget="badge"
+                       decoration-info="cod_status == 'pending'"
+                       decoration-warning="cod_status == 'collected_at_courier'"
+                       decoration-success="cod_status in ['received_from_courier', 'settled']"
+                       decoration-danger="cod_status in ['refunded', 'cancelled']"
+                       invisible="payment_method != 'cod'"/>
+            </field>
+
+            <!-- إضافة أزرار COD في الهيدر -->
+            <xpath expr="//header/button[@name='action_deliver']" position="after">
+                <button name="action_mark_cod_received"
+                        string="Mark COD Received"
+                        type="object"
+                        class="btn-primary"
+                        invisible="cod_status != 'collected_at_courier' or payment_method != 'cod'"/>
+
+                <button name="action_settle_with_customer"
+                        string="Settle with Customer"
+                        type="object"
+                        class="btn-success"
+                        invisible="cod_status not in ['received_from_courier', 'collected_at_courier'] or payment_method != 'cod'"/>
+            </xpath>
+
+            <!-- إضافة تاب COD Details -->
+            <xpath expr="//notebook" position="inside">
+                <page string="COD Management" invisible="payment_method != 'cod'">
+                    <group>
+                        <group string="COD Status">
+                            <field name="is_cod_order" invisible="1"/>
+                            <field name="cod_status" readonly="1"/>
+                            <field name="days_since_collection" invisible="cod_status == 'pending'"/>
+                            <field name="cod_collected_date" readonly="1"/>
+                            <field name="cod_received_date" readonly="1"/>
+                            <field name="cod_settled_date" readonly="1"/>
+                        </group>
+                        <group string="COD Amounts">
+                            <field name="cod_amount" readonly="1"/>
+                            <field name="total_company_cost" readonly="1"/>
+                            <field name="shipping_cost" readonly="1"/>
+                            <field name="total_deductions" readonly="1" widget="monetary"/>
+                            <field name="cod_net_for_customer" readonly="1" widget="monetary"
+                                   style="font-weight: bold; color: green;"/>
+                        </group>
+                    </group>
+                    <separator string="Internal Notes"/>
+                    <field name="cod_notes" nolabel="1" placeholder="Add internal notes about this COD transaction..."/>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- تحديث List View -->
+    <record id="view_shipment_order_cod_list" model="ir.ui.view">
+        <field name="name">shipment.order.cod.list</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_list"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="cod_status"
+                       optional="show"
+                       widget="badge"
+                       decoration-info="cod_status == 'pending'"
+                       decoration-warning="cod_status == 'collected_at_courier'"
+                       decoration-success="cod_status in ['received_from_courier', 'settled']"
+                       decoration-danger="cod_status in ['refunded', 'cancelled']"/>
+                <field name="cod_net_for_customer"
+                       optional="show"
+                       sum="Total Net"
+                       widget="monetary"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_cod_orders" model="ir.actions.act_window">
+        <field name="name">COD Orders</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[('payment_method', '=', 'cod')]</field>
+        <field name="context">{'search_default_cod_orders': 1}</field>
+    </record>
+
+    <record id="action_cod_pending" model="ir.actions.act_window">
+        <field name="name">Pending Collection</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cod_status', '=', 'collected_at_courier')]</field>
+    </record>
+
+    <record id="action_cod_overdue" model="ir.actions.act_window">
+        <field name="name">Overdue COD</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cod_status', '=', 'collected_at_courier'), ('days_since_collection', '>', 7)]</field>
+    </record>
+
+    <!-- Menu مستقل للـ COD -->
+    <menuitem id="menu_cod_root"
+              name="COD Management"
+              sequence="100"
+              web_icon="cod_management,static/description/icon.png"/>
+
+    <menuitem id="menu_cod_orders"
+              name="All COD Orders"
+              parent="menu_cod_root"
+              action="action_cod_orders"
+              sequence="10"/>
+
+    <menuitem id="menu_cod_pending"
+              name="Pending Collection"
+              parent="menu_cod_root"
+              action="action_cod_pending"
+              sequence="20"/>
+
+    <menuitem id="menu_cod_overdue"
+              name="Overdue (>7 days)"
+              parent="menu_cod_root"
+              action="action_cod_overdue"
+              sequence="30"/>
+</odoo>
