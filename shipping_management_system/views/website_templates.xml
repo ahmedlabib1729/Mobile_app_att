@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- صفحة طلب الشحن المحسنة -->
+
+
+<template id="shipment_request_form" name="Shipment Request Form">
+    <t t-call="website.layout">
+        <div id="wrap" class="oe_structure">
+            <!-- Include Torood Theme CSS -->
+            <link rel="stylesheet" href="/shipping_management_system/static/src/css/torood_theme.css"/>
+
+            <!-- Custom Navigation Bar -->
+            <nav class="torood-navbar" id="toroodNavbar">
+                <div class="container">
+                    <div class="d-flex justify-content-between align-items-center py-3">
+                        <a href="/" class="d-flex align-items-center text-decoration-none">
+                            <div class="torood-logo-icon">
+                                <i class="fa fa-box"></i>
+                            </div>
+                            <div class="ms-3">
+                                <div style="font-size: 1.5rem; font-weight: 800; color: var(--torood-primary); line-height: 1;">طرود</div>
+                                <div style="font-size: 0.9rem; color: var(--torood-secondary); font-weight: 600;">TOROOD</div>
+                            </div>
+                        </a>
+
+                        <ul class="nav">
+                            <li class="nav-item"><a href="/" class="nav-link">الرئيسية</a></li>
+                            <li class="nav-item"><a href="/shipment/track" class="nav-link">تتبع الشحنة</a></li>
+                            <li class="nav-item"><a href="/my/shipments" class="nav-link">شحناتي</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="torood-form-container">
+                <div class="torood-form-wrapper">
+                    <!-- Header -->
+                    <div class="torood-form-header fade-in-up">
+                        <h1><i class="fa fa-truck"></i> طلب شحنة جديدة</h1>
+                        <p>خدمة شحن سريعة وآمنة في جميع أنحاء مصر</p>
+                    </div>
+
+                    <!-- Progress Indicator with Torood Style -->
+                    <div class="progress-indicator mb-5">
+                        <style>
+                            .progress-indicator {
+                                display: flex;
+                                justify-content: space-between;
+                                max-width: 800px;
+                                margin: 0 auto 50px;
+                                position: relative;
+                            }
+                            .progress-step {
+                                flex: 1;
+                                text-align: center;
+                                position: relative;
+                            }
+                            .progress-step:not(:last-child)::after {
+                                content: '';
+                                position: absolute;
+                                top: 20px;
+                                left: 50%;
+                                width: 100%;
+                                height: 3px;
+                                background: #ddd;
+                            }
+                            .progress-step.active::after {
+                                background: var(--torood-primary);
+                            }
+                            .step-circle {
+                                width: 40px;
+                                height: 40px;
+                                background: #ddd;
+                                border-radius: 50%;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                                font-weight: bold;
+                                position: relative;
+                                z-index: 1;
+                                transition: all 0.3s ease;
+                            }
+                            .progress-step.active .step-circle {
+                                background: var(--torood-gradient-primary);
+                                box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+                            }
+                            .step-label {
+                                margin-top: 10px;
+                                color: #666;
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                            }
+                            .progress-step.active .step-label {
+                                color: var(--torood-primary);
+                            }
+                        </style>
+                        <div class="progress-step active">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">المرسل</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">المستلم</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">التفاصيل</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-circle">4</div>
+                            <div class="step-label">الدفع</div>
+                        </div>
+                    </div>
+
+                    <!-- Error Messages -->
+                    <t t-if="error_message">
+                        <div class="alert alert-danger torood-rounded">
+                            <h5><i class="fa fa-exclamation-triangle"></i> يرجى تصحيح الأخطاء التالية:</h5>
+                            <ul class="mb-0">
+                                <t t-foreach="error_message" t-as="msg">
+                                    <li t-esc="msg"/>
+                                </t>
+                            </ul>
+                        </div>
+                    </t>
+
+                    <!-- Main Form -->
+                    <form action="/shipment/submit" method="post" class="shipment-form" id="shipmentForm">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <!-- Sender Information Card -->
+                        <div class="torood-form-card fade-in-up">
+                            <div class="torood-form-card-header">
+                                <i class="fa fa-user"></i> معلومات المرسل
+                            </div>
+                            <div class="torood-form-card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>الاسم الكامل <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="text" name="sender_name" class="form-control torood-form-control"
+                                               t-att-value="sender_name" required="required"
+                                               placeholder="أدخل اسم المرسل الكامل"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>رقم الهاتف <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="tel" name="sender_phone" class="form-control torood-form-control"
+                                               t-att-value="sender_phone" required="required"
+                                               placeholder="01234567890"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>البريد الإلكتروني</label>
+                                        <input type="email" name="sender_email" class="form-control torood-form-control"
+                                               t-att-value="sender_email"
+                                               placeholder="sender@example.com"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>رقم الواتساب</label>
+                                        <input type="tel" name="sender_whatsapp" class="form-control torood-form-control"
+                                               t-att-value="sender_whatsapp"
+                                               placeholder="+201234567890"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label>عنوان الاستلام <span style="color: var(--torood-primary);">*</span></label>
+                                        <textarea name="sender_address" class="form-control torood-form-control" rows="2"
+                                                  required="required"
+                                                  placeholder="الشارع، رقم المبنى، الشقة، إلخ..."><t t-esc="sender_address"/></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                            <label>المحافظة <span style="color: var(--torood-primary);">*</span></label>
+                                            <select name="sender_governorate_id" class="form-control torood-form-control" required="required">
+                                                <option value="">-- اختر المحافظة --</option>
+                                                <t t-if="governorates">
+                                                    <t t-foreach="governorates" t-as="gov">
+                                                        <option t-att-value="gov.id" t-att-selected="str(gov.id) == str(sender_governorate_id) if sender_governorate_id else False">
+                                                            <t t-esc="gov.name"/>
+                                                        </option>
+                                                    </t>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    <div class="col-md-6 mb-3">
+                                            <label>المنطقة/الحي</label>
+                                            <input type="text" name="sender_city" class="form-control torood-form-control"
+                                                   t-att-value="sender_city"
+                                                   placeholder="مثال: مدينة نصر، المعادي"/>
+                                        </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-12 mb-3">
+                                        <label>الوقت المفضل للاستلام</label>
+                                        <select name="sender_preferred_pickup_time" class="form-control torood-form-control">
+                                            <option value="anytime" t-att-selected="sender_preferred_pickup_time == 'anytime'">أي وقت</option>
+                                            <option value="morning" t-att-selected="sender_preferred_pickup_time == 'morning'">صباحاً (9 ص - 12 ظ)</option>
+                                            <option value="afternoon" t-att-selected="sender_preferred_pickup_time == 'afternoon'">ظهراً (12 ظ - 3 م)</option>
+                                            <option value="late_afternoon" t-att-selected="sender_preferred_pickup_time == 'late_afternoon'">بعد الظهر (3 م - 6 م)</option>
+                                            <option value="evening" t-att-selected="sender_preferred_pickup_time == 'evening'">مساءً (6 م - 9 م)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Pickup Instructions -->
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label>تعليمات الاستلام</label>
+                                        <textarea name="sender_pickup_notes" class="form-control torood-form-control" rows="2"
+                                                  placeholder="مثال: الطابق الثالث، اسأل عن أحمد في الاستقبال..."><t t-esc="sender_pickup_notes"/></textarea>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <!-- Recipient Information Card -->
+                        <div class="torood-form-card fade-in-up">
+                            <div class="torood-form-card-header" style="background: var(--torood-gradient-secondary);">
+                                <i class="fa fa-map-marker"></i> معلومات المستلم
+                            </div>
+                            <div class="torood-form-card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>الاسم الكامل <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="text" name="recipient_name" class="form-control torood-form-control"
+                                               t-att-value="recipient_name" required="required"
+                                               placeholder="أدخل اسم المستلم الكامل"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>رقم الهاتف <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="tel" name="recipient_phone" class="form-control torood-form-control"
+                                               t-att-value="recipient_phone" required="required"
+                                               placeholder="01234567890"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label>هاتف بديل</label>
+                                        <input type="tel" name="recipient_mobile" class="form-control torood-form-control"
+                                               t-att-value="recipient_mobile"
+                                               placeholder="رقم بديل"/>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>رقم الواتساب</label>
+                                        <input type="tel" name="recipient_whatsapp" class="form-control torood-form-control"
+                                               t-att-value="recipient_whatsapp"
+                                               placeholder="+201234567890"/>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>البريد الإلكتروني</label>
+                                        <input type="email" name="recipient_email" class="form-control torood-form-control"
+                                               t-att-value="recipient_email"
+                                               placeholder="recipient@example.com"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label>عنوان التسليم <span style="color: var(--torood-primary);">*</span></label>
+                                        <textarea name="recipient_address" class="form-control torood-form-control" rows="2"
+                                                  required="required"
+                                                  placeholder="الشارع، رقم المبنى، الشقة، إلخ..."><t t-esc="recipient_address"/></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label>المحافظة <span style="color: var(--torood-primary);">*</span></label>
+                                            <select name="recipient_governorate_id" class="form-control torood-form-control" required="required">
+                                                <option value="">-- اختر المحافظة --</option>
+                                                <t t-if="governorates">
+                                                    <t t-foreach="governorates" t-as="gov">
+                                                        <option t-att-value="gov.id" t-att-selected="str(gov.id) == str(recipient_governorate_id) if recipient_governorate_id else False">
+                                                            <t t-esc="gov.name"/>
+                                                        </option>
+                                                    </t>
+                                                </t>
+                                            </select>
+                                        </div>
+                                     <div class="col-md-6 mb-3">
+                                            <label>المنطقة/الحي <span style="color: var(--torood-primary);">*</span></label>
+                                            <input type="text" name="recipient_city" class="form-control torood-form-control"
+                                                   t-att-value="recipient_city" required="required"
+                                                   placeholder="مثال: مدينة نصر، المعادي"/>
+                                        </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-12 mb-3">
+                                        <label>الوقت المفضل للتوصيل</label>
+                                        <select name="recipient_preferred_delivery_time" class="form-control torood-form-control">
+                                            <option value="anytime" t-att-selected="sender_preferred_pickup_time == 'anytime'">أي وقت</option>
+                                            <option value="morning" t-att-selected="sender_preferred_pickup_time == 'morning'">صباحاً (9 ص - 12 ظ)</option>
+                                            <option value="afternoon" t-att-selected="sender_preferred_pickup_time == 'afternoon'">ظهراً (12 ظ - 3 م)</option>
+                                            <option value="late_afternoon" t-att-selected="sender_preferred_pickup_time == 'late_afternoon'">بعد الظهر (3 م - 6 م)</option>
+                                            <option value="evening" t-att-selected="sender_preferred_pickup_time == 'evening'">مساءً (6 م - 9 م)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Pickup Instructions -->
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label>تعليمات التوصيل</label>
+                                        <textarea name="recipient_delivery_notes" class="form-control torood-form-control" rows="2"
+                                                  placeholder="مثال: الطابق الثالث، اسأل عن أحمد في الاستقبال..."><t t-esc="sender_pickup_notes"/></textarea>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <!-- Package Details Card -->
+                        <div class="torood-form-card fade-in-up">
+                            <div class="torood-form-card-header" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                                <i class="fa fa-box"></i> تفاصيل الشحنة
+                            </div>
+                            <div class="torood-form-card-body">
+                                <!-- Products Container -->
+                                <div id="products-container">
+                                    <!-- Product 1 (Default) -->
+                                    <div class="product-item" data-product-index="1">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0 torood-text-primary">المنتج 1</h5>
+                                            <button type="button" class="btn btn-sm btn-danger remove-product" style="display: none;">
+                                                <i class="fa fa-trash"></i> حذف
+                                            </button>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label>وصف المنتج <span style="color: var(--torood-primary);">*</span></label>
+                                                <input type="text" name="products[0][name]" class="form-control torood-form-control product-name"
+                                                       required="required"
+                                                       placeholder="مثال: إلكترونيات، مستندات، ملابس"/>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label>الفئة</label>
+                                                <select name="products[0][category_id]" class="form-control torood-form-control product-category">
+                                                    <option value="">-- اختر الفئة --</option>
+                                                    <t t-foreach="categories" t-as="cat">
+                                                        <option t-att-value="cat.id">
+                                                            <t t-esc="cat.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label>العلامة التجارية</label>
+                                                <select name="products[0][brand_id]" class="form-control torood-form-control">
+                                                    <option value="">-- اختر العلامة --</option>
+                                                    <t t-if="brands">
+                                                        <t t-foreach="brands" t-as="brand">
+                                                            <option t-att-value="brand.id">
+                                                                <t t-esc="brand.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <option value="" disabled="">لا توجد علامات تجارية</option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3">
+                                                <label>الكمية <span style="color: var(--torood-primary);">*</span></label>
+                                                <input type="number" name="products[0][quantity]" class="form-control torood-form-control product-quantity"
+                                                       value="1" min="1" required="required"/>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label>الوزن (كجم) <span style="color: var(--torood-primary);">*</span></label>
+                                                <input type="number" name="products[0][weight]" class="form-control torood-form-control product-weight"
+                                                       step="0.1" min="0.1" required="required"
+                                                       placeholder="0.0"/>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label>القيمة المعلنة (جنيه) <span style="color: var(--torood-primary);">*</span></label>
+                                                <input type="number" name="products[0][value]" class="form-control torood-form-control product-value"
+                                                       step="0.01" min="0" required="required"
+                                                       placeholder="0.00"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label>الطول (سم)</label>
+                                                <input type="number" name="products[0][length]" class="form-control torood-form-control"
+                                                       step="0.1" placeholder="0.0"/>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label>العرض (سم)</label>
+                                                <input type="number" name="products[0][width]" class="form-control torood-form-control"
+                                                       step="0.1" placeholder="0.0"/>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label>الارتفاع (سم)</label>
+                                                <input type="number" name="products[0][height]" class="form-control torood-form-control"
+                                                       step="0.1" placeholder="0.0"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <div class="special-handling-checkbox" style="padding: 15px; background: rgba(255, 107, 53, 0.05); border-radius: 10px;">
+                                                    <input type="checkbox" name="products[0][fragile]" id="fragile_0"/>
+                                                    <label for="fragile_0" class="mb-0" style="cursor: pointer;">
+                                                        <i class="fa fa-exclamation-triangle text-warning"></i>
+                                                        قابل للكسر - يتطلب عناية خاصة
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 mb-3">
+                                                <div class="special-handling-checkbox" style="padding: 15px; background: rgba(0, 78, 124, 0.05); border-radius: 10px;">
+                                                    <input type="checkbox" name="products[0][dangerous_goods]" id="dangerous_0"/>
+                                                    <label for="dangerous_0" class="mb-0" style="cursor: pointer;">
+                                                        <i class="fa fa-exclamation-circle text-danger"></i>
+                                                        بضائع خطرة - تحتاج معاملة خاصة
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr class="product-separator" style="border-color: #e0e0e0; margin: 20px 0; display: none;"/>
+                                    </div>
+                                </div>
+
+                                <!-- Add Product Button -->
+                                <div class="text-center mt-3">
+                                    <button type="button" id="add-product-btn" class="btn-torood-secondary">
+                                        <i class="fa fa-plus"></i> إضافة منتج آخر
+                                    </button>
+                                </div>
+
+                                <!-- Summary Section -->
+                                <div class="mt-4 p-4 torood-rounded" style="background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(0, 78, 124, 0.05) 100%);">
+                                    <h5 class="torood-text-primary">الملخص:</h5>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <p><strong>إجمالي المنتجات:</strong> <span id="total-products" class="badge-torood badge-torood-primary">1</span></p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>الوزن الكلي:</strong> <span id="total-weight" class="badge-torood badge-torood-info">0</span> كجم</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong>القيمة الإجمالية:</strong> <span id="total-value" class="badge-torood badge-torood-success">0</span> جنيه</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-6 mb-3">
+                                        <label>نوع الشحنة</label>
+                                        <select name="shipment_type" class="form-control torood-form-control">
+                                            <option value="package" t-att-selected="shipment_type == 'package'">طرد</option>
+                                            <option value="document" t-att-selected="shipment_type == 'document'">مستندات</option>
+                                            <option value="pallet" t-att-selected="shipment_type == 'pallet'">منصة نقالة</option>
+                                            <option value="other" t-att-selected="shipment_type == 'other'">أخرى</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>عدد الطرود</label>
+                                        <input type="number" name="package_count" class="form-control torood-form-control"
+                                               value="1" min="1" placeholder="إجمالي عدد الطرود"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Details Card -->
+                        <div class="torood-form-card fade-in-up">
+                            <div class="torood-form-card-header" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                                <i class="fa fa-credit-card"></i> طريقة الدفع
+                            </div>
+                            <div class="torood-form-card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>طريقة الدفع <span style="color: var(--torood-primary);">*</span></label>
+                                        <select name="payment_method" id="payment_method" class="form-control torood-form-control" required="required">
+                                            <option value="prepaid" t-att-selected="payment_method == 'prepaid'">الدفع المسبق</option>
+                                            <option value="cod" t-att-selected="payment_method == 'cod'">الدفع عند الاستلام (COD)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3" id="cod_amount_div" style="display: none;">
+                                        <label>مبلغ التحصيل (جنيه) <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="number" name="cod_amount" id="cod_amount" class="form-control torood-form-control"
+                                               t-att-value="cod_amount" step="0.01" min="0" placeholder="0.00"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Notes Card -->
+                        <div class="torood-form-card fade-in-up">
+                            <div class="torood-form-card-header" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">
+                                <i class="fa fa-comment"></i> ملاحظات إضافية
+                            </div>
+                            <div class="torood-form-card-body">
+                                <textarea name="notes" class="form-control torood-form-control" rows="3"
+                                          placeholder="أي معلومات إضافية أو متطلبات خاصة..."><t t-esc="notes"/></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn-torood-primary" style="font-size: 1.2rem; padding: 15px 50px;">
+                                <i class="fa fa-paper-plane"></i> إرسال طلب الشحن
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- JavaScript الكامل مع كل الوظائف -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Navbar scroll effect
+                    window.addEventListener('scroll', function() {
+                        const navbar = document.getElementById('toroodNavbar');
+                        if (navbar &amp;&amp; window.scrollY > 100) {
+                            navbar.classList.add('scrolled');
+                        } else if (navbar) {
+                            navbar.classList.remove('scrolled');
+                        }
+                    });
+
+                    // Products Management
+                    let productCount = 1;
+                    const productsContainer = document.getElementById('products-container');
+                    const addProductBtn = document.getElementById('add-product-btn');
+
+                    // Get brands and categories options HTML from first product
+                    let categoriesOptionsHTML = '';
+                    let brandsOptionsHTML = '';
+
+                    // Get categories from the first select
+                    const firstCategorySelect = document.querySelector('select[name="products[0][category_id]"]');
+                    if (firstCategorySelect) {
+                        categoriesOptionsHTML = firstCategorySelect.innerHTML;
+                    }
+
+                    // Get brands from the first select
+                    const firstBrandSelect = document.querySelector('select[name="products[0][brand_id]"]');
+                    if (firstBrandSelect) {
+                        brandsOptionsHTML = firstBrandSelect.innerHTML;
+                    }
+
+                    console.log('Categories HTML:', categoriesOptionsHTML);
+                    console.log('Brands HTML:', brandsOptionsHTML);
+
+                    // Add Product Function
+                    function addProduct() {
+                        productCount++;
+                        const index = productCount - 1;
+
+                        const productHTML = `
+                            <div class="product-item" data-product-index="${productCount}">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0 torood-text-primary">المنتج ${productCount}</h5>
+                                    <button type="button" class="btn btn-sm btn-danger remove-product">
+                                        <i class="fa fa-trash"></i> حذف
+                                    </button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label>وصف المنتج <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="text" name="products[${index}][name]" class="form-control torood-form-control product-name"
+                                               required="required"
+                                               placeholder="مثال: إلكترونيات، مستندات، ملابس"/>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>الفئة</label>
+                                        <select name="products[${index}][category_id]" class="form-control torood-form-control product-category">
+                                            ${categoriesOptionsHTML}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>العلامة التجارية</label>
+                                        <select name="products[${index}][brand_id]" class="form-control torood-form-control">
+                                            ${brandsOptionsHTML}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <label>الكمية <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="number" name="products[${index}][quantity]" class="form-control torood-form-control product-quantity"
+                                               value="1" min="1" required="required"/>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>الوزن (كجم) <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="number" name="products[${index}][weight]" class="form-control torood-form-control product-weight"
+                                               step="0.1" min="0.1" required="required"
+                                               placeholder="0.0"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>القيمة المعلنة (جنيه) <span style="color: var(--torood-primary);">*</span></label>
+                                        <input type="number" name="products[${index}][value]" class="form-control torood-form-control product-value"
+                                               step="0.01" min="0" required="required"
+                                               placeholder="0.00"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label>الطول (سم)</label>
+                                        <input type="number" name="products[${index}][length]" class="form-control torood-form-control"
+                                               step="0.1" placeholder="0.0"/>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>العرض (سم)</label>
+                                        <input type="number" name="products[${index}][width]" class="form-control torood-form-control"
+                                               step="0.1" placeholder="0.0"/>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>الارتفاع (سم)</label>
+                                        <input type="number" name="products[${index}][height]" class="form-control torood-form-control"
+                                               step="0.1" placeholder="0.0"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <div class="special-handling-checkbox" style="padding: 15px; background: rgba(255, 107, 53, 0.05); border-radius: 10px;">
+                                            <input type="checkbox" name="products[${index}][fragile]" id="fragile_${index}"/>
+                                            <label for="fragile_${index}" class="mb-0" style="cursor: pointer;">
+                                                <i class="fa fa-exclamation-triangle text-warning"></i>
+                                                قابل للكسر - يتطلب عناية خاصة
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="special-handling-checkbox" style="padding: 15px; background: rgba(0, 78, 124, 0.05); border-radius: 10px;">
+                                            <input type="checkbox" name="products[${index}][dangerous_goods]" id="dangerous_${index}"/>
+                                            <label for="dangerous_${index}" class="mb-0" style="cursor: pointer;">
+                                                <i class="fa fa-exclamation-circle text-danger"></i>
+                                                بضائع خطرة - تحتاج معاملة خاصة
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="product-separator" style="border-color: #e0e0e0; margin: 20px 0;"/>
+                            </div>
+                        `;
+
+                        // Add new product to container
+                        productsContainer.insertAdjacentHTML('beforeend', productHTML);
+
+                        // Show separator for first product
+                        if (productCount === 2) {
+                            document.querySelector('.product-separator').style.display = 'block';
+                        }
+
+                        // Update summary
+                        updateSummary();
+
+                        // Scroll to new product
+                        const newProduct = productsContainer.lastElementChild;
+                        newProduct.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    // Remove Product Function
+                    function removeProduct(button) {
+                        const productItem = button.closest('.product-item');
+                        productItem.remove();
+
+                        // Reindex products
+                        reindexProducts();
+                        updateSummary();
+                    }
+
+                    // Reindex Products
+                    function reindexProducts() {
+                        const products = productsContainer.querySelectorAll('.product-item');
+                        productCount = products.length;
+
+                        products.forEach((product, index) => {
+                            // Update product title
+                            product.querySelector('h5').textContent = `المنتج ${index + 1}`;
+                            product.dataset.productIndex = index + 1;
+
+                            // Update input names
+                            product.querySelectorAll('input, select').forEach(input => {
+                                const name = input.name;
+                                if (name &amp;&amp; name.includes('products[')) {
+                                    input.name = name.replace(/products\[\d+\]/, `products[${index}]`);
+                                }
+
+                                // Update fragile checkbox ID
+                                if (input.type === 'checkbox' &amp;&amp; input.id.includes('fragile_')) {
+                                    input.id = `fragile_${index}`;
+                                    const label = product.querySelector(`label[for*="fragile_"]`);
+                                    if (label) {
+                                        label.setAttribute('for', `fragile_${index}`);
+                                    }
+                                }
+
+                                // Update dangerous checkbox ID
+                                if (input.type === 'checkbox' &amp;&amp; input.id.includes('dangerous_')) {
+                                    input.id = `dangerous_${index}`;
+                                    const label = product.querySelector(`label[for*="dangerous_"]`);
+                                    if (label) {
+                                        label.setAttribute('for', `dangerous_${index}`);
+                                    }
+                                }
+                            });
+
+                            // Show/hide remove button
+                            const removeBtn = product.querySelector('.remove-product');
+                            if (products.length === 1) {
+                                removeBtn.style.display = 'none';
+                            } else {
+                                removeBtn.style.display = 'inline-block';
+                            }
+
+                            // Show/hide separator
+                            const separator = product.querySelector('.product-separator');
+                            if (separator) {
+                                if (index === products.length - 1) {
+                                    separator.style.display = 'none';
+                                } else {
+                                    separator.style.display = 'block';
+                                }
+                            }
+                        });
+                    }
+
+                    // Update Summary
+                    function updateSummary() {
+                        const products = productsContainer.querySelectorAll('.product-item');
+                        let totalWeight = 0;
+                        let totalValue = 0;
+                        let totalItems = 0;
+
+                        products.forEach(product => {
+                            const quantity = parseFloat(product.querySelector('.product-quantity').value) || 0;
+                            const weight = parseFloat(product.querySelector('.product-weight').value) || 0;
+                            const value = parseFloat(product.querySelector('.product-value').value) || 0;
+
+                            totalItems += quantity;
+                            totalWeight += quantity * weight;
+                            totalValue += quantity * value;
+                        });
+
+                        document.getElementById('total-products').textContent = products.length;
+                        document.getElementById('total-weight').textContent = totalWeight.toFixed(2);
+                        document.getElementById('total-value').textContent = totalValue.toFixed(2);
+                    }
+
+                    // Event Listeners
+                    if (addProductBtn) {
+                        addProductBtn.addEventListener('click', addProduct);
+                    }
+
+                    // Delegate event for remove buttons
+                    if (productsContainer) {
+                        productsContainer.addEventListener('click', function(e) {
+                            if (e.target.closest('.remove-product')) {
+                                removeProduct(e.target.closest('.remove-product'));
+                            }
+                        });
+
+                        // Update summary on input change
+                        productsContainer.addEventListener('input', function(e) {
+                            if (e.target.classList.contains('product-quantity') ||
+                                e.target.classList.contains('product-weight') ||
+                                e.target.classList.contains('product-value')) {
+                                updateSummary();
+                            }
+                        });
+                    }
+
+                    // Initial summary update
+                    updateSummary();
+
+                    // Payment method toggle
+                    const paymentMethod = document.getElementById('payment_method');
+                    const codAmountDiv = document.getElementById('cod_amount_div');
+                    const codAmountField = document.getElementById('cod_amount');
+
+                    function toggleCodAmount() {
+                        if (paymentMethod &amp;&amp; paymentMethod.value === 'cod') {
+                            if (codAmountDiv) codAmountDiv.style.display = 'block';
+                            if (codAmountField) codAmountField.required = true;
+                        } else {
+                            if (codAmountDiv) codAmountDiv.style.display = 'none';
+                            if (codAmountField) codAmountField.required = false;
+                        }
+                    }
+
+                    if (paymentMethod) {
+                        paymentMethod.addEventListener('change', toggleCodAmount);
+                        toggleCodAmount(); // Initial check
+                    }
+
+                    // Form validation enhancement
+                    const form = document.getElementById('shipmentForm');
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            // Add loading state
+                            const submitBtn = form.querySelector('.btn-torood-primary[type="submit"]');
+                            if (submitBtn) {
+                                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> جاري المعالجة...';
+                                submitBtn.disabled = true;
+                            }
+                        });
+                    }
+
+                    // Auto-format phone numbers
+                    const phoneInputs = document.querySelectorAll('input[type="tel"]');
+                    phoneInputs.forEach(function(input) {
+                        input.addEventListener('input', function(e) {
+                            // Remove non-digits
+                            let value = e.target.value.replace(/\D/g, '');
+
+                            // Format Egyptian phone numbers
+                            if (value.startsWith('01') &amp;&amp; value.length &lt;= 11) {
+                                if (value.length > 4) {
+                                    value = value.slice(0, 4) + ' ' + value.slice(4);
+                                }
+                                if (value.length > 8) {
+                                    value = value.slice(0, 8) + ' ' + value.slice(8);
+                                }
+                            }
+
+                            // Don't update if it would cause cursor jump
+                            if (e.target.value !== value) {
+                                e.target.value = value;
+                            }
+                        });
+                    });
+
+                    // Progress indicator update based on form completion
+                    function updateProgressIndicator() {
+                        const steps = document.querySelectorAll('.progress-step');
+                        let currentStep = 1;
+
+                        // Check sender fields
+                        const senderFields = ['sender_name', 'sender_phone', 'sender_address', 'sender_city'];
+                        const senderComplete = senderFields.every(field => {
+                            const input = form.querySelector(`[name="${field}"]`);
+                            return input &amp;&amp; input.value.trim() !== '';
+                        });
+                        if (senderComplete) currentStep = 2;
+
+                        // Check recipient fields
+                        const recipientFields = ['recipient_name', 'recipient_phone', 'recipient_address', 'recipient_city'];
+                        const recipientComplete = recipientFields.every(field => {
+                            const input = form.querySelector(`[name="${field}"]`);
+                            return input &amp;&amp; input.value.trim() !== '';
+                        });
+                        if (senderComplete &amp;&amp; recipientComplete) currentStep = 3;
+
+                        // Check package fields (at least one product)
+                        const hasProduct = productsContainer.querySelector('.product-name')?.value?.trim() !== '';
+                        if (senderComplete &amp;&amp; recipientComplete &amp;&amp; hasProduct) currentStep = 4;
+
+                        // Update visual indicator
+                        steps.forEach((step, index) => {
+                            if (index &lt; currentStep) {
+                                step.classList.add('active');
+                            } else {
+                                step.classList.remove('active');
+                            }
+                        });
+                    }
+
+                    // Update progress on input change
+                    if (form) {
+                        form.addEventListener('input', updateProgressIndicator);
+                        updateProgressIndicator(); // Initial check
+                    }
+
+                    // Smooth scroll to error if exists
+                    const errorAlert = document.querySelector('.alert-danger');
+                    if (errorAlert) {
+                        errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            </script>
+        </div>
+    </t>
+
+
+
+</template>
+
+
+
+    <!-- Success Page Enhanced -->
+    <template id="shipment_success" name="Shipment Success">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <style>
+                    .success-container {
+                        min-height: 80vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 40px 20px;
+                    }
+
+                    .success-card {
+                        max-width: 600px;
+                        background: white;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                        padding: 50px;
+                        text-align: center;
+                        animation: slideInUp 0.5s ease;
+                    }
+
+                    @keyframes slideInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+
+                    .success-icon {
+                        width: 100px;
+                        height: 100px;
+                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 30px;
+                        animation: pulse 2s infinite;
+                    }
+
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.05); }
+                        100% { transform: scale(1); }
+                    }
+
+                    .success-icon i {
+                        font-size: 50px;
+                        color: white;
+                    }
+
+                    .tracking-box {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        padding: 25px;
+                        border-radius: 15px;
+                        margin: 30px 0;
+                    }
+
+                    .tracking-number {
+                        font-size: 2rem;
+                        font-weight: bold;
+                        margin: 10px 0;
+                        letter-spacing: 2px;
+                    }
+
+                    .action-buttons {
+                        margin-top: 30px;
+                    }
+
+                    .action-buttons .btn {
+                        margin: 10px;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        font-weight: 600;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .action-buttons .btn:hover {
+                        transform: translateY(-3px);
+                    }
+                </style>
+
+                <div class="success-container">
+                    <div class="success-card">
+                        <div class="success-icon">
+                            <i class="fa fa-check"></i>
+                        </div>
+
+                        <h2 class="mb-4">Shipment Request Submitted Successfully!</h2>
+                        <p class="lead text-muted">Your shipment has been received and will be processed shortly.</p>
+
+                        <div class="tracking-box">
+                            <h5 class="mb-3">Your Tracking Number</h5>
+                            <div class="tracking-number">
+                                <t t-esc="tracking_number"/>
+                            </div>
+                            <p class="mb-0">Save this number to track your shipment</p>
+                        </div>
+
+                        <p class="text-muted">
+                            <i class="fa fa-info-circle"></i>
+                            You will receive a confirmation email with shipment details shortly.
+                        </p>
+
+                        <div class="action-buttons">
+                            <a href="/shipment/track" class="btn btn-primary">
+                                <i class="fa fa-search"></i> Track Shipment
+                            </a>
+                            <a href="/shipment" class="btn btn-outline-primary">
+                                <i class="fa fa-plus"></i> New Shipment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Tracking Page Enhanced -->
+    <template id="track_shipment" name="Track Shipment">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <style>
+                    .tracking-container {
+                        min-height: 80vh;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 60px 20px;
+                    }
+
+                    .tracking-header {
+                        text-align: center;
+                        color: white;
+                        margin-bottom: 40px;
+                    }
+
+                    .tracking-header h1 {
+                        font-size: 2.5rem;
+                        font-weight: bold;
+                    }
+
+                    .search-box {
+                        max-width: 600px;
+                        margin: 0 auto 40px;
+                        background: white;
+                        border-radius: 50px;
+                        padding: 10px;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    }
+
+                    .search-form {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .search-form input {
+                        flex: 1;
+                        border: none;
+                        padding: 15px 25px;
+                        font-size: 1.1rem;
+                        outline: none;
+                        background: transparent;
+                    }
+
+                    .search-form button {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 50px;
+                        font-weight: bold;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .search-form button:hover {
+                        transform: scale(1.05);
+                    }
+
+                    .tracking-result {
+                        max-width: 900px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 20px;
+                        overflow: hidden;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                        animation: slideInUp 0.5s ease;
+                    }
+
+                    .status-timeline {
+                        padding: 30px;
+                        background: #f8f9fa;
+                    }
+
+                    .timeline-item {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 30px;
+                        position: relative;
+                    }
+
+                    .timeline-item:not(:last-child)::after {
+                        content: '';
+                        position: absolute;
+                        left: 20px;
+                        top: 40px;
+                        width: 2px;
+                        height: calc(100% + 10px);
+                        background: #ddd;
+                    }
+
+                    .timeline-item.completed::after {
+                        background: #28a745;
+                    }
+
+                    .timeline-icon {
+                        width: 40px;
+                        height: 40px;
+                        background: #ddd;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-right: 20px;
+                        z-index: 1;
+                    }
+
+                    .timeline-item.completed .timeline-icon {
+                        background: #28a745;
+                        color: white;
+                    }
+
+                    .timeline-item.current .timeline-icon {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        animation: pulse 2s infinite;
+                    }
+
+                    .timeline-content {
+                        flex: 1;
+                    }
+
+                    .timeline-content h5 {
+                        margin: 0 0 5px;
+                        color: #333;
+                    }
+
+                    .timeline-content p {
+                        margin: 0;
+                        color: #666;
+                        font-size: 0.9rem;
+                    }
+                </style>
+
+                <div class="tracking-container">
+                    <div class="tracking-header">
+                        <h1><i class="fa fa-search"></i> Track Your Shipment</h1>
+                        <p>Enter your tracking number to get real-time updates</p>
+                    </div>
+
+                    <div class="search-box">
+                        <form action="/shipment/track" method="get" class="search-form">
+                            <input type="text" name="tracking"
+                                   placeholder="Enter tracking number..."
+                                   t-att-value="tracking" required="required"/>
+                            <button type="submit">
+                                <i class="fa fa-search"></i> Track
+                            </button>
+                        </form>
+                    </div>
+
+                    <t t-if="error">
+                        <div class="alert alert-danger text-center" style="max-width: 600px; margin: 0 auto;">
+                            <i class="fa fa-exclamation-triangle"></i> <t t-esc="error"/>
+                        </div>
+                    </t>
+
+                    <t t-if="shipment">
+                        <div class="tracking-result">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px;">
+                                <h3 class="mb-3">Shipment: <t t-esc="shipment.order_number"/></h3>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>From:</strong> <t t-esc="shipment.sender_id.name"/></p>
+                                        <p><t t-esc="shipment.sender_city"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>To:</strong> <t t-esc="shipment.recipient_name"/></p>
+                                        <p><t t-esc="shipment.recipient_city"/></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="status-timeline">
+                                <h4 class="mb-4">Shipment Status</h4>
+
+                                <div t-attf-class="timeline-item {{ 'completed' if shipment.state != 'draft' else 'current' if shipment.state == 'draft' else '' }}">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-file"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h5>Order Created</h5>
+                                        <p>Your shipment request has been received</p>
+                                    </div>
+                                </div>
+
+                                <div t-attf-class="timeline-item {{ 'completed' if shipment.state not in ['draft', 'confirmed'] else 'current' if shipment.state == 'confirmed' else '' }}">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h5>Confirmed</h5>
+                                        <p>Shipment confirmed and ready for pickup</p>
+                                    </div>
+                                </div>
+
+                                <div t-attf-class="timeline-item {{ 'completed' if shipment.state not in ['draft', 'confirmed', 'picked'] else 'current' if shipment.state == 'picked' else '' }}">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-box"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h5>Picked Up</h5>
+                                        <p>Package has been picked up from sender</p>
+                                    </div>
+                                </div>
+
+                                <div t-attf-class="timeline-item {{ 'completed' if shipment.state in ['out_for_delivery', 'delivered'] else 'current' if shipment.state == 'in_transit' else '' }}">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-truck"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h5>In Transit</h5>
+                                        <p>Package is on the way to destination</p>
+                                    </div>
+                                </div>
+
+                                <div t-attf-class="timeline-item {{ 'completed' if shipment.state == 'delivered' else 'current' if shipment.state == 'out_for_delivery' else '' }}">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-map-marker"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h5>Out for Delivery</h5>
+                                        <p>Package is out for final delivery</p>
+                                    </div>
+                                </div>
+
+                                <div t-attf-class="timeline-item {{ 'completed current' if shipment.state == 'delivered' else '' }}">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-check-circle"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h5>Delivered</h5>
+                                        <p>Package has been successfully delivered</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="padding: 30px; border-top: 1px solid #eee;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Pickup Date:</strong> <t t-esc="shipment.pickup_date"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Expected Delivery:</strong> <t t-esc="shipment.expected_delivery or 'To be determined'"/></p>
+                                    </div>
+                                </div>
+                                <t t-if="shipment.tracking_number">
+                                    <p><strong>Tracking Number:</strong> <span class="text-primary"><t t-esc="shipment.tracking_number"/></span></p>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
