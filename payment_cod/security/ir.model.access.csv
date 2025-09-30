@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_cod_country_fee_user,cod.country.fee.user,model_cod_country_fee,base.group_user,1,0,0,0
-access_cod_country_fee_manager,cod.country.fee.manager,model_cod_country_fee,account.group_account_manager,1,1,1,1
-access_cod_country_fee_portal,cod.country.fee.portal,model_cod_country_fee,base.group_portal,1,0,0,0
-access_cod_country_fee_public,cod.country.fee.public,model_cod_country_fee,base.group_public,1,0,0,0
