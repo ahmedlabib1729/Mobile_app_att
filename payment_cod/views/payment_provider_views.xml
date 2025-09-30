@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form_cod" model="ir.ui.view">
+        <field name="name">payment.provider.form.cod</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="COD Configuration" name="cod_config" invisible="code != 'cod'">
+                    <group>
+                        <group>
+                            <field name="cod_instructions" placeholder="Enter instructions for customers..."/>
+                        </group>
+                    </group>
+                    <separator string="Country Fees Configuration"/>
+                    <field name="cod_country_fee_ids">
+                        <tree editable="bottom" decoration-muted="not active">
+                            <field name="country_id" options="{'no_create': True}"/>
+                            <field name="fee_type"/>
+                            <field name="fee_amount"
+                                   invisible="fee_type != 'fixed'"
+                                   required="fee_type == 'fixed'"/>
+                            <field name="fee_percentage"
+                                   invisible="fee_type != 'percentage'"
+                                   required="fee_type == 'percentage'"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="min_amount" optional="show"/>
+                            <field name="max_amount" optional="show"/>
+                            <field name="active"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

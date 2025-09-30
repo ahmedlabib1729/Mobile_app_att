@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Override COD provider name to include fee notice -->
+    <record id="payment_provider_cod_name_update" model="payment.provider">
+        <field name="name">Cash on Delivery (رسوم إضافية 15 درهم)</field>
+    </record>
+
+    <!-- Update COD instructions to be more visible -->
+    <record id="payment_provider_cod_instructions_update" model="payment.provider">
+        <field name="cod_instructions">⚠️ تنبيه مهم: سيتم إضافة رسوم خدمة بقيمة 15.00 درهم إماراتي للدفع عند الاستلام. يرجى تحضير المبلغ الكامل عند الاستلام.</field>
+    </record>
+</odoo>
