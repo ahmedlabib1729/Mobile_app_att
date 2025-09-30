@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- COD Inline Form Template - UPDATED -->
+    <template id="cod_inline_form" name="COD Inline Form">
+        <div t-if="reference">
+            <form id="cod_payment_form" action="/payment/cod/feedback" method="post" class="d-inline">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="reference" t-att-value="reference"/>
+                <input type="hidden" name="amount" t-att-value="amount"/>
+                <input type="hidden" name="currency_id" t-att-value="currency_id"/>
+                <input type="hidden" name="partner_id" t-att-value="partner_id"/>
+                <input type="hidden" name="provider_id" t-att-value="provider_id"/>
+                <input type="hidden" name="transaction_id" t-att-value="transaction_id" t-if="transaction_id"/>
+            </form>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(function() {
+                        var form = document.getElementById('cod_payment_form');
+                        if (form) {
+                            console.log('Submitting COD form with reference:', '<t t-esc="reference"/>');
+                            form.submit();
+                        }
+                    }, 500);
+                });
+            </script>
+        </div>
+        <div t-else="">
+            <p>Processing payment...</p>
+        </div>
+    </template>
+
+    <!-- COD Form Template (Required) -->
+    <template id="cod_form" name="COD Payment Form">
+        <div>
+            <p>Processing Cash on Delivery payment...</p>
+        </div>
+    </template>
+
+    <!-- COD Confirmation Message -->
+    <template id="website_sale_cod_confirmation" inherit_id="website_sale.confirmation" priority="25">
+        <xpath expr="//div[@id='oe_structure_website_sale_confirmation_1']" position="after">
+            <t t-set="cod_tx" t-value="order.transaction_ids.filtered(lambda t: t.provider_code == 'cod')[:1]" t-if="order"/>
+            <t t-if="cod_tx">
+                <div class="container mb-3">
+                    <div class="alert alert-success">
+                        <h4><i class="fa fa-truck"/> Cash on Delivery Order</h4>
+                        <p>Your order has been confirmed. Payment will be collected upon delivery.</p>
+                        <t t-if="cod_tx.cod_fee_amount and cod_tx.cod_fee_amount > 0">
+                            <hr/>
+                            <strong>COD Service Fee: </strong>
+                            <span t-esc="cod_tx.cod_fee_amount"
+                                  t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>
