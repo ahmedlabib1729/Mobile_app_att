@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- القائمة الرئيسية -->
+    <menuitem id="menu_tax_reminder_root"
+              name="تذكير الضرائب"
+              sequence="10"
+              web_icon="tax_reminder,static/description/vat_8092369.png"/>
+    
+    <!-- قائمة الإقرارات -->
+    <menuitem id="menu_tax_declarations"
+              name="الإقرارات الضريبية"
+              parent="menu_tax_reminder_root"
+              action="action_tax_declaration"
+              sequence="20"/>
+    
+    <!-- قائمة العملاء -->
+    <menuitem id="menu_tax_clients"
+              name="العملاء"
+              parent="menu_tax_reminder_root"
+              action="action_tax_client"
+              sequence="10"/>
+    
+    <!-- قائمة التقارير -->
+    <menuitem id="menu_tax_reports"
+              name="التقارير"
+              parent="menu_tax_reminder_root"
+              sequence="30"/>
+
+    <record id="action_tax_client" model="ir.actions.act_window">
+        <field name="name">العملاء</field>
+        <field name="res_model">tax.client</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                أضف عميل جديد
+            </p>
+            <p>
+                قم بإدارة عملاء الضرائب وتتبع إقراراتهم الضريبية
+            </p>
+        </field>
+    </record>
+
+    <!-- Server Action for Bulk Generation -->
+    <record id="action_generate_declarations_bulk" model="ir.actions.server">
+        <field name="name">توليد الإقرارات القادمة</field>
+        <field name="model_id" ref="model_tax_client"/>
+        <field name="binding_model_id" ref="model_tax_client"/>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    total = 0
+    for record in records:
+        if record.auto_generate:
+            record.generate_upcoming_declarations()
+            total += 1
+    if total:
+        message = f"تم توليد الإقرارات القادمة لـ {total} عميل"
+    else:
+        message = "لا يوجد عملاء مفعل لهم التوليد التلقائي"
+else:
+    message = "الرجاء تحديد عملاء"
+        </field>
+    </record>
+    
+    <!-- إقرارات متأخرة -->
+    <record id="action_overdue_declarations" model="ir.actions.act_window">
+        <field name="name">الإقرارات المتأخرة</field>
+        <field name="res_model">tax.declaration</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('due_date', '&lt;', context_today().strftime('%Y-%m-%d')), ('state', 'not in', ['submitted', 'cancelled'])]</field>
+        <field name="context">{'search_default_group_client': 1}</field>
+    </record>
+    
+    <menuitem id="menu_overdue_declarations"
+              name="الإقرارات المتأخرة"
+              parent="menu_tax_reports"
+              action="action_overdue_declarations"
+              sequence="10"/>
+    
+    <!-- إقرارات هذا الشهر -->
+    <record id="action_current_month_declarations" model="ir.actions.act_window">
+        <field name="name">إقرارات هذا الشهر</field>
+        <field name="res_model">tax.declaration</field>
+        <field name="view_mode">list,kanban,calendar,form</field>
+        <field name="domain">[
+            ('due_date', '&gt;=', (context_today()).strftime('%Y-%m-01')), 
+            ('due_date', '&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))
+        ]</field>
+    </record>
+    
+    <menuitem id="menu_current_month_declarations"
+              name="إقرارات هذا الشهر"
+              parent="menu_tax_reports"
+              action="action_current_month_declarations"
+              sequence="20"/>
+    
+    <!-- قائمة الإعدادات -->
+    <menuitem id="menu_tax_configuration"
+              name="الإعدادات"
+              parent="menu_tax_reminder_root"
+              sequence="100"
+              groups="base.group_system"/>
+</odoo>
