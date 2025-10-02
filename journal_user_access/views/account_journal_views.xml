@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة التاب في نموذج الجورنال -->
+    <record id="view_account_journal_form_inherit" model="ir.ui.view">
+        <field name="name">account.journal.form.inherit.access</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="User Permissions" name="user_access">
+                    <group>
+                        <field name="restrict_access"/>
+                    </group>
+                    <group invisible="not restrict_access">
+                        <field name="allowed_user_ids" widget="many2many_tags"
+                               options="{'no_create': True}"
+                               domain="[('share', '=', False)]"
+                               placeholder="Select allowed internal users..."/>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                         invisible="restrict_access">
+                        <i class="fa fa-info-circle"/> This list is read-only. To modify permissions, go to each journal's settings
+                    </div>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- إضافة عمود في قائمة الجورنالات -->
+    <record id="view_account_journal_tree_inherit" model="ir.ui.view">
+        <field name="name">account.journal.tree.inherit.access</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_tree"/>
+        <field name="arch" type="xml">
+            <field name="type" position="after">
+                <field name="restrict_access" widget="boolean_toggle"/>
+                <field name="allowed_user_ids" widget="many2many_tags"
+                       invisible="not restrict_access"
+                       domain="[('share', '=', False)]"
+                       optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- فلتر للبحث -->
+    <record id="view_account_journal_search_inherit" model="ir.ui.view">
+        <field name="name">account.journal.search.inherit.access</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_search"/>
+        <field name="arch" type="xml">
+            <filter name="dashboard" position="after">
+                <separator/>
+                <filter string="Restricted Access" name="restricted"
+                        domain="[('restrict_access', '=', True)]"/>
+                <filter string="Available to All" name="unrestricted"
+                        domain="[('restrict_access', '=', False)]"/>
+                <separator/>
+                <filter string="Available to Me" name="my_journals"
+                        domain="[('allowed_user_ids', 'in', uid)]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>

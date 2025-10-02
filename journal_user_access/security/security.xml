@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        الحل البسيط:
+        1. السماح بـ READ لكل الـ journals (عشان الـ dropdowns تشتغل)
+        2. منع WRITE/CREATE على الـ journals الممنوعة
+        3. منع READ/WRITE على الـ moves الخاصة بالـ journals الممنوعة
+    -->
+
+    <!-- قاعدة الجورنالات - READ مفتوح للكل -->
+    <record id="journal_read_access" model="ir.rule">
+        <field name="name">Journal Read - All Visible</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- قاعدة الجورنالات - WRITE/CREATE مقيد -->
+    <record id="journal_write_access" model="ir.rule">
+        <field name="name">Journal Write Access Restriction</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">['|', ('restrict_access', '=', False), ('allowed_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- قاعدة للقيود المحاسبية - مقيدة بالكامل -->
+    <record id="move_access_rule" model="ir.rule">
+        <field name="name">Account Move Access Restriction</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">['|', ('journal_id.restrict_access', '=', False), ('journal_id.allowed_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- قاعدة لسطور القيود -->
+    <record id="move_line_access_rule" model="ir.rule">
+        <field name="name">Account Move Line Access Restriction</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">['|', ('journal_id.restrict_access', '=', False), ('journal_id.allowed_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- قاعدة للـ Payments - مقيدة -->
+    <record id="payment_access_rule" model="ir.rule">
+        <field name="name">Account Payment Access Restriction</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">['|', ('journal_id.restrict_access', '=', False), ('journal_id.allowed_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- إعفاء المديرين من كل القيود -->
+    <record id="manager_bypass_journal" model="ir.rule">
+        <field name="name">Accounting Manager - Full Journal Access</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_manager'))]"/>
+    </record>
+
+    <record id="manager_bypass_move" model="ir.rule">
+        <field name="name">Accounting Manager - Full Move Access</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_manager'))]"/>
+    </record>
+
+    <record id="manager_bypass_move_line" model="ir.rule">
+        <field name="name">Accounting Manager - Full Move Line Access</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_manager'))]"/>
+    </record>
+
+    <record id="manager_bypass_payment" model="ir.rule">
+        <field name="name">Accounting Manager - Full Payment Access</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_manager'))]"/>
+    </record>
+</odoo>

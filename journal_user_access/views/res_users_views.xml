@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة تاب في نموذج المستخدم -->
+    <record id="view_users_form_inherit_journal" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.journal</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Allowed Journals" name="allowed_journals">
+                    <group>
+                        <field name="journal_count"/>
+                    </group>
+                    <field name="allowed_journal_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="type"/>
+                            <field name="company_id"/>
+                        </list>
+                    </field>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fa fa-warning"/> This list is read-only. To modify permissions, go to each journal's settings
+                    </div>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- إضافة smart button -->
+    <record id="view_users_form_inherit_journal_button" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.journal.button</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="%(account.action_account_journal_form)d"
+                        type="action"
+                        class="oe_stat_button"
+                        icon="fa-book"
+                        context="{'search_default_my_journals': 1}">
+                    <field name="journal_count" widget="statinfo" string="جورنال"/>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>
