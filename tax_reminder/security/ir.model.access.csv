@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tax_client_user,tax.client.user,model_tax_client,base.group_user,1,1,1,1
+access_tax_declaration_user,tax.declaration.user,model_tax_declaration,base.group_user,1,1,1,1
+access_tax_client_settings_user,tax.client.settings.user,model_tax_client_settings,base.group_user,1,1,1,1
+access_tax_client_partner_user,tax.client.partner.user,model_tax_client_partner,base.group_user,1,1,1,1
