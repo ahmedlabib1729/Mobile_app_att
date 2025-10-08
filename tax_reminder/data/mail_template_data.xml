@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- قالب البريد الإلكتروني للتذكير -->
+        <record id="email_template_tax_reminder" model="mail.template">
+            <field name="name">تذكير بالإقرار الضريبي</field>
+            <field name="model_id" ref="model_tax_declaration"/>
+            <field name="subject">تذكير: موعد تقديم الإقرار الضريبي</field>
+            <field name="email_from">{{ (user.email or user.company_id.email) if user else '' }}</field>
+            <field name="email_to">{{ object.client_id.email }}</field>
+            <field name="body_html"><![CDATA[
+<div dir="rtl" style="font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: rtl; text-align: right; color: #333;">
+
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">📋 تذكير بموعد الإقرار الضريبي</h1>
+    </div>
+
+    <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
+
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">
+            السيد/ة <t t-esc="object.client_id.name"/>
+        </h2>
+
+        <p style="font-size: 16px; line-height: 1.8;">تحية طيبة وبعد،</p>
+
+        <p style="font-size: 16px; line-height: 1.8;">نود تذكير سيادتكم بموعد تقديم الإقرار الضريبي التالي:</p>
+
+        <div style="background: #f8f9fa; border-right: 5px solid #3498db; padding: 20px; margin: 25px 0; border-radius: 5px;">
+            <table width="100%" cellpadding="8" cellspacing="0" style="font-size: 16px;">
+                <tr>
+                    <td style="font-weight: bold; color: #495057; width: 180px; padding: 10px 0;">نوع الضريبة:</td>
+                    <td style="color: #212529; font-weight: 600;">
+                        <t t-if="object.tax_type == 'vat'">ضريبة القيمة المضافة</t>
+                        <t t-elif="object.tax_type == 'income'">ضريبة الدخل</t>
+                        <t t-elif="object.tax_type == 'withholding'">الخصم والإضافة</t>
+                        <t t-elif="object.tax_type == 'payroll'">ضريبة المرتبات</t>
+                        <t t-else="">أخرى</t>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #495057; padding: 10px 0;">الفترة:</td>
+                    <td style="color: #212529; font-weight: 600;">
+                        <t t-if="object.period_type == 'quarterly'">الربع <t t-esc="object.period"/> لسنة <t t-esc="object.year"/></t>
+                        <t t-elif="object.period_type == 'monthly'">شهر <t t-esc="object.period"/> - <t t-esc="object.year"/></t>
+                        <t t-elif="object.period_type == 'semi_annual'">النصف <t t-esc="'الأول' if object.period == '1' else 'الثاني'"/> لسنة <t t-esc="object.year"/></t>
+                        <t t-elif="object.period_type == 'annual'">السنة المالية <t t-esc="object.year"/></t>
+                        <t t-else="">الفترة <t t-esc="object.period"/> - <t t-esc="object.year"/></t>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #495057; padding: 10px 0;">تاريخ الاستحقاق:</td>
+                    <td style="color: #e74c3c; font-weight: bold; font-size: 20px;">
+                        <t t-if="object.due_date">
+                            <t t-esc="object.due_date.strftime('%d/%m/%Y')"/>
+                        </t>
+                        <t t-else="">غير محدد</t>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #495057; padding: 10px 0;">الأيام المتبقية:</td>
+                    <td>
+                        <span style="display: inline-block; background: #ff6b6b; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">
+                            <t t-esc="object.days_remaining"/> يوم
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <h3 style="color: #2c3e50; font-size: 20px; margin: 30px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #3498db;">
+            📄 المستندات المطلوبة:
+        </h3>
+
+        <div style="background: white; border: 1px solid #dee2e6; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <ul style="margin: 0; padding-right: 20px; line-height: 2.2; font-size: 15px;">
+                <li style="margin-bottom: 8px;">✅ كشف حساب البنك للفترة المحددة</li>
+                <li style="margin-bottom: 8px;">✅ كافة الفواتير الصادرة خلال الفترة</li>
+                <li style="margin-bottom: 8px;">✅ كافة الفواتير الواردة خلال الفترة</li>
+                <li style="margin-bottom: 8px;">✅ الإقرار الضريبي للفترة السابقة</li>
+                <li style="margin-bottom: 8px;">✅ أي مستندات أخرى ذات صلة بالنشاط</li>
+            </ul>
+        </div>
+
+        <div style="background: #fff3cd; border: 2px solid #ffc107; border-right: 5px solid #ff6b6b; padding: 20px; margin: 25px 0; border-radius: 5px;">
+            <h4 style="color: #ff6b6b; margin: 0 0 10px 0;">⚠️ تنبيه هام:</h4>
+            <p style="margin: 0; color: #856404; line-height: 1.8; font-size: 15px;">
+                برجاء رفع المستندات المطلوبة في أقرب وقت ممكن لضمان تقديم الإقرار في الموعد المحدد وتجنب أي غرامات تأخير.
+            </p>
+        </div>
+
+        <t t-if="object.notes">
+            <div style="background: #e7f3ff; border: 1px solid #b3d7ff; border-right: 5px solid #3498db; padding: 20px; margin: 25px 0; border-radius: 5px;">
+                <h4 style="color: #004085; margin: 0 0 10px 0;">📌 ملاحظات خاصة:</h4>
+                <p style="margin: 0; color: #004085; line-height: 1.8; font-size: 15px;">
+                    <t t-esc="object.notes"/>
+                </p>
+            </div>
+        </t>
+
+        <p style="margin-top: 30px; font-size: 16px; line-height: 1.8;">
+            في حالة وجود أي استفسارات، لا تترددوا في التواصل معنا.
+        </p>
+
+        <p style="font-size: 16px; line-height: 1.8;">مع خالص التحيات،</p>
+
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; text-align: center; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px;">
+        <h3 style="color: #2c3e50; margin: 0 0 15px 0;">
+            <t t-if="user and user.company_id">
+                <t t-esc="user.company_id.name"/>
+            </t>
+            <t t-else="">الشركة</t>
+        </h3>
+        <div style="color: #6c757d; font-size: 14px; line-height: 1.8;">
+            <t t-if="user and user.company_id and user.company_id.phone">
+                <div>📞 الهاتف: <t t-esc="user.company_id.phone"/></div>
+            </t>
+            <t t-if="user and user.company_id and user.company_id.email">
+                <div>✉️ البريد الإلكتروني: <t t-esc="user.company_id.email"/></div>
+            </t>
+            <t t-if="user and user.company_id and user.company_id.website">
+                <div>🌐 الموقع الإلكتروني: <t t-esc="user.company_id.website"/></div>
+            </t>
+        </div>
+    </div>
+
+</div>
+]]></field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+    </data>
+</odoo>
