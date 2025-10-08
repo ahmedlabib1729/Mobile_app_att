@@ -1,0 +1,36 @@
+/* Stock Card Report Styles */
+.stock-card-container {
+    padding: 20px;
+}
+
+.stock-card-container table {
+    font-size: 14px;
+}
+
+.stock-card-container .table-responsive {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* منع تداخل الأعمدة */
+.stock-card-container td,
+.stock-card-container th {
+    white-space: nowrap;
+    padding: 8px 12px !important;
+}
+
+/* تنسيق الأرقام */
+.stock-card-container .receipt-qty {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.stock-card-container .issue-qty {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.stock-card-container .balance-qty {
+    font-weight: bold;
+    color: #2c3e50;
+}
