@@ -19,6 +19,8 @@
         </field>
     </record>
 
+
+
     <!-- Confirmed Shipments -->
     <record id="action_shipment_confirmed" model="ir.actions.act_window">
         <field name="name">Confirmed Shipments</field>
@@ -32,6 +34,23 @@
             </p>
             <p>
                 Shipments waiting for pickup will appear here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Torood Hub Shipments -->
+    <record id="action_shipment_torood_hub" model="ir.actions.act_window">
+        <field name="name">Draft Shipments</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('state', '=', 'torood_hub')]</field>
+        <field name="context">{'search_default_torood_hub': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No shipments in Torood Hub
+            </p>
+            <p>
+                Create new shipment orders here.
             </p>
         </field>
     </record>
@@ -64,6 +83,23 @@
             </p>
             <p>
                 Shipments currently being transported.
+            </p>
+        </field>
+    </record>
+
+    <!-- Torood Hub Shipments -->
+    <record id="action_shipment_shipping_company_hub" model="ir.actions.act_window">
+        <field name="name">Draft Shipments</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('state', '=', 'shipping_company_hub')]</field>
+        <field name="context">{'search_default_shipping_company_hub': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No shipments in Shipping company Hub
+            </p>
+            <p>
+                Create new shipment orders here.
             </p>
         </field>
     </record>
@@ -209,6 +245,11 @@
             </field>
         </record>
 
+    <menuitem id="menu_shipment_root"
+              name="Shipments"
+              sequence="10"
+              web_icon="shipping_management_system,static/img/delivery-box_9540209.png"/>
+
         <!-- Menu Item -->
         <menuitem
             id="menu_shipment_overdue"
@@ -230,13 +271,40 @@
 
 
 
+
+    <menuitem id="menu_egypt_locations_root"
+              name="Egypt Locations"
+              parent="menu_shipment_root"
+              sequence="50"/>
+
+    <menuitem id="menu_egypt_governorate"
+              name="Governorates"
+              parent="menu_egypt_locations_root"
+              action="action_egypt_governorate"
+              sequence="10"/>
+
+    <menuitem id="menu_egypt_area"
+              name="Areas"
+              parent="menu_egypt_locations_root"
+              action="action_egypt_area"
+              sequence="20"/>
+
+    <menuitem id="menu_egypt_city"
+              name="Cities/Districts"
+              parent="menu_egypt_locations_root"
+              action="action_egypt_city"
+              sequence="30"/>
+
+    <menuitem id="menu_import_egypt_locations"
+              name="Import from Excel"
+              parent="menu_egypt_locations_root"
+              action="action_import_egypt_locations"
+              sequence="100"/>
+
     <!-- ===== MENU ITEMS - الترتيب الصحيح ===== -->
 
     <!-- 1. Main Root Menu -->
-    <menuitem id="menu_shipment_root"
-              name="Shipments"
-              sequence="10"
-              web_icon="shipping_management_system,static/img/delivery-box_9540209.png"/>
+
 
     <!-- 2. Dashboard (First Item) -->
     <menuitem id="menu_shipment_dashboard"
@@ -250,7 +318,7 @@
               name="All Shipment Orders"
               parent="menu_shipment_root"
               action="action_shipment_order"
-              sequence="10"/>
+              sequence="5"/>
 
     <!-- 4. By Status Menu -->
     <menuitem id="menu_shipment_by_status"
@@ -271,17 +339,34 @@
               action="action_shipment_confirmed"
               sequence="20"/>
 
+    <menuitem id="menu_shipment_torood_hub"
+              name="🏢 Torood Hub"
+              parent="menu_shipment_by_status"
+              action="action_shipment_torood_hub"
+              sequence="30"/>
+
     <menuitem id="menu_shipment_picked"
               name="📦 Picked Up"
               parent="menu_shipment_by_status"
               action="action_shipment_picked"
-              sequence="30"/>
+              sequence="35"/>
+
+
+
+
 
     <menuitem id="menu_shipment_in_transit"
               name="🚚 In Transit"
               parent="menu_shipment_by_status"
               action="action_shipment_in_transit"
               sequence="40"/>
+
+
+    <menuitem id="menu_shipment_shipping_company_hub"
+              name="🏭 Shipping Company Hub"
+              parent="menu_shipment_by_status"
+              action="action_shipment_shipping_company_hub"
+              sequence="45"/>
 
     <menuitem id="menu_shipment_out_for_delivery"
               name="🏃 Out for Delivery"
@@ -342,19 +427,15 @@
               name="Product Subcategories"
               parent="menu_shipment_config"
               action="action_product_subcategory"
-              sequence="20"/>
+              sequence="50"/>
 
-    <menuitem id="menu_governorate_pricing"
-              name="Governorate Pricing"
-              parent="menu_shipment_config"
-              action="action_shipping_governorate_price"
-              sequence="25"/>
+
 
     <menuitem id="menu_product_brand"
               name="Product Brands"
               parent="menu_shipment_config"
               action="action_product_brand"
-              sequence="30"/>
+              sequence="35"/>
 
 
 
@@ -362,19 +443,15 @@
               name="Customer Categories"
               parent="menu_shipment_config"
               action="action_customer_price_category"
-              sequence="50"/>
+              sequence="20"/>
 
-    <menuitem id="menu_customer_governorate_costs"
-              name="Category Governorate Costs"
-              parent="menu_shipment_config"
-              action="action_customer_governorate_prices"
-              sequence="55"/>
+
 
     <menuitem id="menu_additional_services"
               name="Additional Services"
               parent="shipping_management_system.menu_shipment_config"
               action="action_additional_service"
-              sequence="35"/>
+              sequence="30"/>
 
 
 

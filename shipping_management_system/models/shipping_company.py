@@ -199,7 +199,7 @@ class ShippingCompany(models.Model):
     )
 
     def calculate_insurance_fee(self, cod_amount_sheet_excel, apply_insurance=True):
-        """حساب رسوم التأمين بناءً على إعدادات الشركة"""
+        """حساب رسوم التأمين بناءً على إعدادات الشركة - معادلة جديدة"""
         self.ensure_one()
 
         if not apply_insurance:
@@ -210,30 +210,44 @@ class ShippingCompany(models.Model):
                 'reason': 'Insurance not required'
             }
 
-        # التحقق من الحد الأدنى
-        if cod_amount_sheet_excel < self.insurance_minimum_value:
+        # إذا كانت قيمة المنتج = 0، لا تأمين
+        if cod_amount_sheet_excel == 0:
             return {
                 'fee_amount': 0,
                 'type_used': None,
                 'rate_used': 0,
-                'reason': f'Product value ({cod_amount_sheet_excel:.2f}) is below minimum ({self.insurance_minimum_value:.2f})'
+                'reason': 'Product value is zero'
             }
 
         # حساب الرسوم حسب النوع
         if self.insurance_type == 'percentage':
-            fee = (cod_amount_sheet_excel * self.insurance_percentage / 100)
+            # احسب النسبة المئوية
+            calculated_fee = (cod_amount_sheet_excel * self.insurance_percentage / 100)
+
+            # خد الأكبر بين النسبة والمنيمم
+            final_fee = max(calculated_fee, self.insurance_minimum_value)
+
             return {
-                'fee_amount': fee,
+                'fee_amount': final_fee,
                 'type_used': 'percentage',
                 'rate_used': self.insurance_percentage,
-                'cod_amount_sheet_excel': cod_amount_sheet_excel
+                'cod_amount_sheet_excel': cod_amount_sheet_excel,
+                'calculated_fee': calculated_fee,
+                'minimum_applied': final_fee > calculated_fee,
+                'reason': f'Applied max of percentage ({calculated_fee:.2f}) and minimum ({self.insurance_minimum_value:.2f})'
             }
         else:  # fixed
+            # خد الأكبر بين القيمة الثابتة والمنيمم
+            final_fee = max(self.insurance_fixed_amount, self.insurance_minimum_value)
+
             return {
-                'fee_amount': self.insurance_fixed_amount,
+                'fee_amount': final_fee,
                 'type_used': 'fixed',
                 'rate_used': self.insurance_fixed_amount,
-                'cod_amount_sheet_excel': cod_amount_sheet_excel
+                'cod_amount_sheet_excel': cod_amount_sheet_excel,
+                'calculated_fee': self.insurance_fixed_amount,
+                'minimum_applied': final_fee > self.insurance_fixed_amount,
+                'reason': f'Applied max of fixed ({self.insurance_fixed_amount:.2f}) and minimum ({self.insurance_minimum_value:.2f})'
             }
 
 
@@ -342,8 +356,8 @@ class ShippingCompany(models.Model):
         self.ensure_one()
 
         # البحث عن سعر مخصص للمحافظة
-        price_config = self.governorate_price_ids.filtered(
-            lambda p: p.governorate_id.id == governorate_id and p.active
+        price_config = self.with_context(active_test=False).governorate_price_ids.filtered(
+            lambda p: p.governorate_id.id == governorate_id
         )
 
         if price_config:
@@ -440,7 +454,6 @@ class ShippingCompany(models.Model):
         return True
 
     def action_view_governorate_prices(self):
-        """فتح نافذة أسعار المحافظات الخاصة بهذه الشركة"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
@@ -451,5 +464,6 @@ class ShippingCompany(models.Model):
             'context': {
                 'default_company_id': self.id,
                 'search_default_company_id': self.id,
+                'active_test': False,
             },
         }

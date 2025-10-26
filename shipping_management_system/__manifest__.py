@@ -43,6 +43,7 @@
         'views/pickup_configuration_views.xml',
         'views/shipment_dashboard_view.xml',
         'views/egypt_locations_views.xml',
+        #'views/coming_soon.xml',
         'views/additional_services_views.xml',
         'views/excel_export_views.xml',
         'views/cod_fee_ranges_views.xml',

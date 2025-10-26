@@ -201,8 +201,8 @@ class ShipmentOrder(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
-        ('torood_hub', 'Torood Hub'),  # حالة جديدة 1
         ('picked', 'Picked Up'),
+        ('torood_hub', 'Torood Hub'),  # حالة جديدة 1
         ('in_transit', 'In Transit'),
         ('shipping_company_hub', 'Shipping Company Hub'),
         ('out_for_delivery', 'Out for Delivery'),
@@ -259,6 +259,12 @@ class ShipmentOrder(models.Model):
         store=True,
         readonly=False,
         help='Auto-calculated: Product Value + Company Charges')
+
+    include_services_in_cod = fields.Boolean(
+        string='Include Services & Pickup in COD',
+        default=False,
+        help='If checked, Services Fees and Pickup Fee will be added to COD amount'
+    )
 
 
     insurance_required = fields.Boolean(string='Insurance Required')
@@ -708,10 +714,13 @@ class ShipmentOrder(models.Model):
             }
         }
 
-    @api.depends('insurance_required', 'total_value', 'shipping_company_id', 'insurance_fee_amount', 'cod_amount_sheet_excel')
+    @api.depends('insurance_required', 'insurance_value',
+                 'total_value', 'shipping_company_id',
+                 'insurance_fee_amount', 'cod_amount_sheet_excel')
     def _compute_insurance_details(self):
-        """حساب وعرض تفاصيل التأمين"""
+        """حساب وعرض تفاصيل التأمين بشكل موحّد"""
         for record in self:
+            # في حالة عدم طلب التأمين أو عدم اختيار شركة شحن
             if not record.insurance_required or not record.shipping_company_id:
                 record.insurance_calculation_details = 'Insurance not required'
                 record.insurance_type_used = ''
@@ -720,32 +729,41 @@ class ShipmentOrder(models.Model):
             company = record.shipping_company_id
             details = []
 
-            # معلومات الإعدادات
+            # قاعدة الحساب: قيمة التأمين المحددة يدويًا -> قيمة المنتجات -> COD (إن وُجد)
+            base_for_insurance = record.insurance_value or record.total_value or record.cod_amount_sheet_excel or 0.0
+
+            # معلومات عامة
             details.append(f"Company: {company.name}")
             details.append(f"Insurance Type: {company.insurance_type}")
 
+            # حساب الرسوم المتوقعة حسب نوع التأمين
             if company.insurance_type == 'percentage':
-                details.append(f"Insurance Rate: {company.insurance_percentage}%")
-                calculated_fee = record.cod_amount_sheet_excel * company.insurance_percentage / 100
-                details.append(
-                    f"Calculation: {record.cod_amount_sheet_excel:.2f} × {company.insurance_percentage}% = {calculated_fee:.2f} EGP")
+                rate = float(company.insurance_percentage or 0.0)
+                calculated_fee = base_for_insurance * rate / 100.0
+                details.append(f"Insurance Rate: {rate:.2f}%")
+                details.append(f"Calculation: {base_for_insurance:.2f} × {rate:.2f}% = {calculated_fee:.2f} EGP")
             else:
-                details.append(f"Fixed Insurance Fee: {company.insurance_fixed_amount:.2f} EGP")
-                calculated_fee = company.insurance_fixed_amount
+                fixed_amt = float(company.insurance_fixed_amount or 0.0)
+                calculated_fee = fixed_amt
+                details.append(f"Fixed Insurance Fee: {fixed_amt:.2f} EGP")
 
-            details.append(f"Minimum Value Required: {company.insurance_minimum_value:.2f} EGP")
-            details.append(f"Product Value: {record.cod_amount_sheet_excel:.2f} EGP")
+            # إظهار حد أدنى (حسب إعداد الشركة)
+            min_value = float(company.insurance_minimum_value or 0.0)
+            details.append(f"Minimum Value/Fee Threshold: {min_value:.2f} EGP")
+            details.append(f"Product Value (Base): {base_for_insurance:.2f} EGP")
 
-            # التحقق من التطابق
-            if abs(record.insurance_fee_amount - calculated_fee) > 0.01:
+            # مقارنة المخزّن مع المتوقع
+            stored_fee = float(record.insurance_fee_amount or 0.0)
+            if abs(stored_fee - calculated_fee) > 0.01:
                 details.append("⚠️ WARNING: Mismatch in insurance calculation!")
-                details.append(f"   Stored: {record.insurance_fee_amount:.2f} EGP")
+                details.append(f"   Stored:   {stored_fee:.2f} EGP")
                 details.append(f"   Expected: {calculated_fee:.2f} EGP")
             else:
-                details.append(f"✓ Final Insurance Fee: {record.insurance_fee_amount:.2f} EGP")
+                details.append(f"✓ Final Insurance Fee: {stored_fee:.2f} EGP")
 
+            # تعيين الحقول
             record.insurance_calculation_details = '\n'.join(details)
-            record.insurance_type_used = company.insurance_type
+            record.insurance_type_used = company.insurance_type or ''
 
     @api.depends('shipment_line_ids', 'total_weight', 'weight_shipping_cost', 'shipping_company_id',
                  'recipient_governorate_id')
@@ -891,19 +909,10 @@ class ShipmentOrder(models.Model):
 
     # ===== Onchange Methods =====
 
-
-
-
-
-
-
-
-
-
-
     @api.onchange('shipping_company_id', 'recipient_governorate_id', 'total_weight',
                   'payment_method', 'cod_payment_type', 'cod_includes_shipping',
-                  'insurance_required', 'total_value', 'total_company_cost',
+                  'insurance_required', 'insurance_value',  # ✅ تمت الإضافة
+                  'total_value', 'total_company_cost',
                   'total_additional_fees', 'discount_amount')
     def _onchange_calculate_shipping(self):
         """حساب السعر عند تغيير الشركة أو المحافظة أو الوزن أو إعدادات COD أو التأمين"""
@@ -933,10 +942,11 @@ class ShipmentOrder(models.Model):
                     self.weight_shipping_cost = 0
 
                 # حساب رسوم التأمين
-                if self.insurance_required and self.cod_amount_sheet_excel > 0:
+                base_for_insurance = self.insurance_value or self.total_value or self.cod_amount_sheet_excel or 0
+                if self.insurance_required and base_for_insurance > 0 and self.shipping_company_id:
                     if hasattr(self.shipping_company_id, 'calculate_insurance_fee'):
                         insurance_result = self.shipping_company_id.calculate_insurance_fee(
-                            cod_amount_sheet_excel=self.cod_amount_sheet_excel,
+                            cod_amount_sheet_excel=base_for_insurance,
                             apply_insurance=True
                         )
                         self.insurance_fee_amount = insurance_result.get('fee_amount', 0)
@@ -980,7 +990,7 @@ class ShipmentOrder(models.Model):
             # إعادة حساب COD details
             self._compute_cod_details()
 
-    @api.onchange('insurance_required')
+    @api.onchange('insurance_required', 'insurance_value')  # ✅ تمت الإضافة
     def _onchange_insurance_required_direct(self):
         """تحديث فوري مباشر للتأمين"""
         # حساب تكاليف الشركة أولاً
@@ -1002,7 +1012,12 @@ class ShipmentOrder(models.Model):
 
         # احسب cod_amount_sheet_excel
         if self.payment_method == 'cod':
-            self.cod_amount_sheet_excel = self.total_value + (self.company_base_cost or 0) + (
+            if self.include_services_in_cod:
+                # إذا كان الخيار مفعل: قيمة المنتج + كل تكاليف الشركة
+                self.cod_amount_sheet_excel = self.total_value + (self.total_company_cost or 0)
+            else:
+                # الحسبة العادية: قيمة المنتج + التكلفة الأساسية + تكلفة الوزن
+                self.cod_amount_sheet_excel = self.total_value + (self.company_base_cost or 0) + (
                         self.company_weight_cost or 0)
 
         # الآن احسب التأمين
@@ -1011,12 +1026,15 @@ class ShipmentOrder(models.Model):
             self.company_insurance_fee_amount = 0
         else:
             # رسوم شركة الشحن
-            if self.shipping_company_id and self.cod_amount_sheet_excel > 0:
+            base_for_insurance = self.insurance_value or self.total_value or self.cod_amount_sheet_excel or 0
+            if self.shipping_company_id and base_for_insurance > 0:
                 insurance_result = self.shipping_company_id.calculate_insurance_fee(
-                    cod_amount_sheet_excel=self.cod_amount_sheet_excel,
+                    cod_amount_sheet_excel=base_for_insurance,
                     apply_insurance=True
                 )
                 self.insurance_fee_amount = insurance_result.get('fee_amount', 0)
+            else:
+                self.insurance_fee_amount = 0
 
             # رسوم فئة العميل
             if self.customer_category_id and self.total_value > 0:
@@ -1028,7 +1046,9 @@ class ShipmentOrder(models.Model):
 
     # في class ShipmentOrder، أضف هذه الدالة المحسوبة:
 
-    @api.depends('total_value', 'total_company_cost', 'total_additional_fees', 'discount_amount', 'payment_method' , 'company_base_cost' , 'company_weight_cost')
+    @api.depends('total_value', 'total_company_cost', 'total_additional_fees', 'discount_amount',
+                 'payment_method', 'company_base_cost', 'company_weight_cost',
+                 'include_services_in_cod')  # إضافة الحقل الجديد للـ depends
     def _compute_cod_amount(self):
         """حساب مبلغ COD تلقائياً = قيمة البضاعة + تكلفة الشركة"""
         for record in self:
@@ -1036,7 +1056,14 @@ class ShipmentOrder(models.Model):
                 # COD = قيمة البضاعة + (تكلفة الشركة + رسوم إضافية - خصم)
                 company_price = record.total_company_cost + record.total_additional_fees - record.discount_amount
                 record.cod_amount = record.total_value
-                record.cod_amount_sheet_excel = record.total_value + record.company_base_cost
+
+                # حساب cod_amount_sheet_excel
+                if record.include_services_in_cod:
+                    # إذا كان الخيار مفعل: قيمة المنتج + كل تكاليف الشركة
+                    record.cod_amount_sheet_excel = record.total_value + record.total_company_cost
+                else:
+                    # الحسبة العادية: قيمة المنتج + التكلفة الأساسية فقط
+                    record.cod_amount_sheet_excel = record.total_value + record.company_base_cost
             else:
                 record.cod_amount = 0
 
@@ -1044,13 +1071,22 @@ class ShipmentOrder(models.Model):
 
 
     # أضف أيضاً onchange للتحديث عند تغيير payment_method:
-    @api.onchange('payment_method', 'total_value', 'total_company_cost', 'total_additional_fees', 'discount_amount')
+    @api.onchange('payment_method', 'total_value', 'total_company_cost', 'total_additional_fees',
+                  'discount_amount', 'include_services_in_cod')
     def _onchange_cod_calculation(self):
         """تحديث COD amount عند تغيير طريقة الدفع أو الأسعار"""
         if self.payment_method == 'cod':
             company_price = self.total_company_cost + self.total_additional_fees - self.discount_amount
             self.cod_amount = self.total_value
-            self.cod_amount_sheet_excel = self.total_value + self.company_base_cost + self.company_weight_cost
+
+            # حساب cod_amount_sheet_excel
+            if self.include_services_in_cod:
+                # إذا كان الخيار مفعل: قيمة المنتج + كل تكاليف الشركة
+                self.cod_amount_sheet_excel = self.total_value + self.total_company_cost
+            else:
+                # الحسبة العادية: قيمة المنتج + التكلفة الأساسية + تكلفة الوزن
+                self.cod_amount_sheet_excel = self.total_value + self.company_base_cost + self.company_weight_cost
+
             # إعادة حساب COD fee بناء على القيمة الجديدة
             self._compute_cod_details()
         else:
@@ -1297,7 +1333,7 @@ class ShipmentOrder(models.Model):
         """نقل الشحنة إلى Torood Hub مع التحقق من الحقول وتصدير الإكسيل تلقائياً"""
         for record in self:
             # التحقق من الحالة السابقة
-            if record.state != 'confirmed':
+            if record.state != 'picked':
                 raise UserError(_('Shipment must be Confirmed first!'))
 
             # قائمة تفصيلية للحقول المفقودة
@@ -1564,7 +1600,7 @@ class ShipmentOrder(models.Model):
         """استلام الشحنة من Torood Hub - مع التحقق من الحقول المطلوبة"""
         for record in self:
             # التحقق من الحالة السابقة
-            if record.state != 'torood_hub':
+            if record.state != 'confirmed':
                 raise UserError(_('Shipment must be at Torood Hub first!'))
 
             # قائمة للحقول المفقودة
@@ -1601,7 +1637,7 @@ class ShipmentOrder(models.Model):
     def action_in_transit(self):
         """الشحنة في الطريق - تبقى كما هي بعد picked"""
         for record in self:
-            if record.state != 'picked':
+            if record.state != 'torood_hub':
                 raise UserError(_('Shipment must be Picked Up first!'))
 
             if not record.tracking_number:
@@ -2314,7 +2350,8 @@ class ShipmentOrder(models.Model):
 
     @api.onchange('shipping_company_id', 'recipient_governorate_new_id', 'total_weight',
                   'payment_method', 'cod_payment_type', 'cod_includes_shipping',
-                  'insurance_required', 'total_value', 'total_company_cost',
+                  'insurance_required', 'insurance_value',  # ✅ تمت الإضافة
+                  'total_value', 'total_company_cost',
                   'total_additional_fees', 'discount_amount', 'cod_amount_sheet_excel')
     def _onchange_calculate_shipping_new(self):
         """حساب السعر عند تغيير الشركة أو المحافظة الجديدة"""
@@ -2340,10 +2377,11 @@ class ShipmentOrder(models.Model):
                     self.weight_shipping_cost = 0
 
                 # حساب رسوم التأمين
-                if self.insurance_required and self.cod_amount_sheet_excel > 0:
+                base_for_insurance = self.insurance_value or self.total_value or self.cod_amount_sheet_excel or 0
+                if self.insurance_required and base_for_insurance > 0 and self.shipping_company_id:
                     if hasattr(self.shipping_company_id, 'calculate_insurance_fee'):
                         insurance_result = self.shipping_company_id.calculate_insurance_fee(
-                            cod_amount_sheet_excel=self.cod_amount_sheet_excel,
+                            cod_amount_sheet_excel=base_for_insurance,
                             apply_insurance=True
                         )
                         self.insurance_fee_amount = insurance_result.get('fee_amount', 0)
@@ -2376,3 +2414,52 @@ class ShipmentOrder(models.Model):
             self._compute_customer_pricing()
             # حساب تكاليف الشحن
             self._onchange_calculate_shipping_new()
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    # Egyptian Location Fields
+    governorate_new_id = fields.Many2one(
+        'egypt.governorate',
+        string='Governorate',
+        tracking=True,
+        help='Egyptian Governorate'
+    )
+
+    area_id = fields.Many2one(
+        'egypt.governorate.area',
+        string='Area',
+        domain="[('governorate_id', '=', governorate_new_id)]",
+        tracking=True,
+        help='Area within the governorate'
+    )
+
+    city_district_id = fields.Many2one(
+        'egypt.governorate.city',
+        string='City/District',
+        domain="[('area_id', '=', area_id)]",
+        tracking=True,
+        help='City or District within the area'
+    )
+
+    # Additional fields
+    preferred_pickup_time = fields.Selection([
+        ('morning', 'Morning (9 AM - 12 PM)'),
+        ('afternoon', 'Afternoon (12 PM - 3 PM)'),
+        ('late_afternoon', 'Late Afternoon (3 PM - 6 PM)'),
+        ('evening', 'Evening (6 PM - 9 PM)'),
+        ('anytime', 'Any Time'),
+    ], string='Preferred Pickup Time', default='anytime')
+
+    preferred_delivery_time = fields.Selection([
+        ('morning', 'Morning (9 AM - 12 PM)'),
+        ('afternoon', 'Afternoon (12 PM - 3 PM)'),
+        ('late_afternoon', 'Late Afternoon (3 PM - 6 PM)'),
+        ('evening', 'Evening (6 PM - 9 PM)'),
+        ('anytime', 'Any Time'),
+    ], string='Preferred Delivery Time', default='anytime')
+
+    pickup_notes = fields.Text(string='Default Pickup Instructions')
+    delivery_notes = fields.Text(string='Default Delivery Instructions')
+    whatsapp = fields.Char(string='WhatsApp')
+    alternative_phone = fields.Char(string='Alternative Phone')

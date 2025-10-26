@@ -211,11 +211,7 @@ class EgyptGovernorateArea(models.Model):
         for record in self:
             record.city_count = len(record.city_ids)
 
-    _sql_constraints = [
-        ('unique_area_per_governorate',
-         'UNIQUE(name, governorate_id)',
-         'Area name must be unique within the governorate!'),
-    ]
+
 
     def name_get(self):
         result = []
@@ -289,11 +285,7 @@ class EgyptGovernorateCity(models.Model):
         string='ZIP/Postal Code'
     )
 
-    _sql_constraints = [
-        ('unique_city_per_area',
-         'UNIQUE(name, area_id)',
-         'City name must be unique within the area!'),
-    ]
+
 
     def name_get(self):
         result = []

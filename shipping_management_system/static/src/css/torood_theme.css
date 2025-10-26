@@ -511,18 +511,7 @@ header.o_header_standard,
                     gap: 12px;
                 }
 
-                .logo-box {
-                    width: 48px;
-                    height: 48px;
-                    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: var(--white);
-                    font-size: 24px;
-                    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
-                }
+
 
                 .logo-text {
                     display: flex;
@@ -892,13 +881,22 @@ header.o_header_standard,
                         height: 70px;
                     }
 
-                    .logo-box {
-                        width: 40px;
-                        height: 40px;
-                        font-size: 20px;
-                    }
+
 
                     .logo-text-ar {
                         font-size: 20px;
                     }
                 }
+
+
+
+/* أو إذا كنت تريد صورة دائرية */
+
+
+.logo-image {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
+
+

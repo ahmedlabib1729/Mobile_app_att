@@ -224,6 +224,35 @@ class CustomerPriceCategory(models.Model):
         help='Penalty percentage for returned shipments (charged to customer)'
     )
 
+    governorate_count_all = fields.Integer(
+        string='Governorates',
+        compute='_compute_governorate_count_all',
+    )
+
+    def _compute_governorate_count_all(self):
+        for rec in self:
+            count = self.env['customer.category.governorate.price'].with_context(active_test=False).search_count([
+                ('category_id', '=', rec.id)
+            ])
+            rec.governorate_count_all = count
+
+    def action_view_all_governorate_costs(self):
+        """يفتح ليست فيها كل المحافظات (Active + Archived) لهذه الفئة"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Governorate Costs (All)'),
+            'res_model': 'customer.category.governorate.price',
+            'view_mode': 'list,form',
+            'domain': [('category_id', '=', self.id)],
+            'context': {
+                'default_category_id': self.id,
+                'active_test': False,  # مهم لعرض الـ archived
+            },
+            # اختيارياً: افتح الليست مباشرة
+            # 'target': 'current',
+        }
+
     @api.depends('insurance_type', 'insurance_percentage', 'insurance_fixed_amount',
                  'insurance_minimum_value', 'insurance_enabled')
     def _compute_insurance_examples(self):
@@ -256,6 +285,8 @@ class CustomerPriceCategory(models.Model):
                     fee = record.insurance_fixed_amount
                 record.insurance_example_5000 = f"{fee:.2f} EGP"
 
+
+
     @api.constrains('insurance_percentage', 'insurance_fixed_amount',
                     'insurance_minimum_value', 'insurance_maximum_value')
     def _check_insurance_values(self):
@@ -273,7 +304,7 @@ class CustomerPriceCategory(models.Model):
                 raise ValidationError(_('Insurance minimum value cannot be greater than maximum value!'))
 
     def calculate_company_insurance_fee(self, product_value, apply_insurance=True):
-        """حساب رسوم التأمين للشركة بناءً على إعدادات الفئة"""
+        """حساب رسوم التأمين للشركة بناءً على إعدادات الفئة - معادلة جديدة"""
         self.ensure_one()
 
         if not apply_insurance or not self.insurance_enabled:
@@ -284,41 +315,46 @@ class CustomerPriceCategory(models.Model):
                 'reason': 'Insurance not enabled for this category' if not self.insurance_enabled else 'Insurance not required'
             }
 
-        # التحقق من الحد الأدنى
-        if product_value < self.insurance_minimum_value:
+        # إذا كانت قيمة المنتج = 0، لا تأمين
+        if product_value == 0:
             return {
                 'fee_amount': 0,
                 'type_used': None,
                 'rate_used': 0,
-                'reason': f'Product value ({product_value:.2f}) is below minimum ({self.insurance_minimum_value:.2f})'
-            }
-
-        # التحقق من الحد الأقصى
-        if self.insurance_maximum_value > 0 and product_value > self.insurance_maximum_value:
-            return {
-                'fee_amount': 0,
-                'type_used': None,
-                'rate_used': 0,
-                'reason': f'Product value ({product_value:.2f}) exceeds maximum ({self.insurance_maximum_value:.2f})'
+                'reason': 'Product value is zero'
             }
 
         # حساب الرسوم حسب النوع
         if self.insurance_type == 'percentage':
-            fee = (product_value * self.insurance_percentage / 100)
+            # احسب النسبة المئوية
+            calculated_fee = (product_value * self.insurance_percentage / 100)
+
+            # خد الأكبر بين النسبة والمنيمم
+            final_fee = max(calculated_fee, self.insurance_minimum_value)
+
             return {
-                'fee_amount': fee,
+                'fee_amount': final_fee,
                 'type_used': 'percentage',
                 'rate_used': self.insurance_percentage,
                 'product_value': product_value,
-                'category': self.name
+                'category': self.name,
+                'calculated_fee': calculated_fee,
+                'minimum_applied': final_fee > calculated_fee,
+                'reason': f'Applied max of percentage ({calculated_fee:.2f}) and minimum ({self.insurance_minimum_value:.2f})'
             }
         else:  # fixed
+            # خد الأكبر بين القيمة الثابتة والمنيمم
+            final_fee = max(self.insurance_fixed_amount, self.insurance_minimum_value)
+
             return {
-                'fee_amount': self.insurance_fixed_amount,
+                'fee_amount': final_fee,
                 'type_used': 'fixed',
                 'rate_used': self.insurance_fixed_amount,
                 'product_value': product_value,
-                'category': self.name
+                'category': self.name,
+                'calculated_fee': self.insurance_fixed_amount,
+                'minimum_applied': final_fee > self.insurance_fixed_amount,
+                'reason': f'Applied max of fixed ({self.insurance_fixed_amount:.2f}) and minimum ({self.insurance_minimum_value:.2f})'
             }
 
     def get_governorate_cost_new(self, egypt_governorate_id):

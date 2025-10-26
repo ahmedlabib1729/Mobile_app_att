@@ -77,38 +77,6 @@
         </field>
     </record>
 
-    <!-- تعديل Search View لإضافة فلاتر الفواتير -->
-    <record id="view_shipment_order_search_invoice" model="ir.ui.view">
-        <field name="name">shipment.order.search.invoice</field>
-        <field name="model">shipment.order</field>
-        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_search"/>
-        <field name="arch" type="xml">
-
-            <filter name="delivered" position="after">
-                <separator/>
-                <filter name="to_invoice"
-                        string="To Invoice"
-                        domain="[('invoice_status', '=', 'to_invoice')]"
-                        help="Shipments ready to be invoiced"/>
-                <filter name="invoiced"
-                        string="Invoiced"
-                        domain="[('invoice_status', '=', 'invoiced')]"
-                        help="Shipments with invoices"/>
-                <filter name="not_invoiced"
-                        string="Not Invoiced"
-                        domain="[('invoice_status', '=', 'no_invoice')]"
-                        help="Shipments without invoices"/>
-            </filter>
-
-            <filter name="state" position="after">
-                <filter name="invoice_status"
-                        string="Invoice Status"
-                        context="{'group_by': 'invoice_status'}"/>
-            </filter>
-
-        </field>
-    </record>
-
     <!-- تعديل Form View للفاتورة لإضافة معلومات الشحنة -->
     <record id="view_move_form_shipment" model="ir.ui.view">
         <field name="name">account.move.form.shipment</field>

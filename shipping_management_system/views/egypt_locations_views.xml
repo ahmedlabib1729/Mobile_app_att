@@ -173,11 +173,11 @@
                 <field name="recipient_area_id"
                        string="Area"
                        options="{'no_create': True}"
-                       invisible="not recipient_governorate_new_id"/>
+                       />
                 <field name="recipient_city_district_id"
                        string="City/District"
                        options="{'no_create': True}"
-                       invisible="not recipient_area_id"/>
+                       />
             </xpath>
 
             <!-- تحديث حقول المرسل -->
@@ -188,11 +188,11 @@
                 <field name="sender_area_id"
                        string="Area"
                        options="{'no_create': True}"
-                       invisible="not sender_governorate_new_id"/>
+                       />
                 <field name="sender_city_district_id"
                        string="City/District"
                        options="{'no_create': True}"
-                       invisible="not sender_area_id"/>
+                       />
             </xpath>
         </field>
     </record>
@@ -234,32 +234,4 @@
 
     <!-- ===== Menu Items ===== -->
 
-    <menuitem id="menu_egypt_locations_root"
-              name="Egypt Locations"
-              parent="menu_shipment_root"
-              sequence="50"/>
-
-    <menuitem id="menu_egypt_governorate"
-              name="Governorates"
-              parent="menu_egypt_locations_root"
-              action="action_egypt_governorate"
-              sequence="10"/>
-
-    <menuitem id="menu_egypt_area"
-              name="Areas"
-              parent="menu_egypt_locations_root"
-              action="action_egypt_area"
-              sequence="20"/>
-
-    <menuitem id="menu_egypt_city"
-              name="Cities/Districts"
-              parent="menu_egypt_locations_root"
-              action="action_egypt_city"
-              sequence="30"/>
-
-    <menuitem id="menu_import_egypt_locations"
-              name="Import from Excel"
-              parent="menu_egypt_locations_root"
-              action="action_import_egypt_locations"
-              sequence="100"/>
 </odoo>

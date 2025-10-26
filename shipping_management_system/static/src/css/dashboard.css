@@ -1126,3 +1126,4 @@
 .kpi-card-modern:has(.color-danger) .kpi-value:not(:contains('0')) {
     animation: pulse-danger 2s infinite;
 }
+

@@ -11,9 +11,8 @@
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="footer-widget">
                                 <div class="footer-logo">
-                                    <div class="logo-box-footer">
-                                        <i class="fa fa-box"></i>
-                                    </div>
+                                    <img src="/shipping_management_system/static/img/LOGO PNG.jpg"
+                         class="logo-image"/>
                                     <div class="logo-text-footer">
                                         <span class="logo-ar">طرود</span>
                                         <span class="logo-en">TOROOD</span>
@@ -23,17 +22,15 @@
                                     نحن شركة رائدة في مجال الشحن والتوصيل في مصر، نقدم خدمات شحن سريعة وموثوقة لجميع المحافظات
                                 </p>
                                 <div class="social-links">
-                                    <a href="#" class="social-link facebook">
+                                    <a href="https://www.facebook.com/share/1B5QgEJoWH/?mibextid=wwXIfr" class="social-link facebook">
                                         <i class="fa fa-facebook"></i>
                                     </a>
-                                    <a href="#" class="social-link twitter">
-                                        <i class="fa fa-twitter"></i>
-                                    </a>
-                                    <a href="#" class="social-link instagram">
+
+                                    <a href="https://www.instagram.com/torood.exp?igsh=MXdmcnBodXN1b3Ru&amp;utm_source=qr" class="social-link instagram">
                                         <i class="fa fa-instagram"></i>
                                     </a>
-                                    <a href="#" class="social-link linkedin">
-                                        <i class="fa fa-linkedin"></i>
+                                    <a href="https://www.tiktok.com/@torood?_t=ZS-90BuQRIGuIB&amp;_r=1" class="social-link linkedin">
+                                        <i class="fa-brands fa-tiktok"></i>
                                     </a>
                                 </div>
                             </div>
@@ -47,8 +44,10 @@
                                     <li><a href="/"><i class="fa fa-angle-left"></i> الرئيسية</a></li>
                                     <li><a href="/shipment"><i class="fa fa-angle-left"></i> أرسل طرد</a></li>
                                     <li><a href="/shipment/track"><i class="fa fa-angle-left"></i> تتبع الشحنة</a></li>
+                                    <t t-if="not request.env.user._is_public()">
                                     <li><a href="/my/shipments"><i class="fa fa-angle-left"></i> شحناتي</a></li>
                                     <li><a href="/my/invoices"><i class="fa fa-angle-left"></i> الفواتير</a></li>
+                                    </t>
                                 </ul>
                             </div>
                         </div>
@@ -76,21 +75,31 @@
                                         <i class="fa fa-map-marker"></i>
                                         <div class="contact-text">
                                             <span>العنوان</span>
-                                            <p>القاهرة، مصر</p>
+                                            <p>إسكندرية ، مصر</p>
                                         </div>
                                     </div>
                                     <div class="contact-item">
                                         <i class="fa fa-phone"></i>
                                         <div class="contact-text">
-                                            <span>اتصل بنا</span>
-                                            <p dir="ltr">+20 123 456 7890</p>
+                                            <span>المبيعات</span>
+                                            <p dir="ltr">+201108372315</p>
+                                            <span>العمليات</span>
+                                            <p dir="ltr">+201108372316</p>
                                         </div>
                                     </div>
                                     <div class="contact-item">
                                         <i class="fa fa-envelope"></i>
                                         <div class="contact-text">
                                             <span>البريد الإلكتروني</span>
-                                            <p>info@torood.com</p>
+                                            <p>Torood.exp@gmail.com</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-item">
+                                        <i class="fa fa-receipt"></i>
+                                        <div class="contact-text">
+                                            <span>رقم التسجيل الضريبى </span>
+                                            <p>Torood new express 775542644 </p>
                                         </div>
                                     </div>
                                 </div>
@@ -266,8 +275,8 @@
             }
 
             .social-link.linkedin:hover {
-                background: #0077b5;
-                border-color: #0077b5;
+                background: #000000;
+                border-color: #000000;
             }
 
             /* Widget Title */

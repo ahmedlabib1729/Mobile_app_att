@@ -22,20 +22,20 @@
                             type="object"
                             class="btn-warning"
                             help="Mark shipment as arrived at Torood Hub"
-                            invisible="state != 'confirmed'"/>
+                            invisible="state != 'picked'"/>
 
                     <button name="action_pickup"
                             string="📦 Pickup"
                             type="object"
                             class="btn-info"
-                            invisible="state != 'torood_hub'"/>
+                            invisible="state != 'confirmed'"/>
 
                     <!-- Torood Hub → In Transit -->
                     <button name="action_in_transit"
                             string="🚛 In Transit"
                             type="object"
                             class="btn-info"
-                            invisible="state != 'picked'"
+                            invisible="state != 'torood_hub'"
                             help="Shipment leaving Torood Hub"/>
 
                     <!-- In Transit → Shipping Company Hub -->
@@ -313,6 +313,38 @@
                         </page>
 
 
+
+
+                         <page string="Additional Services" name="additional_services">
+                           <group string="Select Additional Services" invisible="not customer_category_id">
+                                <field name="additional_service_ids" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="service_id"
+                                               options="{'no_create': True}"
+                                               domain="[('active', '=', True)]"/>
+                                        <field name="fee_amount"
+                                               widget="monetary"
+                                               sum="Total"
+                                               readonly="0"
+                                               force_save="1"/>
+                                    </list>
+                                </field>
+                            </group>
+
+                            <div class="alert alert-warning" invisible="customer_category_id">
+                                <i class="fa fa-warning"/> Please select a customer first to add additional services
+                            </div>
+                        </page>
+
+                        <page string="Notes">
+                            <group>
+                                <field name="notes" placeholder="Customer notes..." nolabel="1"/>
+                                <field name="internal_notes" placeholder="Internal notes (not visible to customer)..."
+                                       nolabel="1" groups="base.group_user"/>
+                            </group>
+                        </page>
+
+
                         <page string="Pricing &amp; Shipping">
                     <group>
                         <group string="Shipping Company">
@@ -369,6 +401,8 @@
                                    invisible="payment_method != 'cod'"
                                    required="payment_method == 'cod'"/>
 
+                            <field name="include_services_in_cod"  invisible="payment_method != 'cod'" />
+
                             <field name="cod_payment_type"
                                    invisible="payment_method != 'cod'"
                                    required="payment_method == 'cod'"
@@ -416,45 +450,6 @@
 
                 </page>
 
-                         <page string="Additional Services" name="additional_services">
-                           <group string="Select Additional Services" invisible="not customer_category_id">
-    <field name="additional_service_ids" nolabel="1">
-        <list editable="bottom">
-            <field name="service_id"
-                   options="{'no_create': True}"
-                   domain="[('active', '=', True)]"/>
-            <field name="fee_amount"
-                   widget="monetary"
-                   sum="Total"
-                   readonly="0"
-                   force_save="1"/>
-        </list>
-    </field>
-</group>
-
-                            <div class="alert alert-warning" invisible="customer_category_id">
-                                <i class="fa fa-warning"/> Please select a customer first to add additional services
-                            </div>
-
-                            <!-- عرض الإجمالي -->
-                            <group class="oe_subtotal_footer oe_right">
-                                <field name="shipping_cost" widget="monetary"/>
-                                <field name="total_additional_fees" widget="monetary" class="text-warning"/>
-                                <div class="oe_subtotal_footer_separator"/>
-                                <field name="final_customer_price"
-                                       widget="monetary"
-                                       class="fw-bold text-primary"/>
-                            </group>
-                        </page>
-
-                        <page string="Notes">
-                            <group>
-                                <field name="notes" placeholder="Customer notes..." nolabel="1"/>
-                                <field name="internal_notes" placeholder="Internal notes (not visible to customer)..."
-                                       nolabel="1" groups="base.group_user"/>
-                            </group>
-                        </page>
-
                     </notebook>
                 </sheet>
                 <chatter/>
@@ -489,6 +484,7 @@
                 <field name="pickup_date"/>
                 <field name="expected_delivery" optional="show"/>
                 <field name="shipping_company_id" optional="show"/>
+                <field name="tracking_number_shipping_company" optional="show"/>
 
                 <!-- State field -->
                 <field name="state"
@@ -516,6 +512,8 @@
                 <field name="recipient_id"/>
                 <field name="recipient_city"/>
                 <field name="tracking_number"/>
+                <field name="tracking_number_shipping_company"/>
+
 
                 <separator/>
                 <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
@@ -592,18 +590,23 @@
 
     <!-- Action -->
     <record id="action_shipment_order" model="ir.actions.act_window">
-        <field name="name">Shipment Orders</field>
-        <field name="res_model">shipment.order</field>
-        <field name="view_mode">list,kanban,form,graph,pivot,calendar</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create your first shipment order
-            </p>
-            <p>
-                Manage your shipping operations efficiently with our comprehensive shipment tracking system.
-            </p>
-        </field>
-    </record>
+    <field name="name">Shipment Orders</field>
+    <field name="res_model">shipment.order</field>
+    <!-- لو إصدارك قبل 16 استخدم tree بدل list -->
+    <field name="view_mode">list,kanban,form,graph,pivot,calendar</field>
+    <field name="views" eval="[
+        (ref('shipping_management_system.view_shipment_order_list'), 'list'),
+        (False, 'kanban'),
+        (False, 'form'),
+        (False, 'graph'),
+        (False, 'pivot'),
+        (False, 'calendar')
+    ]"/>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">Create your first shipment order</p>
+        <p>Manage your shipping operations efficiently with our comprehensive shipment tracking system.</p>
+    </field>
+</record>
 
     <!-- Menu Items -->
 

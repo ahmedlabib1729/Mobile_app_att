@@ -30,6 +30,14 @@
                         <button class="oe_stat_button" icon="fa-users">
                             <field name="customer_count" widget="statinfo" string="Customers"/>
                         </button>
+
+                        <button type="object"
+                                class="oe_stat_button"
+                                name="action_view_all_governorate_costs"
+                                icon="fa-map"
+                                context="{'active_test': False}">
+                            <field name="governorate_count_all" widget="statinfo" string="Governorates"/>
+                        </button>
                     </div>
 
                     <widget name="web_ribbon" title="Archived"
@@ -77,16 +85,7 @@
                         <!-- Tab 1: Description -->
 
 
-                        <page string="COD Fee Configuration" >
-                            <group col="4">
-                        <field name="cod_fee_enabled"/>
-                        <field name="company_cod_minimum_amount"
-                               widget="monetary"
-                               invisible="not cod_fee_enabled"/>
-                        <field name="company_cod_include_shipping"
-                               invisible="not cod_fee_enabled"/>
-                    </group>
-                        </page>
+
 
                         <!-- Tab 2: Governorate Pricing (New) -->
                         <page string="Governorate Company Costs" name="governorate_costs">
@@ -124,14 +123,15 @@
                             <separator string="Governorate Specific Costs"/>
 
                             <!-- Governorate Costs List -->
-                            <field name="governorate_price_ids">
-                                <list editable="bottom">
-                                    <field name="governorate_id"
-                                           domain="[('country_id.code', '=', 'EG')]"
-                                           options="{'no_create': True}"/>
-                                    <field name="zone" widget="badge"/>
+                            <field name="governorate_price_ids"
+                                   context="{'active_test': False}"
+                                   domain="[('active','in',[True, False])]">
+                                <list editable="bottom" context="{'active_test': False}">
+                                    <field name="egypt_governorate_id"
+                                           options="{'no_create': True}"
+                                           context="{'active_test': False}"
+                                           domain="[('active','in',[True, False])]" />
                                     <field name="base_cost" widget="monetary"/>
-
                                     <field name="handling_fee" widget="monetary" optional="show"/>
                                     <field name="active" widget="boolean_toggle"/>
                                 </list>
@@ -152,6 +152,17 @@
                                 Set the price for each additional service in this customer category.
                             </div>
                        </page>
+
+                        <page string="COD Fee Configuration" >
+                            <group col="4">
+                        <field name="cod_fee_enabled"/>
+                        <field name="company_cod_minimum_amount"
+                               widget="monetary"
+                               invisible="not cod_fee_enabled"/>
+                        <field name="company_cod_include_shipping"
+                               invisible="not cod_fee_enabled"/>
+                    </group>
+                        </page>
 
 
                         <page string="Insurance Settings" name="insurance_settings">

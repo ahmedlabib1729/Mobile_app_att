@@ -106,20 +106,22 @@
                             <separator string="Governorate Specific Prices"/>
 
                             <!-- Governorate Prices List -->
-                            <field name="governorate_price_ids">
-                                <list editable="bottom">
-                                    <field name="governorate_id"
-                                           domain="[('country_id.code', '=', 'EG')]"
-                                           options="{'no_create': True}"/>
-                                    <field name="zone" widget="badge"/>
-                                    <field name="base_price" widget="monetary"/>
+                            <field name="governorate_price_ids"
+       context="{'active_test': False}"
+       domain="[('active','in',[True, False])]">
+    <list editable="bottom">
 
-                                    <field name="delivery_days_min" optional="show"/>
-                                    <field name="delivery_days_max" optional="show"/>
-                                    <field name="active" widget="boolean_toggle"/>
-                                </list>
-                            </field>
-                        </page>
+        <field name="egypt_governorate_id"
+               options="{'no_create': True}"
+               context="{'active_test': False}"
+               domain="[('active','in',[True, False])]"/>
+        <field name="base_price" widget="monetary"/>
+        <field name="delivery_days_min" optional="show"/>
+        <field name="delivery_days_max" optional="show"/>
+        <field name="active" widget="boolean_toggle"/>
+    </list>
+</field>
+                           </page>
 
                         <!-- Tab 1: COD Configuration -->
                         <page string="COD  &amp; Insurance Configuration" name="cod_config">

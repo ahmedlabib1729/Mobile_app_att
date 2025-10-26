@@ -3,26 +3,34 @@
     <!-- Template الأساسي للـ Navbar -->
     <template id="torood_global_navbar" name="Torood Global Navbar">
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
         <nav class="custom-navbar">
             <div class="navbar-container">
                 <!-- Logo -->
                 <a href="/" class="navbar-brand">
-                    <div class="logo-box">
-                        <i class="fa fa-box"></i>
-                    </div>
+                    <img src="/shipping_management_system/static/img/LOGO PNG.jpg"
+                         class="logo-image"/>
                     <div class="logo-text">
                         <span class="logo-text-ar">طرود</span>
                         <span class="logo-text-en">TOROOD</span>
+
                     </div>
                 </a>
 
                 <!-- Navigation Menu -->
                 <ul class="navbar-menu">
                     <li><a href="/" t-att-class="'active' if request.httprequest.path == '/' else ''">الرئيسية</a></li>
+
+                    <t t-if="not request.env.user._is_public()">
                     <li><a href="/my/shipments" t-att-class="'active' if '/shipments' in request.httprequest.path else ''">شحناتي</a></li>
                     <li><a href="/my/invoices" t-att-class="'active' if '/invoices' in request.httprequest.path else ''">الفواتير</a></li>
+                    </t>
+
                     <li><a href="/shipment/track" t-att-class="'active' if '/track' in request.httprequest.path else ''">تتبع الشحنة</a></li>
+                    <li><a class="nav-link quran-nav-link" href="https://wa.me/00201108372315" target="_blank">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    تواصل معنا
+                                </a></li>
                     <li>
                         <a href="/shipment" class="btn-cta">
                             <i class="fa fa-plus"></i>
