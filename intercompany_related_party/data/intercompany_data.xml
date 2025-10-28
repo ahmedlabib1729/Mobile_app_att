@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Mail Activity Type for Intercompany Errors -->
+        <record id="mail_activity_data_intercompany_error" model="mail.activity.type">
+            <field name="name">Intercompany Entry Error</field>
+            <field name="summary">Intercompany entry creation failed</field>
+            <field name="icon">fa-exclamation-triangle</field>
+            <field name="delay_count">0</field>
+            <field name="delay_unit">days</field>
+            <field name="res_model">account.move</field>
+        </record>
+
+    </data>
+</odoo>

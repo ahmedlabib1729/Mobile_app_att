@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Security Groups -->
+    <record id="group_intercompany_manager" model="res.groups">
+        <field name="name">Intercompany Manager</field>
+        <field name="category_id" ref="base.module_category_accounting_accounting"/>
+        <field name="implied_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="comment">User can configure intercompany related party mappings</field>
+    </record>
+
+    <!-- Record Rules -->
+    <record id="intercompany_config_rule" model="ir.rule">
+        <field name="name">Intercompany Configuration: multi-company</field>
+        <field name="model_id" ref="model_intercompany_config"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[
+            '|',
+                ('company_id', 'in', company_ids),
+                ('target_company_id', 'in', company_ids)
+        ]</field>
+    </record>
+
+</odoo>

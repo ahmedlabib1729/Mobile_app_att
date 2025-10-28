@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================================== -->
+    <!-- Main Menu Item                         -->
+    <!-- ====================================== -->
+    <menuitem id="menu_intercompany_root"
+              name="Intercompany"
+              parent="account.menu_finance_configuration"
+              sequence="100"
+              groups="group_intercompany_manager"/>
+
+    <!-- ====================================== -->
+    <!-- Submenu: Configuration                 -->
+    <!-- ====================================== -->
+    <menuitem id="menu_intercompany_config"
+              name="Intercompany Configurations"
+              parent="menu_intercompany_root"
+              action="action_intercompany_config"
+              sequence="10"/>
+
+</odoo>
