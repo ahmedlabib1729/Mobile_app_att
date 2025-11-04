@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Payment Batch Tree View -->
+    <record id="view_payment_batch_tree" model="ir.ui.view">
+        <field name="name">payment.batch.tree</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <list string="Payment Batches" 
+                  decoration-info="state=='draft'" 
+                  decoration-warning="state=='confirmed'"
+                  decoration-success="state=='posted'"
+                  decoration-muted="state=='cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="paying_company_id"/>
+                <field name="partner_ids" widget="many2many_tags"/>
+                <field name="invoice_count"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Payment Batch Form View -->
+    <record id="view_payment_batch_form" model="ir.ui.view">
+        <field name="name">payment.batch.form</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <form string="Payment Batch">
+                <header>
+                    <button name="action_confirm" 
+                            type="object" 
+                            string="Confirm" 
+                            invisible="state != 'draft'"
+                            class="btn-primary"/>
+                    <button name="action_create_payment" 
+                            type="object" 
+                            string="Create Payments" 
+                            invisible="state != 'confirmed'"
+                            class="btn-primary"/>
+                    <button name="action_reconcile" 
+                            type="object" 
+                            string="Reconcile" 
+                            invisible="state != 'posted'"/>
+                    <button name="action_cancel" 
+                            type="object" 
+                            string="Cancel" 
+                            invisible="state in ['cancelled', 'reconciled']"/>
+                    <button name="action_draft" 
+                            type="object" 
+                            string="Reset to Draft" 
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,posted,reconciled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_payments" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-money"
+                                invisible="not payment_ids">
+                            <field name="payment_ids" invisible="1"/>
+                            <span class="o_stat_text">Payments</span>
+                        </button>
+                        <button name="action_view_moves" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-book"
+                                invisible="not generated_move_ids">
+                            <field name="generated_move_ids" invisible="1"/>
+                            <span class="o_stat_text">Journal Entries</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="paying_company_id" readonly="state != 'draft'"/>
+                            <field name="payment_journal_id" readonly="state != 'draft'"/>
+                            <field name="payment_method_line_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="total_amount"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="invoice_count"/>
+                            <field name="company_count"/>
+                            <field name="has_config" invisible="1"/>
+                            <div invisible="has_config" colspan="2" class="alert alert-warning" role="alert">
+                                <strong>Warning!</strong> Missing intercompany configuration.
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Vendor Bills">
+                            <button name="action_add_invoices" 
+                                    type="object" 
+                                    string="Add Bills" 
+                                    class="btn-secondary"
+                                    invisible="state != 'draft'"/>
+                            <field name="invoice_line_ids" readonly="state != 'draft'">
+                                <list editable="bottom" create="0" delete="state == 'draft'">
+                                    <field name="invoice_id" required="1"/>
+                                    <field name="partner_id"/>
+                                    <field name="company_id"/>
+                                    <field name="invoice_date"/>
+                                    <field name="due_date"/>
+                                    <field name="total_amount"/>
+                                    <field name="residual_amount"/>
+                                    <field name="amount" sum="Total Payment"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Company Distribution" readonly="1">
+                            <group>
+                                <field name="company_amounts" nolabel="1" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" placeholder="Add any internal notes here..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Payment Batch Kanban View -->
+    <record id="view_payment_batch_kanban" model="ir.ui.view">
+        <field name="name">payment.batch.kanban</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="paying_company_id"/>
+                <field name="total_amount"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+                <field name="invoice_count"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <i class="fa fa-building-o"/> <field name="paying_company_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar"/> <field name="date"/>
+                                </div>
+                                <div>
+                                    <span class="badge badge-pill">
+                                        <field name="invoice_count"/> Bills
+                                    </span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <strong>
+                                        <field name="total_amount" widget="monetary"/>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Payment Batch Search View -->
+    <record id="view_payment_batch_search" model="ir.ui.view">
+        <field name="name">payment.batch.search</field>
+        <field name="model">payment.batch</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_ids"/>
+                <field name="paying_company_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="this_month" string="This Month" domain="[('date', '&gt;=', context_today().strftime('%%Y-%%m-01'))]"/>
+                <filter name="last_month" string="Last Month" domain="[('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%%Y-%%m-01')), ('date', '&lt;', context_today().strftime('%%Y-%%m-01'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_company" string="Paying Company" context="{'group_by': 'paying_company_id'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Payment Batch Action -->
+    <record id="action_payment_batch" model="ir.actions.act_window">
+        <field name="name">Payment Batches</field>
+        <field name="res_model">payment.batch</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_payment_batch_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new payment batch
+            </p>
+            <p>
+                Process vendor payments from a central company and automatically
+                generate intercompany journal entries.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

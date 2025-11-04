@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Invoice Selection Wizard Form View -->
+    <record id="view_invoice_selection_wizard_form" model="ir.ui.view">
+        <field name="name">invoice.selection.wizard.form</field>
+        <field name="model">invoice.selection.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Vendor Bills">
+                <group>
+                    <field name="batch_id" invisible="1"/>
+                    <field name="paying_company_id"/>
+                    <field name="partner_id"/>
+                    <field name="company_id"/>
+                </group>
+                <separator string="Available Bills"/>
+                <field name="invoice_ids">
+                    <list>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="company_id"/>
+                        <field name="invoice_date"/>
+                        <field name="amount_residual" sum="Total"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_add_invoices" 
+                            type="object" 
+                            string="Add Selected" 
+                            class="btn-primary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

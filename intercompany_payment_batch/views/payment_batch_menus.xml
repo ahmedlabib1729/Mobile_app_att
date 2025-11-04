@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Main Menu -->
+    <menuitem id="menu_intercompany_payment_root"
+              name="Intercompany Payments"
+              sequence="55"
+              web_icon="intercompany_payment_batch,static/description/icon.png"/>
+    
+    <!-- Operations Menu -->
+    <menuitem id="menu_payment_operations"
+              name="Operations"
+              parent="menu_intercompany_payment_root"
+              sequence="10"/>
+    
+    <!-- Payment Batches Menu -->
+    <menuitem id="menu_payment_batch"
+              name="Payment Batches"
+              parent="menu_payment_operations"
+              action="action_payment_batch"
+              sequence="10"/>
+    
+    <!-- Create Batch Wizard Menu -->
+    <menuitem id="menu_payment_batch_wizard"
+              name="Create Batch"
+              parent="menu_payment_operations"
+              action="action_payment_batch_wizard"
+              sequence="20"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_payment_configuration"
+              name="Configuration"
+              parent="menu_intercompany_payment_root"
+              sequence="90"/>
+    
+    <!-- Intercompany Config Menu -->
+    <menuitem id="menu_intercompany_config"
+              name="Intercompany Settings"
+              parent="menu_payment_configuration"
+              action="action_intercompany_config"
+              sequence="10"/>
+    
+</odoo>

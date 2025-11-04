@@ -1,0 +1,23 @@
+<svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+    <rect width="70" height="70" fill="#875A7B"/>
+    <g fill="white">
+        <!-- Building icons for companies -->
+        <rect x="10" y="15" width="15" height="20" fill="white" opacity="0.9"/>
+        <rect x="12" y="18" width="3" height="3" fill="#875A7B"/>
+        <rect x="18" y="18" width="3" height="3" fill="#875A7B"/>
+        <rect x="12" y="23" width="3" height="3" fill="#875A7B"/>
+        <rect x="18" y="23" width="3" height="3" fill="#875A7B"/>
+        
+        <rect x="45" y="15" width="15" height="20" fill="white" opacity="0.9"/>
+        <rect x="47" y="18" width="3" height="3" fill="#875A7B"/>
+        <rect x="53" y="18" width="3" height="3" fill="#875A7B"/>
+        <rect x="47" y="23" width="3" height="3" fill="#875A7B"/>
+        <rect x="53" y="23" width="3" height="3" fill="#875A7B"/>
+        
+        <!-- Arrow -->
+        <path d="M 27 25 L 43 25 L 43 22 L 48 27 L 43 32 L 43 29 L 27 29 Z" fill="white"/>
+        
+        <!-- Money symbol -->
+        <text x="35" y="50" font-family="Arial" font-size="14" text-anchor="middle" fill="white">$$$</text>
+    </g>
+</svg>
