@@ -1,0 +1,881 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template الأساسي للصفحة - نستخدم نفس الـ ID القديم لتجنب تعديل Controller -->
+     <template id="shipment_request_form" name="Shipment Request Form">
+  <t t-call="website.layout">
+    <div id="wrap" class="oe_structure">
+
+      <!-- حاوية الثيم -->
+      <div class="torood-form-container">
+        <div class="torood-form-wrapper">
+
+          <h1 class="torood-form-title">طلب شحنة جديدة </h1>
+
+          <form action="/shipment/submit" method="post" class="o_website_form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+            <!-- SENDER (المُرسل) -->
+            <div class="torood-form-card mb-4">
+              <div class="torood-form-card-header">بيانات المُرسل</div>
+              <div class="torood-form-card-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">اسم المُرسل *</label>
+                    <input type="text" name="sender_name" class="form-control torood-form-control" required="required"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">موبايل المُرسل *</label>
+                    <input type="tel" name="sender_phone" class="form-control torood-form-control" required="required"/>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">عنوان الاستلام *</label>
+                    <textarea name="sender_address" rows="2" class="form-control torood-form-control" required="required"></textarea>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">المحافظة *</label>
+                    <select id="sender_governorate" class="form-control torood-form-control" required="required"></select>
+                    <input type="hidden" name="sender_governorate_new_id" id="sender_governorate_id_hidden"/>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">المنطقة *</label>
+                    <select id="sender_area" class="form-control torood-form-control" required="required"></select>
+                    <input type="hidden" name="sender_area_id" id="sender_area_id_hidden"/>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">المدينة/الحي *</label>
+                    <select id="sender_city" class="form-control torood-form-control" required="required"></select>
+                    <input type="hidden" name="sender_city_district_id" id="sender_city_id_hidden"/>
+                  </div>
+
+                  <!-- تفضيلات الاستلام من المُرسل -->
+                  <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label d-block">طريقة الاستلام</label>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="pickup_type" id="pickup_type_pickup" value="customer" checked="checked"/>
+                          <label class="form-check-label" for="pickup_type_pickup">نستلم من المُرسل</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="pickup_type" id="pickup_type_dropoff" value="sender"/>
+                          <label class="form-check-label" for="pickup_type_dropoff">العميل سيسلّم بنفسه</label>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">ميعاد مفضل للاستلام</label>
+                        <select name="sender_preferred_pickup_time" class="form-control torood-form-control">
+                          <option value="anytime" selected="selected">في أي وقت</option>
+                          <option value="morning">صباحًا</option>
+                          <option value="afternoon">ظهرًا</option>
+                          <option value="evening">مساءً</option>
+                        </select>
+                      </div>
+
+                      <div class="col-12">
+                        <label class="form-label">ملاحظات الاستلام من المُرسل</label>
+                        <textarea name="sender_pickup_notes" rows="2" class="form-control torood-form-control" placeholder="أي تعليمات خاصة بالاستلام (اختياري)"></textarea>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RECIPIENT (المُستلم) -->
+            <div class="torood-form-card mb-4">
+              <div class="torood-form-card-header">بيانات المُستلم</div>
+              <div class="torood-form-card-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">اسم المُستلم *</label>
+                    <input type="text" name="recipient_name" class="form-control torood-form-control" required="required"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">موبايل المُستلم *</label>
+                    <input type="tel" name="recipient_phone" class="form-control torood-form-control" required="required"/>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">عنوان التسليم *</label>
+                    <textarea name="recipient_address" rows="2" class="form-control torood-form-control" required="required"></textarea>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">المحافظة *</label>
+                    <select id="recipient_governorate" class="form-control torood-form-control" required="required"></select>
+                    <input type="hidden" name="recipient_governorate_new_id" id="recipient_governorate_id_hidden"/>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">المنطقة *</label>
+                    <select id="recipient_area" class="form-control torood-form-control" required="required"></select>
+                    <input type="hidden" name="recipient_area_id" id="recipient_area_id_hidden"/>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">المدينة/الحي *</label>
+                    <select id="recipient_city" class="form-control torood-form-control" required="required"></select>
+                    <input type="hidden" name="recipient_city_district_id" id="recipient_city_id_hidden"/>
+                  </div>
+
+                  <!-- تفضيلات التسليم للمستلم -->
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">ميعاد مفضل للتسليم</label>
+                      <select name="recipient_preferred_delivery_time" class="form-control torood-form-control">
+                        <option value="anytime" selected="selected">في أي وقت</option>
+                        <option value="morning">(9 AM - 12 PM) صباحًا</option>
+                        <option value="afternoon">(12 PM - 3 PM) ظهرًا</option>
+                        <option value="evening">(6 PM - 9 PM) مساءً</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRODUCT (اختياري) -->
+
+            <div class="torood-form-card mb-4">
+              <div class="torood-form-card-header">تفاصيل المنتج (اختياري)</div>
+              <div class="torood-form-card-body">
+                <div class="row g-3">
+
+                  <!-- الصف الأول: الوصف والكمية -->
+                  <div class="col-md-6">
+                    <label class="form-label">وصف المنتج</label>
+                    <input type="text" name="product_name" class="form-control torood-form-control"/>
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">الكمية</label>
+                    <input type="number" name="quantity" min="1" value="1" class="form-control torood-form-control"/>
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">الوزن (كجم)</label>
+                    <input type="number" step="0.01" name="weight" class="form-control torood-form-control"/>
+                  </div>
+
+                  <div class="col-md-2">
+                    <label class="form-label">القيمة</label>
+                    <input type="number" step="0.01" name="product_value" class="form-control torood-form-control"/>
+                  </div>
+
+                  <!-- الصف الثاني: الأبعاد (الطول، العرض، الارتفاع) -->
+                  <div class="col-md-4">
+                    <label class="form-label">الطول (سم)</label>
+                    <input type="number" step="0.01" name="length" class="form-control torood-form-control" placeholder="Length in cm"/>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">العرض (سم)</label>
+                    <input type="number" step="0.01" name="width" class="form-control torood-form-control" placeholder="Width in cm"/>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">الارتفاع (سم)</label>
+                    <input type="number" step="0.01" name="height" class="form-control torood-form-control" placeholder="Height in cm"/>
+                  </div>
+
+                  <!-- الصف الثالث: التصنيفات -->
+                  <div class="col-md-4">
+                    <label class="form-label">التصنيف (Category)</label>
+                    <select id="product_category" name="category_id" class="form-control torood-form-control">
+                      <option value="">-- اختر التصنيف --</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">التصنيف الفرعي</label>
+                    <select id="product_subcategory" name="product_subcategory_id" class="form-control torood-form-control">
+                      <option value="">-- اختر التصنيف الفرعي --</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">البراند</label>
+                    <select id="product_brand" name="product_brand_id" class="form-control torood-form-control">
+                      <option value="">-- اختر البراند --</option>
+                    </select>
+                  </div>
+
+                  <!-- الصف الرابع: خصائص خاصة (قابل للكسر ومواد خطرة) -->
+                  <div class="col-md-6">
+                    <div class="form-check mt-4">
+                      <input class="form-check-input" type="checkbox" name="fragile" id="fragile" value="1"/>
+                      <label class="form-check-label" for="fragile">
+                        <i class="fa fa-exclamation-triangle text-warning me-1"></i> قابل للكسر (Fragile)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-check mt-4">
+                      <input class="form-check-input" type="checkbox" name="dangerous_goods" id="dangerous_goods" value="1"/>
+                      <label class="form-check-label" for="dangerous_goods">
+                        <i class="fa fa-radiation text-danger me-1"></i> مواد خطرة (Dangerous Goods)
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- ملاحظة -->
+                  <div class="col-12">
+                    <small class="text-muted">
+                      * لن يتم إنشاء سطر منتج إلا إذا اخترت <strong>التصنيف</strong> (Category).
+                    </small>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="text-end">
+              <button type="submit" class="btn btn-torood-primary">إرسال الطلب</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- ===== JS لتعبئة (محافظة ← منطقة ← مدينة) من موديل مصر ===== -->
+      <script type="text/javascript">
+  (function () {
+    // ===== Helper: RPC عام على /web/dataset/call_kw =====
+    const rpc = (model, method, domain=[], fields=['id','name'], kwargsExtra={}) => {
+      return fetch('/web/dataset/call_kw', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          jsonrpc: '2.0', method: 'call', id: Date.now(),
+          params: { model, method, args: [], kwargs: Object.assign({ domain, fields, limit: 1000 }, kwargsExtra) }
+        })
+      }).then(r => r.json()).then(j => j.result || []);
+    };
+
+    // ===== Helper: تعبئة select ببيانات =====
+    function fillSelect(el, data, placeholder) {
+      el.innerHTML = '';
+      const opt0 = document.createElement('option');
+      opt0.value = ''; opt0.textContent = placeholder || '-- اختر --';
+      el.appendChild(opt0);
+      data.forEach(rec => {
+        const opt = document.createElement('option');
+        opt.value = rec.id; opt.textContent = rec.name;
+        el.appendChild(opt);
+      });
+      // إطلاق change عشان أي listeners تشتغل
+      el.dispatchEvent(new Event('change'));
+    }
+
+    // ===== عناصر العناوين الجغرافية =====
+    const sg = document.getElementById('sender_governorate');
+    const sa = document.getElementById('sender_area');
+    const sc = document.getElementById('sender_city');
+    const rg = document.getElementById('recipient_governorate');
+    const ra = document.getElementById('recipient_area');
+    const rc = document.getElementById('recipient_city');
+
+    const sgH = document.getElementById('sender_governorate_id_hidden');
+    const saH = document.getElementById('sender_area_id_hidden');
+    const scH = document.getElementById('sender_city_id_hidden');
+    const rgH = document.getElementById('recipient_governorate_id_hidden');
+    const raH = document.getElementById('recipient_area_id_hidden');
+    const rcH = document.getElementById('recipient_city_id_hidden');
+
+    // ===== تحميل المحافظات للمرسل والمستلم =====
+    rpc('egypt.governorate','search_read', [], ['id','name']).then(govs => {
+      fillSelect(sg, govs, '-- محافظة المُرسل --');
+      fillSelect(rg, govs, '-- محافظة المُستلم --');
+    });
+
+    // ===== تبعيات المرسل: محافظة → منطقة → مدينة =====
+    sg.addEventListener('change', () => {
+      sgH.value = sg.value || '';
+      // تفريغ التابعين
+      fillSelect(sa, [], '-- اختر المنطقة --');
+      fillSelect(sc, [], '-- اختر المدينة --');
+      saH.value = ''; scH.value = '';
+      if (!sg.value) return;
+
+      rpc('egypt.governorate.area','search_read', [['governorate_id','=',parseInt(sg.value)]], ['id','name'])
+        .then(areas => fillSelect(sa, areas, '-- اختر المنطقة --'));
+    });
+
+    sa.addEventListener('change', () => {
+      saH.value = sa.value || '';
+      fillSelect(sc, [], '-- اختر المدينة --');
+      scH.value = '';
+      if (!sa.value) return;
+
+      rpc('egypt.governorate.city','search_read', [['area_id','=',parseInt(sa.value)]], ['id','name'])
+        .then(cities => fillSelect(sc, cities, '-- اختر المدينة --'));
+    });
+
+    sc.addEventListener('change', () => {
+      scH.value = sc.value || '';
+    });
+
+    // ===== تبعيات المستلم: محافظة → منطقة → مدينة =====
+    rg.addEventListener('change', () => {
+      rgH.value = rg.value || '';
+      fillSelect(ra, [], '-- اختر المنطقة --');
+      fillSelect(rc, [], '-- اختر المدينة --');
+      raH.value = ''; rcH.value = '';
+      if (!rg.value) return;
+
+      rpc('egypt.governorate.area','search_read', [['governorate_id','=',parseInt(rg.value)]], ['id','name'])
+        .then(areas => fillSelect(ra, areas, '-- اختر المنطقة --'));
+    });
+
+    ra.addEventListener('change', () => {
+      raH.value = ra.value || '';
+      fillSelect(rc, [], '-- اختر المدينة --');
+      rcH.value = '';
+      if (!ra.value) return;
+
+      rpc('egypt.governorate.city','search_read', [['area_id','=',parseInt(ra.value)]], ['id','name'])
+        .then(cities => fillSelect(rc, cities, '-- اختر المدينة --'));
+    });
+
+    rc.addEventListener('change', () => {
+      rcH.value = rc.value || '';
+    });
+
+    // ====================================================================
+    // =====================   تفاصيل المنتج (اختياري)   ====================
+    // ====================================================================
+    const pc  = document.getElementById('product_category');      // name="category_id"
+    const psc = document.getElementById('product_subcategory');   // name="product_subcategory_id"
+    const pb  = document.getElementById('product_brand');         // name="product_brand_id"
+
+    // تعبئة التصنيفات
+    if (pc) {
+      rpc('product.category','search_read', [], ['id','name']).then(cats => {
+        fillSelect(pc, cats, '-- اختر التصنيف --');
+      });
+
+      // عند اختيار التصنيف → تحميل التصنيف الفرعي
+      pc.addEventListener('change', () => {
+        const catId = parseInt(pc.value || 0);
+        // تفريغ الفرعي
+        fillSelect(psc, [], '-- اختر التصنيف الفرعي --');
+        if (!catId) return;
+
+        rpc('product.subcategory','search_read',
+            [['category_id','=',catId]],
+            ['id','name']
+        ).then(subs => {
+          fillSelect(psc, subs, '-- اختر التصنيف الفرعي --');
+        });
+      });
+    }
+
+    // تعبئة البراندات
+    if (pb) {
+      rpc('product.brand','search_read', [], ['id','name']).then(brands => {
+        fillSelect(pb, brands, '-- اختر البراند --');
+      });
+    }
+  })();
+</script>
+
+    </div>
+  </t>
+</template>
+
+
+
+    <template id="shipment_success" name="Shipment Success">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <style>
+                    .success-container {
+                        min-height: 80vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 40px 20px;
+                    }
+
+                    .success-card {
+                        max-width: 600px;
+                        background: white;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                        padding: 50px;
+                        text-align: center;
+                        animation: slideInUp 0.5s ease;
+                    }
+
+                    @keyframes slideInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+
+                    .success-icon {
+                        width: 100px;
+                        height: 100px;
+                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 30px;
+                        animation: pulse 2s infinite;
+                    }
+
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.05); }
+                        100% { transform: scale(1); }
+                    }
+
+                    .success-icon i {
+                        font-size: 50px;
+                        color: white;
+                    }
+
+                    .tracking-box {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        padding: 25px;
+                        border-radius: 15px;
+                        margin: 30px 0;
+                    }
+
+                    .tracking-number {
+                        font-size: 2rem;
+                        font-weight: bold;
+                        margin: 10px 0;
+                        letter-spacing: 2px;
+                    }
+
+                    .action-buttons {
+                        margin-top: 30px;
+                    }
+
+                    .action-buttons .btn {
+                        margin: 10px;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        font-weight: 600;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .action-buttons .btn:hover {
+                        transform: translateY(-3px);
+                    }
+                </style>
+
+                <div class="success-container">
+                    <div class="success-card">
+                        <div class="success-icon">
+                            <i class="fa fa-check"></i>
+                        </div>
+
+                        <h2 class="mb-4">Shipment Request Submitted Successfully!</h2>
+                        <p class="lead text-muted">Your shipment has been received and will be processed shortly.</p>
+
+                        <div class="tracking-box">
+                            <h5 class="mb-3">Your Tracking Number</h5>
+                            <div class="tracking-number">
+                                <t t-esc="order_number"/>
+                            </div>
+                            <p class="mb-0">Save this number to track your shipment</p>
+                        </div>
+
+                        <p class="text-muted">
+                            <i class="fa fa-info-circle"></i>
+                            You will receive a confirmation email with shipment details shortly.
+                        </p>
+
+                        <div class="action-buttons">
+                            <a href="/shipment/track" class="btn btn-primary">
+                                <i class="fa fa-search"></i> Track Shipment
+                            </a>
+                            <a href="/shipment" class="btn btn-outline-primary">
+                                <i class="fa fa-plus"></i> New Shipment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="track_shipment" name="Track Shipment">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+                <style>
+                    .tracking-container {
+                        min-height: 80vh;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 60px 20px;
+                    }
+
+                    .tracking-header {
+                        text-align: center;
+                        color: white;
+                        margin-bottom: 40px;
+                    }
+
+                    .tracking-header h1 {
+                        font-size: 2.5rem;
+                        font-weight: bold;
+                    }
+
+                    .search-box {
+                        max-width: 600px;
+                        margin: 0 auto 40px;
+                        background: white;
+                        border-radius: 50px;
+                        padding: 10px;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    }
+
+                    .search-form {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .search-form input {
+                        flex: 1;
+                        border: none;
+                        padding: 15px 25px;
+                        font-size: 1.1rem;
+                        outline: none;
+                        background: transparent;
+                    }
+
+                    .search-form button {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 50px;
+                        font-weight: bold;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .search-form button:hover {
+                        transform: scale(1.05);
+                    }
+
+                    .tracking-result {
+                        max-width: 900px;
+                        margin: 0 auto;
+                        background: white;
+                        border-radius: 20px;
+                        overflow: hidden;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                        animation: slideInUp 0.5s ease;
+                    }
+
+                    .status-timeline {
+                        padding: 30px;
+                        background: #f8f9fa;
+                    }
+
+                    .timeline-item {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 30px;
+                        position: relative;
+                    }
+
+                    .timeline-item:not(:last-child)::after {
+                        content: '';
+                        position: absolute;
+                        left: 20px;
+                        top: 40px;
+                        width: 2px;
+                        height: calc(100% + 10px);
+                        background: #ddd;
+                    }
+
+                    .timeline-item.completed::after {
+                        background: #28a745;
+                    }
+
+                    .timeline-icon {
+                        width: 40px;
+                        height: 40px;
+                        background: #ddd;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-right: 20px;
+                        z-index: 1;
+                    }
+
+                    .timeline-item.completed .timeline-icon {
+                        background: #28a745;
+                        color: white;
+                    }
+
+                    .timeline-item.current .timeline-icon {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        animation: pulse 2s infinite;
+                    }
+
+                    .timeline-content {
+                        flex: 1;
+                    }
+
+                    .timeline-content h5 {
+                        margin: 0 0 5px;
+                        color: #333;
+                    }
+
+                    .timeline-content p {
+                        margin: 0;
+                        color: #666;
+                        font-size: 0.9rem;
+                    }
+
+
+                    /* الحالات العادية - اللون الأخضر */
+.timeline-item.completed .timeline-icon {
+    background: #28a745;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1);
+}
+
+.timeline-item.current .timeline-icon {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+}
+
+/* حالة الخطأ - اللون الأحمر للـ Returned */
+.timeline-item.error-state .timeline-icon.error-icon {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    animation: errorShake 0.5s;
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.2);
+}
+
+/* حالة الإلغاء - لون رمادي محمر */
+.timeline-item.error-state .timeline-icon.cancelled-icon {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-item.error-state .timeline-icon.cancelled-icon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(220, 53, 69, 0.3);
+}
+
+/* خط التايم لاين للحالات الخطأ */
+.timeline-item.error-state::after {
+    background: #dc3545 !important;
+    opacity: 0.5;
+}
+
+/* Animation للنجاح */
+@keyframes successPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+
+/* Animation للخطأ */
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+    20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+/* تحسين مظهر النص */
+.timeline-item.error-state .timeline-content h5 {
+    font-weight: 600;
+}
+
+/* إضافة تأثير hover */
+.timeline-item:hover .timeline-icon {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+/* الخط الأخضر للحالات المكتملة */
+.timeline-item.completed::after {
+    background: #28a745 !important;
+}
+                </style>
+
+                <div class="tracking-container">
+                <div class="tracking-header">
+                    <h1><i class="fa fa-search"></i> Track Your Shipment</h1>
+                    <p>Enter your tracking number to get real-time updates</p>
+                </div>
+
+                <div class="search-box">
+                    <form action="/shipment/track" method="get" class="search-form">
+                        <input type="text" name="tracking"
+                               placeholder="Enter tracking number..."
+                               t-att-value="tracking" required="required"/>
+                        <button type="submit">
+                            <i class="fa fa-search"></i> Track
+                        </button>
+                    </form>
+                </div>
+
+                <t t-if="error">
+                    <div class="alert alert-danger text-center" style="max-width: 600px; margin: 0 auto;">
+                        <i class="fa fa-exclamation-triangle"></i> <t t-esc="error"/>
+                    </div>
+                </t>
+
+                <t t-if="shipment">
+                    <div class="tracking-result">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px;">
+                            <h3 class="mb-3">Shipment: <t t-esc="shipment.order_number"/></h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>From:</strong> <t t-esc="shipment.sender_id.name"/></p>
+                                    <p><t t-esc="shipment.sender_city"/></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>To:</strong> <t t-esc="shipment.recipient_name"/></p>
+                                    <p><t t-esc="shipment.recipient_city"/></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="status-timeline">
+    <h4 class="mb-4">Shipment Status</h4>
+
+    <!-- Torood Hub -->
+    <div t-attf-class="timeline-item {{ 'completed' if shipment.state not in ['draft', 'confirmed', 'torood_hub'] else 'current' if shipment.state == 'torood_hub' else '' }}">
+        <div class="timeline-icon">
+            <i class="fa fa-building"></i>
+        </div>
+        <div class="timeline-content">
+            <h5>Torood Hub</h5>
+            <p>Package received at Torood hub</p>
+        </div>
+    </div>
+
+    <!-- Picked Up -->
+    <div t-attf-class="timeline-item {{ 'completed' if shipment.state not in ['draft', 'confirmed', 'torood_hub', 'picked'] else 'current' if shipment.state == 'picked' else '' }}">
+        <div class="timeline-icon">
+            <i class="fa fa-box"></i>
+        </div>
+        <div class="timeline-content">
+            <h5>Picked Up</h5>
+            <p>Package has been picked up from Trood</p>
+        </div>
+    </div>
+
+    <!-- In Transit -->
+    <div t-attf-class="timeline-item {{ 'completed' if shipment.state in ['shipping_company_hub', 'out_for_delivery', 'delivered'] else 'current' if shipment.state == 'in_transit' else '' }}">
+        <div class="timeline-icon">
+            <i class="fa-solid fa-truck-fast"></i>
+        </div>
+        <div class="timeline-content">
+            <h5>In Transit</h5>
+            <p>Package is on the way to destination</p>
+        </div>
+    </div>
+
+    <!-- Shipping Company Hub -->
+    <div t-attf-class="timeline-item {{ 'completed' if shipment.state in ['out_for_delivery', 'delivered'] else 'current' if shipment.state == 'shipping_company_hub' else '' }}">
+        <div class="timeline-icon">
+            <i class="fa-solid fa-warehouse"></i>
+        </div>
+        <div class="timeline-content">
+            <h5>Shipping Company Hub</h5>
+            <p>Package arrived at shipping company hub</p>
+        </div>
+    </div>
+
+    <!-- Out for Delivery -->
+    <div t-attf-class="timeline-item {{ 'completed' if shipment.state == 'delivered' else 'current' if shipment.state == 'out_for_delivery' else '' }}">
+        <div class="timeline-icon">
+            <i class="fa fa-map-marker"></i>
+        </div>
+        <div class="timeline-content">
+            <h5>Out for Delivery</h5>
+            <p>Package is out for final delivery</p>
+        </div>
+    </div>
+
+    <!-- Delivered -->
+    <t t-if="shipment.state not in ['returned', 'cancelled']">
+        <div t-attf-class="timeline-item {{ 'completed' if shipment.state == 'delivered' else '' }}">
+            <div class="timeline-icon" t-attf-style="{{ 'animation: successPulse 2s infinite;' if shipment.state == 'delivered' else '' }}">
+                <i class="fa fa-check-circle"></i>
+            </div>
+            <div class="timeline-content">
+                <h5>Delivered</h5>
+                <p>Package has been successfully delivered</p>
+            </div>
+        </div>
+    </t>
+
+    <!-- Returned -->
+    <t t-if="shipment.state == 'returned'">
+        <div class="timeline-item error-state">
+            <div class="timeline-icon error-icon">
+                <i class="fa fa-undo"></i>
+            </div>
+            <div class="timeline-content">
+                <h5 class="text-danger">Returned</h5>
+                <p class="text-muted">Package has been returned to sender</p>
+            </div>
+        </div>
+    </t>
+
+    <!-- Cancelled -->
+    <t t-if="shipment.state == 'cancelled'">
+        <div class="timeline-item error-state">
+            <div class="timeline-icon cancelled-icon">
+                <i class="fa fa-times-circle"></i>
+            </div>
+            <div class="timeline-content">
+                <h5 class="text-danger">Cancelled</h5>
+                <p class="text-muted">Shipment has been cancelled</p>
+            </div>
+        </div>
+    </t>
+</div>
+
+                        <div style="padding: 30px; border-top: 1px solid #eee;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Pickup Date:</strong> <t t-esc="shipment.pickup_date"/></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Expected Delivery:</strong> <t t-esc="shipment.expected_delivery or 'To be determined'"/></p>
+                                </div>
+                            </div>
+                            <t t-if="shipment.tracking_number">
+                                <p><strong>Tracking Number:</strong> <span class="text-primary"><t t-esc="shipment.tracking_number"/></span></p>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</template>
+</odoo>
