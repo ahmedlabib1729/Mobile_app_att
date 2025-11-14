@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expense_own,hr.expense.personal,hr_expense.model_hr_expense,group_expense_own_only,1,1,1,0
+access_expense_sheet_own,hr.expense.sheet.personal,hr_expense.model_hr_expense_sheet,group_expense_own_only,1,1,1,0
+access_expense_team,hr.expense.team.manager,hr_expense.model_hr_expense,group_expense_team_manager,1,1,0,0
+access_expense_sheet_team,hr.expense.sheet.team.manager,hr_expense.model_hr_expense_sheet,group_expense_team_manager,1,1,0,0
+access_expense_accountant,hr.expense.accountant,hr_expense.model_hr_expense,group_expense_accountant,1,1,0,0
+access_expense_sheet_accountant,hr.expense.sheet.accountant,hr_expense.model_hr_expense_sheet,group_expense_accountant,1,1,0,0
+access_expense_cfo,hr.expense.cfo,hr_expense.model_hr_expense,group_expense_cfo,1,1,1,1
+access_expense_sheet_cfo,hr.expense.sheet.cfo,hr_expense.model_hr_expense_sheet,group_expense_cfo,1,1,1,1
+access_expense_auditor,hr.expense.auditor,hr_expense.model_hr_expense,group_expense_auditor,1,0,0,0
+access_expense_sheet_auditor,hr.expense.sheet.auditor,hr_expense.model_hr_expense_sheet,group_expense_auditor,1,0,0,0
+access_expense_category_own,product.product.expense.own,product.model_product_product,group_expense_own_only,1,0,0,0
+access_expense_category_team,product.product.expense.team,product.model_product_product,group_expense_team_manager,1,0,0,0
+access_expense_category_accountant,product.product.expense.accountant,product.model_product_product,group_expense_accountant,1,1,1,0
+access_expense_category_cfo,product.product.expense.cfo,product.model_product_product,group_expense_cfo,1,1,1,1

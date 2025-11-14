@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+<!-- إنشاء فئة جديدة للمجموعات -->
+<record id="module_category_expense_custom" model="ir.module.category">
+    <field name="name">مصاريف الشركة</field>
+    <field name="description">إدارة صلاحيات المصاريف</field>
+    <field name="sequence">15</field>
+</record>
+
+<!-- المستوى 1: موظف - يرى مصاريفه الشخصية فقط -->
+<record id="group_expense_own_only" model="res.groups">
+    <field name="name">موظف - مصاريف شخصية فقط</field>
+    <field name="category_id" ref="module_category_expense_custom"/>
+    <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    <field name="comment">يمكن للموظف رؤية وإدارة مصاريفه الشخصية فقط</field>
+</record>
+
+<!-- المستوى 2: مدير قسم - يوافق على مصاريف فريقه -->
+<record id="group_expense_team_manager" model="res.groups">
+    <field name="name">مدير قسم - موافقة الفريق</field>
+    <field name="category_id" ref="module_category_expense_custom"/>
+    <field name="implied_ids" eval="[(4, ref('group_expense_own_only'))]"/>
+    <field name="comment">يمكن للمدير رؤية والموافقة على مصاريف فريقه</field>
+</record>
+
+<!-- المستوى 3: محاسب - يعالج المصاريف المعتمدة -->
+<record id="group_expense_accountant" model="res.groups">
+    <field name="name">محاسب - معالجة المصاريف</field>
+    <field name="category_id" ref="module_category_expense_custom"/>
+    <field name="implied_ids" eval="[(4, ref('group_expense_team_manager'))]"/>
+    <field name="comment">يمكن للمحاسب معالجة المصاريف المعتمدة وإنشاء القيود المحاسبية</field>
+</record>
+
+<!-- المستوى 4: مدير مالي - وصول كامل -->
+<record id="group_expense_cfo" model="res.groups">
+    <field name="name">مدير مالي - كل الصلاحيات</field>
+    <field name="category_id" ref="module_category_expense_custom"/>
+    <field name="implied_ids" eval="[(4, ref('group_expense_accountant'))]"/>
+    <field name="comment">وصول كامل لكل المصاريف والتقارير</field>
+</record>
+
+<!-- مجموعة خاصة للمراجعين -->
+<record id="group_expense_auditor" model="res.groups">
+    <field name="name">مراجع - قراءة فقط</field>
+    <field name="category_id" ref="module_category_expense_custom"/>
+    <field name="comment">يمكن للمراجع رؤية كل المصاريف بدون تعديل</field>
+</record>
+
+</odoo>

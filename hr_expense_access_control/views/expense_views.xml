@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- عرض قائمة مخصص للمصاريف -->
+<record id="hr_expense_view_list_custom" model="ir.ui.view">
+    <field name="name">hr.expense.list.custom</field>
+    <field name="model">hr.expense</field>
+    <field name="arch" type="xml">
+        <list string="المصاريف" 
+              decoration-info="state == 'draft'"
+              decoration-warning="state == 'reported'"
+              decoration-success="state == 'approved'"
+              decoration-muted="state == 'refused'">
+            <field name="date"/>
+            <field name="employee_id"/>
+            <field name="name"/>
+            <field name="product_id"/>
+            <field name="total_amount" sum="الإجمالي"/>
+            <field name="payment_mode"/>
+            <field name="state" widget="badge"/>
+        </list>
+    </field>
+</record>
+
+<!-- عرض البحث المخصص -->
+<record id="hr_expense_view_search_custom" model="ir.ui.view">
+    <field name="name">hr.expense.search.custom</field>
+    <field name="model">hr.expense</field>
+    <field name="arch" type="xml">
+        <search string="البحث في المصاريف">
+            <!-- حقول البحث -->
+            <field name="name" string="الوصف"/>
+            <field name="employee_id"/>
+            <field name="product_id"/>
+            <field name="date"/>
+            
+            <!-- الفلاتر -->
+            <filter string="مصاريفي فقط"
+                    name="my_expenses_only"
+                    domain="[('employee_id.user_id', '=', uid)]"
+                    help="عرض مصاريفي الشخصية فقط"/>
+            
+            <separator/>
+            
+            <filter string="فريقي"
+                    name="my_team_expenses"
+                    domain="['|', ('employee_id.parent_id.user_id', '=', uid), ('employee_id.department_id.manager_id.user_id', '=', uid)]"
+                    groups="hr_expense_access_control.group_expense_team_manager"
+                    help="عرض مصاريف فريقي"/>
+                    
+            <filter string="بانتظار الموافقة"
+                    name="pending_approval"
+                    domain="[('state', '=', 'reported')]"
+                    groups="hr_expense_access_control.group_expense_team_manager"
+                    help="المصاريف التي تحتاج موافقة"/>
+                    
+            <separator/>
+            
+            <filter string="للمعالجة المحاسبية"
+                    name="for_accounting"
+                    domain="[('state', '=', 'approved')]"
+                    groups="hr_expense_access_control.group_expense_accountant"
+                    help="المصاريف المعتمدة للمعالجة"/>
+            
+            <separator/>
+            
+            <!-- التجميعات -->
+            <group expand="0" string="تجميع حسب">
+                <filter string="الموظف" name="group_employee" context="{'group_by':'employee_id'}"/>
+
+
+                <filter string="الحالة" name="group_state" context="{'group_by':'state'}"/>
+                <filter string="طريقة الدفع" name="group_payment" context="{'group_by':'payment_mode'}"/>
+                <filter string="الشهر" name="group_month" context="{'group_by':'date:month'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+<!-- عرض النموذج المخصص -->
+    <record id="hr_expense_view_form_custom" model="ir.ui.view">
+        <field name="name">hr.expense.form.custom</field>
+        <field name="model">hr.expense</field>
+        <field name="arch" type="xml">
+            <form string="المصروف">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="وصف المصروف"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"
+                                   options="{'no_create': True}"
+                                   required="1"/>
+                            <field name="date" required="1"/>
+                            <field name="product_id"
+                                   domain="[('can_be_expensed', '=', True)]"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="total_amount" widget="monetary"/>
+                            <field name="payment_mode"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="الوصف">
+                            <field name="description" placeholder="ملاحظات إضافية..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

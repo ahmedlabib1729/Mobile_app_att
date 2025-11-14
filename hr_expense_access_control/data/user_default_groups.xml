@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- تعيين المجموعة الافتراضية للمستخدمين الجدد -->
+<record id="base.default_user" model="res.users">
+    <field name="groups_id" eval="[(4, ref('hr_expense_access_control.group_expense_own_only'))]"/>
+</record>
+
+<!-- إعداد خاص للمدير (admin) -->
+<record id="base.user_admin" model="res.users">
+    <field name="groups_id" eval="[(4, ref('hr_expense_access_control.group_expense_cfo'))]"/>
+</record>
+
+</odoo>

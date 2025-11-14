@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ==================== قواعد المصاريف ==================== -->
+
+<!-- قاعدة 1: الموظف يرى مصاريفه فقط -->
+<record id="expense_personal_only_rule" model="ir.rule">
+            <field name="name">مصاريف شخصية فقط</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_expense_own_only'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- قاعدة 2: مدير القسم يرى مصاريف فريقه -->
+<record id="expense_team_manager_rule" model="ir.rule">
+            <field name="name">مصاريف الفريق - مدير القسم</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense"/>
+            <field name="domain_force">['|',
+                '|',
+                ('employee_id.user_id', '=', user.id),
+                ('employee_id.parent_id.user_id', '=', user.id),
+                ('employee_id.department_id.manager_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_expense_team_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- قاعدة 3: المحاسب يرى المصاريف المعتمدة -->
+<record id="expense_accountant_rule" model="ir.rule">
+            <field name="name">مصاريف معتمدة - محاسب</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense"/>
+            <field name="domain_force">[
+                '|',
+                ('state', 'in', ['reported', 'approved', 'done']),
+                ('employee_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_expense_accountant'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- قاعدة 4: المدير المالي يرى كل شيء -->
+<record id="expense_cfo_rule" model="ir.rule">
+            <field name="name">كل المصاريف - مدير مالي</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_expense_cfo'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+<!-- قاعدة 5: المراجع يرى كل شيء بدون تعديل -->
+<record id="expense_auditor_rule" model="ir.rule">
+            <field name="name">كل المصاريف للقراءة - مراجع</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_expense_auditor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- ==================== قواعد تقارير المصاريف ==================== -->
+
+<!-- قاعدة تقارير 1: الموظف يرى تقاريره فقط -->
+<record id="expense_sheet_personal_rule" model="ir.rule">
+            <field name="name">تقارير مصاريف شخصية</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense_sheet"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_expense_own_only'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- قاعدة تقارير 2: مدير القسم يرى تقارير فريقه -->
+<record id="expense_sheet_team_rule" model="ir.rule">
+            <field name="name">تقارير الفريق - مدير القسم</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense_sheet"/>
+            <field name="domain_force">['|',
+                '|',
+                ('employee_id.user_id', '=', user.id),
+                ('employee_id.parent_id.user_id', '=', user.id),
+                ('employee_id.department_id.manager_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_expense_team_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- قاعدة تقارير 3: المحاسب يرى التقارير المعتمدة -->
+<record id="expense_sheet_accountant_rule" model="ir.rule">
+            <field name="name">تقارير معتمدة - محاسب</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense_sheet"/>
+            <field name="domain_force">[
+                '|',
+                ('state', 'in', ['approve', 'post', 'done']),
+                ('employee_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('group_expense_accountant'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+<!-- قاعدة تقارير 4: المدير المالي يرى كل شيء -->
+<record id="expense_sheet_cfo_rule" model="ir.rule">
+            <field name="name">كل التقارير - مدير مالي</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense_sheet"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_expense_cfo'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+<!-- قاعدة تقارير 5: المراجع يرى كل شيء بدون تعديل -->
+<record id="expense_sheet_auditor_rule" model="ir.rule">
+            <field name="name">كل التقارير للقراءة - مراجع</field>
+            <field name="model_id" ref="hr_expense.model_hr_expense_sheet"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_expense_auditor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+</odoo>

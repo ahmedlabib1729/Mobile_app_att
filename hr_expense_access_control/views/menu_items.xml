@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- إجراء النافذة المخصص -->
+<record id="hr_expense_action_custom" model="ir.actions.act_window">
+    <field name="name">المصاريف</field>
+    <field name="res_model">hr.expense</field>
+    <field name="view_mode">list,form,kanban,graph,pivot</field>
+    <field name="search_view_id" ref="hr_expense_view_search_custom"/>
+    <field name="context">{'search_default_my_expenses_only': 1}</field>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            إنشاء مصروف جديد
+        </p>
+        <p>
+            سجّل مصاريفك هنا وتابع حالة الموافقة عليها
+        </p>
+    </field>
+</record>
+
+<!-- ربط العروض بالإجراء -->
+<record id="hr_expense_action_view_list" model="ir.actions.act_window.view">
+    <field name="sequence" eval="1"/>
+    <field name="view_mode">list</field>
+    <field name="view_id" ref="hr_expense_view_list_custom"/>
+    <field name="act_window_id" ref="hr_expense_action_custom"/>
+</record>
+
+<record id="hr_expense_action_view_form" model="ir.actions.act_window.view">
+    <field name="sequence" eval="2"/>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="hr_expense_view_form_custom"/>
+    <field name="act_window_id" ref="hr_expense_action_custom"/>
+</record>
+
+<!-- القائمة الرئيسية -->
+<menuitem id="hr_expense_menu_root_custom"
+    name="المصاريف"
+    sequence="10"
+    groups="hr_expense_access_control.group_expense_own_only,hr_expense_access_control.group_expense_team_manager,hr_expense_access_control.group_expense_accountant,hr_expense_access_control.group_expense_cfo,hr_expense_access_control.group_expense_auditor"
+    web_icon="hr_expense,static/description/icon.png"/>
+
+<!-- القوائم الفرعية -->
+<menuitem id="hr_expense_menu_my_expenses"
+    name="مصاريفي"
+    parent="hr_expense_menu_root_custom"
+    action="hr_expense_action_custom"
+    sequence="1"
+    groups="hr_expense_access_control.group_expense_own_only"/>
+
+<menuitem id="hr_expense_menu_team_expenses"
+    name="مصاريف الفريق"
+    parent="hr_expense_menu_root_custom"
+    action="hr_expense_action_custom"
+    sequence="2"
+    groups="hr_expense_access_control.group_expense_team_manager"/>
+
+<menuitem id="hr_expense_menu_to_approve"
+    name="للموافقة"
+    parent="hr_expense_menu_root_custom"
+    action="hr_expense_action_custom"
+    sequence="3"
+    groups="hr_expense_access_control.group_expense_team_manager"/>
+
+<menuitem id="hr_expense_menu_accounting"
+    name="المعالجة المحاسبية"
+    parent="hr_expense_menu_root_custom"
+    action="hr_expense_action_custom"
+    sequence="4"
+    groups="hr_expense_access_control.group_expense_accountant"/>
+
+<menuitem id="hr_expense_menu_all_expenses"
+    name="كل المصاريف"
+    parent="hr_expense_menu_root_custom"
+    action="hr_expense_action_custom"
+    sequence="5"
+    groups="hr_expense_access_control.group_expense_cfo"/>
+
+<menuitem id="hr_expense_menu_reports"
+    name="التقارير"
+    parent="hr_expense_menu_root_custom"
+    sequence="10"
+    groups="hr_expense_access_control.group_expense_accountant,hr_expense_access_control.group_expense_cfo,hr_expense_access_control.group_expense_auditor"/>
+
+</odoo>
