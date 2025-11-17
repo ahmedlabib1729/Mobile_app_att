@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_pos_config_form_receipt_custom" model="ir.ui.view">
+        <field name="name">pos.config.form.receipt.custom</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//form/sheet" position="inside">
+                <group string="Custom Receipt Settings" name="custom_receipt_settings">
+                    <field name="receipt_footer_text" placeholder="Enter custom footer text..."/>
+                    <field name="show_receipt_line_numbers"/>
+                    <field name="show_receipt_barcode"/>
+                </group>
+            </xpath>
+            
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend OrderReceipt header -->
+   <t t-name="custom_pos_receipt.OrderReceipt">
+        <div class="pos-receipt custom-diamond-receipt">
+        
+        <!-- Add custom styling class -->
+        <xpath expr="//div[hasclass('pos-receipt')]" position="attributes">
+            <attribute name="class">pos-receipt custom-receipt-style</attribute>
+        </xpath>
+        
+        <!-- Replace header with custom header -->
+        <xpath expr="//div[hasclass('pos-receipt-company')]" position="replace">
+            <div class="pos-receipt-company custom-header">
+                <!-- Company Logo -->
+                <t t-if="receipt.company.logo">
+                    <div class="company-logo">
+                        <img t-att-src="'data:image/png;base64,' + receipt.company.logo" 
+                             alt="Logo"
+                             style="max-height: 80px; max-width: 180px; margin: 10px auto; display: block;"/>
+                    </div>
+                </t>
+                
+                <!-- Company Name -->
+                <div class="company-name" style="font-size: 18px; font-weight: bold; text-align: center; margin: 10px 0;">
+                    <t t-esc="receipt.company.name"/>
+                </div>
+                
+                <!-- Company Details -->
+                <div class="company-details" style="font-size: 10px; text-align: center; margin: 5px 0;">
+                    <!-- Address -->
+                    <div t-if="receipt.company.street or receipt.company.city">
+                        <t t-if="receipt.company.street"><t t-esc="receipt.company.street"/></t>
+                        <t t-if="receipt.company.city">
+                            <t t-if="receipt.company.street">, </t>
+                            <t t-esc="receipt.company.city"/>
+                        </t>
+                    </div>
+                    
+                    <!-- Contact -->
+                    <div t-if="receipt.company.phone or receipt.company.email">
+                        <t t-if="receipt.company.phone">Tel: <t t-esc="receipt.company.phone"/></t>
+                        <t t-if="receipt.company.email">
+                            <t t-if="receipt.company.phone"> | </t>
+                            Email: <t t-esc="receipt.company.email"/>
+                        </t>
+                    </div>
+                    
+                    <!-- Tax Number -->
+                    <div t-if="receipt.company.vat">
+                        Tax No: <t t-esc="receipt.company.vat"/>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 10px 0;">════════════════════════</div>
+            </div>
+        </xpath>
+        
+        <!-- Add line numbers to orderlines -->
+        <xpath expr="//div[hasclass('orderlines')]//t[@t-foreach='receipt.orderlines']" position="before">
+            <t t-set="show_numbers" t-value="receipt.show_line_numbers"/>
+        </xpath>
+        
+        <xpath expr="//div[hasclass('orderline')]" position="replace">
+            <div class="orderline" style="display: flex; justify-content: space-between; margin: 5px 0; font-size: 11px;">
+                <t t-if="show_numbers">
+                    <span style="min-width: 20px; font-weight: bold;"><t t-esc="line.line_number"/>.</span>
+                </t>
+                <span style="flex: 1; padding: 0 5px;"><t t-esc="line.product_name"/></span>
+                <span style="min-width: 50px; text-align: right;"><t t-esc="env.utils.formatCurrency(line.price_display)"/></span>
+            </div>
+            <t t-if="line.discount > 0">
+                <div style="font-size: 9px; color: #d9534f; margin-left: 25px; font-style: italic;">
+                    Discount (<t t-esc="line.discount"/>%): -<t t-esc="env.utils.formatCurrency(line.price * line.quantity * line.discount / 100)"/>
+                </div>
+            </t>
+        </xpath>
+        
+        <!-- Add total discount if exists -->
+        <xpath expr="//div[hasclass('pos-receipt-amount') and contains(@t-if, 'total_without_tax')]" position="after">
+            <t t-if="receipt.total_discount and receipt.total_discount > 0">
+                <div class="pos-receipt-amount" style="display: flex; justify-content: space-between; margin: 3px 0; font-weight: bold; color: #d9534f;">
+                    <span>Total Discount</span>
+                    <span>-<t t-esc="env.utils.formatCurrency(receipt.total_discount)"/></span>
+                </div>
+            </t>
+        </xpath>
+        
+        <!-- Add barcode before footer -->
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="before">
+            <t t-if="receipt.show_barcode and receipt.name">
+                <div style="text-align: center; margin: 15px 0;">
+                    <img t-att-src="'/report/barcode/?type=Code128&amp;value=' + receipt.name + '&amp;width=400&amp;height=50&amp;humanreadable=1'"
+                         alt="Barcode"
+                         style="max-width: 100%; height: auto;"/>
+                </div>
+            </t>
+        </xpath>
+        
+        <!-- Add custom footer -->
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="after">
+            <t t-if="receipt.receipt_footer_text">
+                <div style="text-align: center; margin: 15px 0; font-size: 11px; font-style: italic; padding: 8px; background: #f9f9f9;">
+                    <t t-esc="receipt.receipt_footer_text"/>
+                </div>
+            </t>
+            
+            <div style="text-align: center; margin: 10px 0;">
+                <div style="font-size: 13px; font-weight: bold; margin: 5px 0;">THANK YOU!</div>
+                <div style="font-size: 13px; font-weight: bold;">شكراً لزيارتكم</div>
+            </div>
+            
+            <div style="text-align: center; margin: 10px 0;">════════════════════════</div>
+        </xpath>
+        </div>
+    </t>
+
+</templates>

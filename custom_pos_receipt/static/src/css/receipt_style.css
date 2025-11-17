@@ -1,0 +1,100 @@
+/* Custom POS Receipt Styling */
+/* By: Ahmed - ERP Accounting */
+/* Version: 18.0.1.0.0 */
+
+.custom-receipt-style {
+    font-family: 'Courier New', Courier, monospace;
+    width: 80mm;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 5mm;
+    background: white;
+    color: #000;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.custom-receipt-style .custom-header {
+    margin-bottom: 15px;
+}
+
+.custom-receipt-style .company-logo img {
+    display: block;
+    margin: 0 auto;
+}
+
+.custom-receipt-style .company-name {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin: 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.custom-receipt-style .company-details {
+    font-size: 10px;
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.custom-receipt-style .orderline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 5px 0;
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px dashed #ddd;
+}
+
+.custom-receipt-style .orderline:last-child {
+    border-bottom: 2px solid #000;
+}
+
+.custom-receipt-style .pos-receipt-amount {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 11px;
+}
+
+.custom-receipt-style .pos-receipt-amount-total {
+    font-size: 16px !important;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 10px 0;
+    border-top: 3px double #000;
+    border-bottom: 3px double #000;
+}
+
+/* Print specific styles */
+@media print {
+    .custom-receipt-style {
+        width: 80mm;
+        margin: 0;
+        padding: 3mm;
+    }
+    
+    .custom-receipt-style .orderline {
+        page-break-inside: avoid;
+    }
+}
+
+/* RTL Support for Arabic */
+.custom-receipt-style[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Responsive */
+@media screen and (max-width: 400px) {
+    .custom-receipt-style {
+        font-size: 11px;
+    }
+    
+    .custom-receipt-style .company-name {
+        font-size: 16px;
+    }
+}
