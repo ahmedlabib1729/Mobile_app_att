@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_receipt_simple_working" model="pos.receipt">
+        <field name="name">Simple Receipt</field>
+        <field name="design_receipt"><![CDATA[
+        <div class="pos-receipt" style="font-family: monospace; padding: 10px;">
+            <!-- Header with Logo -->
+            <div style="text-align:center; margin-bottom: 20px;">
+                <t t-if="env.services.pos.config.logo">
+                    <img t-att-src="'data:image/png;base64,' + env.services.pos.config.logo"
+                         alt="Logo" style="max-width: 150px; height: auto;"/>
+                    <br/>
+                </t>
+                <div style="font-size:16px; font-weight:bold;">
+                    <t t-esc="env.services.pos.company.name"/>
+                </div>
+                <div style="font-size:12px;">
+                    <t t-if="env.services.pos.company.phone">
+                        Phone: <t t-esc="env.services.pos.company.phone"/><br/>
+                    </t>
+                    <t t-if="env.services.pos.company.email">
+                        Email: <t t-esc="env.services.pos.company.email"/><br/>
+                    </t>
+                    <t t-if="env.services.pos.company.vat">
+                        VAT: <t t-esc="env.services.pos.company.vat"/>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Order Info -->
+            <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 10px 0; margin: 10px 0;">
+                <div style="font-size:13px;">
+                    <strong>Order:</strong> <t t-esc="props.data.name"/><br/>
+                    <strong>Date:</strong> <t t-esc="props.data.date"/><br/>
+                    <strong>Cashier:</strong> <t t-esc="props.data.cashier || 'N/A'"/><br/>
+                    <t t-if="props.data.partner">
+                        <strong>Customer:</strong> <t t-esc="props.data.partner.name"/>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Order Lines - Simple Structure -->
+            <table style="width:100%; font-size:13px; margin: 10px 0;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #000;">
+                        <th style="text-align:left; padding: 5px;">Product</th>
+                        <th style="text-align:center; padding: 5px;">Qty</th>
+                        <th style="text-align:right; padding: 5px;">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Direct orderlines loop - FIXED PATH -->
+                    <tr t-foreach="props.data.orderlines" t-as="line">
+                        <td style="padding: 5px;">
+                            <t t-esc="line.productName"/>
+                            <t t-if="line.discount &gt; 0">
+                                <div style="font-size:11px; color:#666;">
+                                    Discount: <t t-esc="line.discount"/>%
+                                </div>
+                            </t>
+                        </td>
+                        <td style="text-align:center; padding: 5px;">
+                            <t t-esc="line.qty"/>
+                        </td>
+                        <td style="text-align:right; padding: 5px;">
+                            <t t-esc="line.price"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div style="border-top: 1px dashed #000; margin-top: 10px; padding-top: 10px;">
+                <div style="font-size:14px; margin: 5px 0;">
+                    <span style="display:inline-block; width:60%;">Subtotal:</span>
+                    <span style="float:right;"><t t-esc="env.utils.formatCurrency(props.data.total_without_tax)"/></span>
+                </div>
+                <div style="font-size:14px; margin: 5px 0;">
+                    <span style="display:inline-block; width:60%;">Tax:</span>
+                    <span style="float:right;"><t t-esc="props.data.total_tax || 0"/> AED</span>
+                </div>
+                <div style="font-size:16px; font-weight:bold; margin: 5px 0; border-top: 1px solid #000; padding-top: 5px;">
+                    <span style="display:inline-block; width:60%;">TOTAL:</span>
+                    <span style="float:right;"><t t-esc="env.utils.formatCurrency(props.data.amount_total)"/></span>
+                </div>
+            </div>
+
+            <!-- Payment Info -->
+            <div style="border-top: 1px dashed #000; margin-top: 10px; padding-top: 10px;">
+                <div t-foreach="props.data.paymentlines" t-as="payment" style="font-size:13px; margin: 5px 0;">
+                    <span style="display:inline-block; width:60%;"><t t-esc="payment.name"/>:</span>
+                    <span style="float:right;"><t t-esc="payment.amount"/> AED</span>
+                </div>
+                <div style="font-size:14px; font-weight:bold; margin: 5px 0;">
+                    <span style="display:inline-block; width:60%;">CHANGE:</span>
+                    <span style="float:right;"><t t-esc="env.utils.formatCurrency(props.data.change)"/></span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align:center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #000;">
+                <t t-if="props.receipt.footer">
+                    <div style="font-size:12px;">
+                        <t t-esc="props.receipt.footer"/>
+                    </div>
+                </t>
+                <div style="font-size:14px; margin-top: 10px;">
+                    <strong>Thank You!</strong><br/>
+                    Please Visit Again
+                </div>
+            </div>
+        </div>
+        ]]></field>
+    </record>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt')]" position="before">
+            <t t-if="customReceiptContent">
+                <div class="pos-receipt custom-receipt" t-out="customReceiptContent"/>
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('pos-receipt')]" position="attributes">
+            <attribute name="t-if">!customReceiptContent</attribute>
+        </xpath>
+    </t>
+</templates>
