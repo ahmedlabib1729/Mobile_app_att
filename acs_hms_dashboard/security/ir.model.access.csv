@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+acs_hms_dashboard.access_acs_hms_dashboard,access_acs_hms_dashboard,acs_hms_dashboard.model_acs_hms_dashboard,acs_hms_dashboard.group_hms_dashboard,1,1,1,1

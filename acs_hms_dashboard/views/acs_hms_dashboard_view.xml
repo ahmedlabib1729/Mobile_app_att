@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="acs_hms_core_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard</field>
+        <field name="tag">AlmightyHmsDashboard</field>
+    </record>
+
+    <menuitem id="main_dashboard" name="My Dashboard" sequence="0"
+        web_icon="acs_hms_dashboard,static/description/icon.png" groups="acs_hms_dashboard.group_hms_dashboard"/>
+
+    <menuitem id="menu_hms_core_dashboard" name="Dashboard" sequence="10" 
+        parent="acs_hms_dashboard.main_dashboard"  action="acs_hms_core_dashboard"/>
+
+</odoo>
