@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_shipment_cod_user,access_shipment_cod_user,shipping_management_system.model_shipment_order,base.group_user,1,1,1,0
+access_shipment_cod_manager,access_shipment_cod_manager,shipping_management_system.model_shipment_order,base.group_system,1,1,1,1
+access_cod_batch_user,access_cod_batch_user,model_cod_batch,base.group_user,1,1,1,0
+access_cod_batch_manager,access_cod_batch_manager,model_cod_batch,base.group_system,1,1,1,1
+access_cod_customer_payment_user,access_cod_customer_payment_user,model_cod_customer_payment,base.group_user,1,1,1,0
+access_cod_customer_payment_manager,access_cod_customer_payment_manager,model_cod_customer_payment,base.group_system,1,1,1,1
