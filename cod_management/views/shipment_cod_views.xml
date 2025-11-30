@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- تحديث Form View للشحنة -->
+    <record id="view_shipment_order_cod_form" model="ir.ui.view">
+        <field name="name">shipment.order.cod.form</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة حقل COD Status في الهيدر -->
+            <field name="state" position="after">
+                <field name="cod_status"
+                       widget="badge"
+                       decoration-info="cod_status == 'pending'"
+                       decoration-warning="cod_status == 'collected_at_courier'"
+                       decoration-success="cod_status in ['received_from_courier', 'settled']"
+                       decoration-danger="cod_status in ['refunded', 'cancelled']"
+                       invisible="payment_method != 'cod'"/>
+
+                <!-- Advance Payment Badge (جديد) -->
+                <field name="advance_payment_status"
+                       widget="badge"
+                       decoration-muted="advance_payment_status == 'no_payment'"
+                       decoration-warning="advance_payment_status == 'partial'"
+                       decoration-success="advance_payment_status == 'full'"
+                       invisible="advance_payment_status == 'no_payment'"/>
+            </field>
+
+            <!-- إضافة أزرار في الهيدر -->
+            <xpath expr="//header/button[@name='action_deliver']" position="after">
+                <!-- زر الدفعة المقدمة (جديد) -->
+                <button name="action_register_advance_payment"
+                        string="Register Advance Payment"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-money"
+                        invisible="state in ['delivered', 'cancelled', 'returned']"/>
+
+                <button name="action_mark_cod_received"
+                        string="Mark COD Received"
+                        type="object"
+                        class="btn-primary"
+                        invisible="cod_status != 'collected_at_courier' or payment_method != 'cod'"/>
+
+                <button name="action_settle_with_customer"
+                        string="Settle with Customer"
+                        type="object"
+                        class="btn-success"
+                        invisible="cod_status not in ['received_from_courier', 'collected_at_courier'] or payment_method != 'cod'"/>
+            </xpath>
+
+
+            <xpath expr="//field[@name='payment_method']" position="after">
+    <field name="prepaid_amount_due" widget="monetary"
+           invisible="payment_method != 'prepaid'"
+           string="Amount Due (After Advance)"
+           style="font-weight: bold; color: orange;"/>
+</xpath>
+
+            <!-- إضافة تاب COD Details -->
+            <xpath expr="//notebook" position="inside">
+                <!-- Advance Payments Tab (جديد) -->
+                <page string="Advance Payments" name="advance_payments">
+                    <group>
+                        <group string="Payment Summary">
+                            <field name="total_company_cost" widget="monetary" string="Total Company Cost"/>
+                            <field name="total_advance_paid" widget="monetary"/>
+                            <field name="remaining_to_pay" widget="monetary"
+                                   style="font-weight: bold; color: red;"/>
+                            <field name="advance_payment_status" widget="badge"/>
+                        </group>
+                        <group string="Actions">
+                            <button name="action_register_advance_payment"
+                                    string="➕ Register New Payment"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="state in ['delivered', 'cancelled', 'returned']"/>
+                            <button name="action_view_advance_payments"
+                                    string="📋 View All Payments"
+                                    type="object"
+                                    class="btn-secondary"
+                                    invisible="advance_payment_count == 0"/>
+                        </group>
+                    </group>
+
+                    <field name="advance_payment_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'posted'"
+                                   decoration-muted="state == 'draft'"/>
+                            <field name="is_reconciled" widget="boolean"/>
+                        </list>
+                    </field>
+                </page>
+
+                <!-- COD Management Tab -->
+                <page string="COD Management" invisible="payment_method != 'cod'">
+                    <group>
+                        <group string="COD Status">
+                            <field name="is_cod_order" invisible="1"/>
+                            <field name="cod_status" readonly="1"/>
+                            <field name="days_since_collection" invisible="cod_status == 'pending'"/>
+                            <field name="cod_collected_date" readonly="1"/>
+                            <field name="cod_received_date" readonly="1"/>
+                            <field name="cod_settled_date" readonly="1"/>
+                        </group>
+                        <group string="COD Amounts">
+                            <field name="cod_amount" readonly="1" widget="monetary" string="Product COD Amount"/>
+                            <field name="cod_amount_sheet_excel" readonly="1" string="COD Amount to Shipping"/>
+                            <field name="total_company_cost" readonly="1"/>
+                            <field name="shipping_cost" readonly="1"/>
+                            <field name="total_deductions" readonly="1" widget="monetary"/>
+                            <field name="cod_net_for_customer" readonly="1" widget="monetary"
+                                   style="font-weight: bold; color: green;"/>
+                        </group>
+
+                        <group string="COD Breakdown">
+                            <field name="cod_amount" readonly="1" widget="monetary" string="Product COD Amount"/>
+                            <field name="cod_amount_sheet_excel" readonly="1" string="COD Amount to Shipping"/>
+                            <field name="shipping_cost" readonly="1" widget="monetary" string="(-) Shipping Company Cost"/>
+                            <field name="cod_amount_from_shipping" readonly="1" widget="monetary" style="font-weight: bold; color: blue;"/>
+                            <separator/>
+                            <field name="total_company_cost" readonly="1" widget="monetary"/>
+                            <field name="shipping_cost" readonly="1" widget="monetary" string="(-) Shipping Cost"/>
+                            <field name="cod_our_profit" readonly="1" widget="monetary" style="font-weight: bold; color: green;"/>
+                            <separator/>
+                            <field name="total_deductions" readonly="1" widget="monetary" string="Deductions from Customer"/>
+                            <field name="cod_net_for_customer" readonly="1" widget="monetary" style="font-weight: bold; font-size: 120%; color: red;"/>
+                        </group>
+                        <separator string="Calculation Details"/>
+                        <field name="cod_calculation_breakdown" readonly="1" nolabel="1"/>
+                    </group>
+                    <separator string="Internal Notes"/>
+                    <field name="cod_notes" nolabel="1" placeholder="Add internal notes about this COD transaction..."/>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- تحديث List View -->
+    <record id="view_shipment_order_cod_list" model="ir.ui.view">
+        <field name="name">shipment.order.cod.list</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_list"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="cod_status"
+                       optional="show"
+                       widget="badge"
+                       decoration-info="cod_status == 'pending'"
+                       decoration-warning="cod_status == 'collected_at_courier'"
+                       decoration-success="cod_status in ['received_from_courier', 'settled']"
+                       decoration-danger="cod_status in ['refunded', 'cancelled']"/>
+                <field name="cod_net_for_customer"
+                       optional="show"
+                       sum="Total Net"
+                       widget="monetary"/>
+                <!-- Advance Payment (جديد) -->
+                <field name="total_advance_paid"
+                       optional="hide"
+                       sum="Total Advance"
+                       widget="monetary"/>
+                <field name="advance_payment_status"
+                       optional="hide"
+                       widget="badge"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Wizard Form View (جديد) -->
+    <record id="view_shipment_advance_payment_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.advance.payment.wizard.form</field>
+        <field name="model">shipment.advance.payment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Register Advance Payment">
+                <group>
+                    <group string="Shipment Info">
+                        <field name="shipment_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="shipment_total" widget="monetary"/>
+                        <field name="already_paid" widget="monetary"/>
+                        <field name="remaining" widget="monetary"
+                               style="font-weight: bold; color: red;"/>
+                    </group>
+                    <group string="Payment Details">
+                        <field name="amount" widget="monetary" required="1"/>
+                        <field name="journal_id" required="1"/>
+                        <field name="payment_date" required="1"/>
+                        <field name="reference" placeholder="Receipt number..."/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm Payment" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_cod_orders" model="ir.actions.act_window">
+        <field name="name">COD Orders</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[('payment_method', '=', 'cod')]</field>
+        <field name="context">{'search_default_cod_orders': 1}</field>
+    </record>
+
+    <record id="action_cod_pending" model="ir.actions.act_window">
+        <field name="name">Pending Collection</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cod_status', '=', 'collected_at_courier')]</field>
+    </record>
+
+    <record id="action_cod_overdue" model="ir.actions.act_window">
+        <field name="name">Overdue COD</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cod_status', '=', 'collected_at_courier'), ('days_since_collection', '>', 7)]</field>
+    </record>
+
+    <!-- Action للشحنات مع دفعات مقدمة (جديد) -->
+    <record id="action_shipments_with_advance" model="ir.actions.act_window">
+        <field name="name">Shipments with Advance Payments</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('advance_payment_status', '!=', 'no_payment')]</field>
+    </record>
+
+    <!-- Menu مستقل للـ COD -->
+    <menuitem id="menu_cod_root"
+              name="COD Management"
+              sequence="100"
+              web_icon="cod_management,static/description/icon.png"/>
+
+    <menuitem id="menu_cod_orders"
+              name="All COD Orders"
+              parent="menu_cod_root"
+              action="action_cod_orders"
+              sequence="10"/>
+
+    <menuitem id="menu_cod_pending"
+              name="Pending Collection"
+              parent="menu_cod_root"
+              action="action_cod_pending"
+              sequence="20"/>
+
+    <menuitem id="menu_cod_overdue"
+              name="Overdue (>7 days)"
+              parent="menu_cod_root"
+              action="action_cod_overdue"
+              sequence="30"/>
+
+    <!-- Menu للدفعات المقدمة (جديد) -->
+    <menuitem id="menu_advance_payments"
+              name="Advance Payments"
+              parent="menu_cod_root"
+              action="action_shipments_with_advance"
+              sequence="35"/>
+</odoo>
