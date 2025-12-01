@@ -217,7 +217,7 @@
                     <div><span class="bold">Party</span>&#160;&#160;&#160;&#160;<t t-esc="o.partner_id.name"/></div>
                     <div style="margin-left: 20mm;"><t t-esc="o.partner_id.street or ''"/></div>
                     <div style="margin-left: 20mm;"><t t-esc="o.partner_id.street2 or ''"/></div>
-                    <div><span class="bold">VAT</span></div>
+                    <div><span class="bold">VAT</span>&#160;&#160;&#160;&#160;<t t-esc="o.partner_id.vat or ''"/></div>
                     <div><span class="bold">Country</span>&#160;&#160;&#160;&#160;<t t-esc="o.partner_id.country_id.name or ''"/></div>
                 </div>
 

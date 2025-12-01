@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the Journal Voucher report -->
+    <record id="action_report_journal_voucher" model="ir.actions.report">
+        <field name="name">Journal Voucher Report</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_report.report_journal_voucher_document</field>
+        <field name="report_file">custom_invoice_report.report_journal_voucher_document</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- Main report template -->
+    <template id="report_journal_voucher_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="custom_invoice_report.report_journal_voucher_layout">
+                    <t t-set="o" t-value="o"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Journal Voucher Layout -->
+    <template id="report_journal_voucher_layout">
+        <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+            <t t-set="company" t-value="o.company_id"/>
+            
+            <style>
+                @page {
+                    margin: 0mm;
+                    size: A4;
+                }
+                
+                body {
+                    font-family: 'Arial', sans-serif;
+                    font-size: 10pt;
+                    line-height: 1.4;
+                    margin: 0;
+                    padding: 15mm 10mm;
+                    color: #000;
+                }
+                
+                .journal-container {
+                    width: 100%;
+                    max-width: 190mm;
+                    margin: 0 auto;
+                }
+
+                .company-header {
+                    text-align: left;
+                    margin-bottom: 10mm;
+                }
+
+                .company-logo {
+                    max-height: 50px;
+                    max-width: 200px;
+                    margin-bottom: 3mm;
+                }
+
+                .company-info {
+                    font-size: 9pt;
+                    line-height: 1.3;
+                }
+
+                .report-title {
+                    text-align: center;
+                    font-size: 16pt;
+                    font-weight: bold;
+                    margin: 8mm 0 3mm 0;
+                    letter-spacing: 1px;
+                }
+
+                .voucher-number {
+                    text-align: center;
+                    font-size: 14pt;
+                    font-weight: bold;
+                    margin-bottom: 8mm;
+                }
+
+                .journal-info-table {
+                    width: 100%;
+                    margin-bottom: 8mm;
+                    border-collapse: collapse;
+                }
+
+                .journal-info-table tr {
+                    line-height: 1.8;
+                }
+
+                .journal-info-table td {
+                    padding: 2mm 0;
+                    vertical-align: top;
+                }
+
+                .journal-info-table td:first-child {
+                    font-weight: bold;
+                    width: 120px;
+                }
+
+                .journal-info-table td:nth-child(2) {
+                    width: 15px;
+                }
+
+                .journal-info-table td:last-child {
+                    text-align: right;
+                    font-weight: bold;
+                    width: 150px;
+                }
+
+                .entries-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 0;
+                    font-size: 10pt;
+                }
+
+                .entries-table th,
+                .entries-table td {
+                    border: 1px solid #000;
+                    padding: 3mm 2mm;
+                    text-align: left;
+                }
+
+                .entries-table th {
+                    background-color: #ffffff;
+                    font-weight: bold;
+                    text-align: center;
+                    font-size: 10pt;
+                }
+
+                .entries-table td.right {
+                    text-align: right;
+                }
+
+                .entries-table td.center {
+                    text-align: center;
+                }
+
+                .entries-table tfoot td {
+                    font-weight: bold;
+                    background-color: #ffffff;
+                }
+
+                .signature-section {
+                    margin-top: 15mm;
+                    margin-bottom: 5mm;
+                    border-top: 1px solid #000;
+                }
+
+                .signature-row {
+                    display: table;
+                    width: 100%;
+                    border-collapse: collapse;
+                    padding-top: 3mm;
+                }
+
+                .signature-cell {
+                    display: table-cell;
+                    width: 25%;
+                    text-align: center;
+                    padding: 2mm;
+                    vertical-align: top;
+                }
+
+                .signature-label {
+                    font-weight: bold;
+                    font-size: 10pt;
+                    margin-top: 15mm;
+                }
+
+                .company-footer {
+                    text-align: center;
+                    font-size: 9pt;
+                    margin-top: 3mm;
+                    padding-top: 3mm;
+                    border-top: 1px solid #000;
+                }
+
+                .bold {
+                    font-weight: bold;
+                }
+            </style>
+
+            <div class="journal-container">
+                <!-- Company Header with Logo -->
+                <div class="company-header">
+                    <t t-if="company.logo">
+                        <img t-att-src="image_data_uri(company.logo)" class="company-logo" alt="Company Logo"/>
+                    </t>
+                    <div class="company-info">
+                        <t t-if="company.phone">
+                            <div><span class="bold">PH:</span> <t t-esc="company.phone"/></div>
+                        </t>
+                        <t t-if="company.email">
+                            <div><span class="bold">Email:</span> <t t-esc="company.email"/></div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Report Title -->
+                <div class="report-title">
+                    JOURNAL VOUCHER REPORT
+                </div>
+
+                <!-- Voucher Number -->
+                <div class="voucher-number">
+                    <t t-esc="o.name"/>
+                </div>
+
+                <!-- Journal Information -->
+                <table class="journal-info-table">
+                    <tr>
+                        <td><span class="bold">Journal:</span></td>
+                        <td></td>
+                        <td><span class="bold">Reference:</span></td>
+                        <td></td>
+                        <td><span class="bold">Date:</span></td>
+                    </tr>
+                    <tr>
+                        <td><t t-esc="o.journal_id.name"/></td>
+                        <td></td>
+                        <td><t t-esc="o.ref or o.name"/></td>
+                        <td></td>
+                        <td><t t-esc="o.date.strftime('%d/%m/%Y') if o.date else ''"/></td>
+                    </tr>
+                </table>
+
+                <!-- Entries Table -->
+                <table class="entries-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 18%;">Account</th>
+                            <th style="width: 15%;">Partner</th>
+                            <th style="width: 32%;">Label</th>
+                            <th style="width: 12%;">Debit</th>
+                            <th style="width: 12%;">Credit</th>
+                            <th style="width: 11%;">Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.line_ids.filtered(lambda l: l.display_type == 'product' or not l.display_type)" t-as="line">
+                            <tr>
+                                <td>
+                                    <t t-esc="line.account_id.code"/> <t t-esc="line.account_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.partner_id.name if line.partner_id else ''"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.name"/>
+                                </td>
+                                <td class="right">
+                                    <t t-if="line.debit > 0">
+                                        <t t-esc="'{:,.3f}'.format(line.debit)"/> <t t-esc="o.currency_id.name"/>
+                                    </t>
+                                    <t t-else="">
+                                        0.000 <t t-esc="o.currency_id.name"/>
+                                    </t>
+                                </td>
+                                <td class="right">
+                                    <t t-if="line.credit > 0">
+                                        <t t-esc="'{:,.3f}'.format(line.credit)"/> <t t-esc="o.currency_id.name"/>
+                                    </t>
+                                    <t t-else="">
+                                        0.000 <t t-esc="o.currency_id.name"/>
+                                    </t>
+                                </td>
+                                <td class="center">
+                                    <t t-if="line.date_maturity">
+                                        <t t-esc="line.date_maturity.strftime('%d/%m/%Y')"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="right"></td>
+                            <td class="right">
+                                <t t-esc="'{:,.3f}'.format(sum(o.line_ids.filtered(lambda l: l.display_type == 'product' or not l.display_type).mapped('debit')))"/> <t t-esc="o.currency_id.name"/>
+                            </td>
+                            <td class="right">
+                                <t t-esc="'{:,.3f}'.format(sum(o.line_ids.filtered(lambda l: l.display_type == 'product' or not l.display_type).mapped('credit')))"/> <t t-esc="o.currency_id.name"/>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Signature Section -->
+                <div class="signature-section">
+                    <div class="signature-row">
+                        <div class="signature-cell">
+                            <div class="signature-label">Received By</div>
+                        </div>
+                        <div class="signature-cell">
+                            <div class="signature-label">Prepared By</div>
+                        </div>
+                        <div class="signature-cell">
+                            <div class="signature-label">Checked By</div>
+                        </div>
+                        <div class="signature-cell">
+                            <div class="signature-label">Approved By</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Address Footer -->
+                <!-- لتعديل العنوان، غيّر النص التالي: -->
+                <div class="company-footer">
+                    FLAT/SHOP No. 4, BUILDING 2356, ROAD 1532, AREA - HIDD BLOCK 115, Bahrain
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>
