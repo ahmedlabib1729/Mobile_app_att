@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================== -->
+    <!-- Wizard: Pickup Advance Payment Confirmation -->
+    <!-- ========================================== -->
+    <record id="view_shipment_pickup_advance_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.pickup.advance.wizard.form</field>
+        <field name="model">shipment.pickup.advance.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Advance Payment">
+                <sheet>
+                    <div class="alert alert-warning" role="alert" style="margin-bottom:20px;">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-money"/> Planned Advance Payment Found!
+                        </h4>
+                        <p>
+                            This customer has a planned advance payment of
+                            <strong><field name="planned_amount" readonly="1" class="oe_inline"/> EGP</strong>
+                        </p>
+                        <hr/>
+                        <p class="mb-0">
+                            Please confirm the actual payment amount or skip if the customer did not pay.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group string="Payment Details">
+                            <field name="shipment_id" invisible="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="customer_invoice_id" readonly="1"/>
+                            <field name="invoice_amount" readonly="1"/>
+                            <field name="shipment_total" readonly="1"/>
+                        </group>
+                        <group string="Amount">
+                            <field name="planned_amount" readonly="1"/>
+                            <field name="amount"/>
+                            <field name="difference" readonly="1"
+                                   decoration-danger="difference &lt; 0"
+                                   decoration-success="difference &gt; 0"
+                                   decoration-muted="difference == 0"/>
+                        </group>
+                    </group>
+
+                    <group string="Payment Information" col="2">
+                        <field name="journal_id"/>
+                        <field name="payment_date"/>
+                        <field name="reference" placeholder="Receipt number or reference..."/>
+                    </group>
+
+                    <separator string="Skip Payment (if customer did not pay)"/>
+                    <group col="2">
+                        <field name="skip_reason"/>
+                        <field name="skip_notes" placeholder="Additional notes..."
+                               attrs="{'invisible': [('skip_reason', '=', False)]}"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_confirm_payment"
+                            string="✓ Confirm Payment"
+                            type="object"
+                            class="btn-primary"/>
+                    <button name="action_skip"
+                            string="✗ Skip Payment"
+                            type="object"
+                            class="btn-warning"
+                            confirm="Are you sure you want to skip this advance payment?"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- ========================================== -->
+    <!-- Wizard: Set Planned Advance (Information Only) -->
+    <!-- ========================================== -->
+    <record id="view_shipment_planned_advance_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.planned.advance.wizard.form</field>
+        <field name="model">shipment.planned.advance.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Set Planned Advance">
+                <sheet>
+                    <div class="alert alert-info" role="alert" style="margin-bottom:20px;">
+                        <i class="fa fa-info-circle"/>
+                        <strong>Information Only:</strong>
+                        This records the customer's intention to pay in advance.
+                        The actual payment will be confirmed when the shipment is picked up.
+                    </div>
+
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="shipment_id" readonly="1"/>
+                            <field name="shipment_total" readonly="1"/>
+                        </group>
+                        <group string="Planned Advance">
+                            <field name="amount"/>
+                            <field name="notes" placeholder="Any notes about this planned payment..."/>
+                        </group>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_confirm"
+                            string="✓ Set Planned Advance"
+                            type="object"
+                            class="btn-primary"/>
+                    <button name="action_clear"
+                            string="Clear Advance"
+                            type="object"
+                            class="btn-secondary"
+                            attrs="{'invisible': [('amount', '=', 0)]}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

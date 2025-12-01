@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- تحديث Form View للشحنة -->
+    <record id="view_shipment_order_cod_form" model="ir.ui.view">
+        <field name="name">shipment.order.cod.form</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- تنبيه للدفعة المخططة (جديد) -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-info" role="alert"
+                     invisible="planned_advance_status != 'planned' or state != 'draft'">
+                    <i class="fa fa-info-circle"/>
+                    <strong> Planned Advance:</strong>
+                    Customer plans to pay <field name="planned_advance_amount" readonly="1" class="oe_inline"/> EGP in advance.
+                    This will be confirmed at pickup.
+                </div>
+                <div class="alert alert-success" role="alert"
+                     invisible="planned_advance_status != 'confirmed'">
+                    <i class="fa fa-check-circle"/>
+                    <strong> Advance Confirmed:</strong>
+                    Customer paid <field name="total_advance_paid" readonly="1" class="oe_inline"/> EGP in advance.
+                </div>
+                <div class="alert alert-warning" role="alert"
+                     invisible="planned_advance_status != 'skipped'">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <strong> Advance Skipped:</strong>
+                    Planned advance of <field name="planned_advance_amount" readonly="1" class="oe_inline"/> EGP was skipped.
+                </div>
+            </xpath>
+
+            <!-- إضافة حقل COD Status في الهيدر -->
+            <field name="state" position="after">
+                <field name="cod_status"
+                       widget="badge"
+                       decoration-info="cod_status == 'pending'"
+                       decoration-warning="cod_status == 'collected_at_courier'"
+                       decoration-success="cod_status in ['received_from_courier', 'settled']"
+                       decoration-danger="cod_status in ['refunded', 'cancelled']"
+                       invisible="payment_method != 'cod'"/>
+
+                <!-- Advance Payment Badge -->
+                <field name="advance_payment_status"
+                       widget="badge"
+                       decoration-muted="advance_payment_status == 'no_payment'"
+                       decoration-warning="advance_payment_status == 'partial'"
+                       decoration-success="advance_payment_status == 'full'"
+                       invisible="advance_payment_status == 'no_payment'"/>
+
+                <!-- Planned Advance Badge (جديد) -->
+                <field name="planned_advance_status"
+                       widget="badge"
+                       decoration-info="planned_advance_status == 'planned'"
+                       decoration-success="planned_advance_status == 'confirmed'"
+                       decoration-warning="planned_advance_status == 'skipped'"
+                       invisible="planned_advance_status == 'none'"/>
+            </field>
+
+            <!-- إضافة أزرار في الهيدر -->
+            <xpath expr="//header/button[@name='action_deliver']" position="after">
+                <!-- زر تسجيل الدفعة المخططة (جديد) -->
+                <button name="action_set_planned_advance"
+                        string="💰 Set Planned Advance"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state != 'draft' or planned_advance_status in ['confirmed', 'skipped']"/>
+
+                <!-- زر الدفعة المقدمة -->
+                <button name="action_register_advance_payment"
+                        string="Register Advance Payment"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-money"
+                        invisible="state in ['delivered', 'cancelled', 'returned']"/>
+
+                <button name="action_mark_cod_received"
+                        string="Mark COD Received"
+                        type="object"
+                        class="btn-primary"
+                        invisible="cod_status != 'collected_at_courier' or payment_method != 'cod'"/>
+
+                <button name="action_settle_with_customer"
+                        string="Settle with Customer"
+                        type="object"
+                        class="btn-success"
+                        invisible="cod_status not in ['received_from_courier', 'collected_at_courier'] or payment_method != 'cod'"/>
+            </xpath>
+
+            <xpath expr="//field[@name='payment_method']" position="after">
+                <field name="prepaid_amount_due" widget="monetary"
+                       invisible="payment_method != 'prepaid'"
+                       string="Amount Due (After Advance)"
+                       style="font-weight: bold; color: orange;"/>
+            </xpath>
+
+            <!-- إضافة تاب COD Details -->
+            <xpath expr="//notebook" position="inside">
+                <!-- Advance Payments Tab -->
+                <page string="Advance Payments" name="advance_payments">
+                    
+                    <!-- قسم الدفعة المخططة (جديد) -->
+                    <group string="Planned Advance Payment" col="4">
+                        <field name="planned_advance_amount" 
+                               readonly="planned_advance_status in ['confirmed', 'skipped']"/>
+                        <field name="planned_advance_status" readonly="1"
+                               widget="badge"
+                               decoration-info="planned_advance_status == 'planned'"
+                               decoration-success="planned_advance_status == 'confirmed'"
+                               decoration-warning="planned_advance_status == 'skipped'"/>
+                        <field name="planned_advance_date" readonly="1"/>
+                        <field name="advance_skip_reason" readonly="1"
+                               invisible="planned_advance_status != 'skipped'"/>
+                    </group>
+
+                    <group invisible="planned_advance_status != 'skipped'">
+                        <field name="advance_skip_notes" readonly="1"/>
+                    </group>
+
+                    <separator string="Actual Payments Summary"/>
+
+                    <group>
+                        <group string="Payment Summary">
+                            <field name="total_company_cost" widget="monetary" string="Total Company Cost"/>
+                            <field name="total_advance_paid" widget="monetary"/>
+                            <field name="remaining_to_pay" widget="monetary"
+                                   style="font-weight: bold; color: red;"/>
+                            <field name="advance_payment_status" widget="badge"
+                                   decoration-danger="advance_payment_status == 'no_payment'"
+                                   decoration-warning="advance_payment_status == 'partial'"
+                                   decoration-success="advance_payment_status == 'full'"/>
+                        </group>
+                        <group string="Actions">
+                            <button name="action_set_planned_advance"
+                                    string="💰 Set Planned Advance"
+                                    type="object"
+                                    class="btn-secondary"
+                                    invisible="state != 'draft' or planned_advance_status in ['confirmed', 'skipped']"/>
+                            <button name="action_register_advance_payment"
+                                    string="➕ Register New Payment"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="state in ['delivered', 'cancelled', 'returned']"/>
+                            <button name="action_view_advance_payments"
+                                    string="📋 View All Payments"
+                                    type="object"
+                                    class="btn-secondary"
+                                    invisible="advance_payment_count == 0"/>
+                        </group>
+                    </group>
+
+                    <field name="advance_payment_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'posted'"
+                                   decoration-muted="state == 'draft'"/>
+                            <field name="is_reconciled" widget="boolean"/>
+                        </list>
+                    </field>
+                </page>
+
+                <!-- COD Management Tab -->
+                <page string="COD Management" invisible="payment_method != 'cod'">
+                    <group>
+                        <group string="COD Status">
+                            <field name="is_cod_order" invisible="1"/>
+                            <field name="cod_status" readonly="1"/>
+                            <field name="days_since_collection" invisible="cod_status == 'pending'"/>
+                            <field name="cod_collected_date" readonly="1"/>
+                            <field name="cod_received_date" readonly="1"/>
+                            <field name="cod_settled_date" readonly="1"/>
+                        </group>
+                        <group string="COD Amounts">
+                            <field name="cod_amount" readonly="1" widget="monetary" string="Product COD Amount"/>
+                            <field name="cod_amount_sheet_excel" readonly="1" string="COD Amount to Shipping"/>
+                            <field name="total_company_cost" readonly="1"/>
+                            <field name="shipping_cost" readonly="1"/>
+                            <field name="total_deductions" readonly="1" widget="monetary"/>
+                            <field name="cod_net_for_customer" readonly="1" widget="monetary"
+                                   style="font-weight: bold; color: green;"/>
+                        </group>
+
+                        <group string="COD Breakdown">
+                            <field name="cod_amount" readonly="1" widget="monetary" string="Product COD Amount"/>
+                            <field name="cod_amount_sheet_excel" readonly="1" string="COD Amount to Shipping"/>
+                            <field name="shipping_cost" readonly="1" widget="monetary" string="(-) Shipping Company Cost"/>
+                            <field name="cod_amount_from_shipping" readonly="1" widget="monetary" style="font-weight: bold; color: blue;"/>
+                            <separator/>
+                            <field name="total_company_cost" readonly="1" widget="monetary"/>
+                            <field name="shipping_cost" readonly="1" widget="monetary" string="(-) Shipping Cost"/>
+                            <field name="cod_our_profit" readonly="1" widget="monetary" style="font-weight: bold; color: green;"/>
+                            <separator/>
+                            <field name="total_deductions" readonly="1" widget="monetary" string="Deductions from Customer"/>
+                            <field name="cod_net_for_customer" readonly="1" widget="monetary" style="font-weight: bold; font-size: 120%; color: red;"/>
+                        </group>
+                        <separator string="Calculation Details"/>
+                        <field name="cod_calculation_breakdown" readonly="1" nolabel="1"/>
+                    </group>
+                    <separator string="Internal Notes"/>
+                    <field name="cod_notes" nolabel="1" placeholder="Add internal notes about this COD transaction..."/>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- تحديث List View -->
+    <record id="view_shipment_order_cod_list" model="ir.ui.view">
+        <field name="name">shipment.order.cod.list</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_list"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="cod_status"
+                       optional="show"
+                       widget="badge"
+                       decoration-info="cod_status == 'pending'"
+                       decoration-warning="cod_status == 'collected_at_courier'"
+                       decoration-success="cod_status in ['received_from_courier', 'settled']"
+                       decoration-danger="cod_status in ['refunded', 'cancelled']"/>
+                <field name="cod_net_for_customer"
+                       optional="show"
+                       sum="Total Net"
+                       widget="monetary"/>
+                <!-- Planned Advance (جديد) -->
+                <field name="planned_advance_status"
+                       optional="hide"
+                       widget="badge"
+                       decoration-info="planned_advance_status == 'planned'"
+                       decoration-success="planned_advance_status == 'confirmed'"
+                       decoration-warning="planned_advance_status == 'skipped'"/>
+                <field name="planned_advance_amount"
+                       optional="hide"
+                       widget="monetary"/>
+                <!-- Advance Payment -->
+                <field name="total_advance_paid"
+                       optional="hide"
+                       sum="Total Advance"
+                       widget="monetary"/>
+                <field name="advance_payment_status"
+                       optional="hide"
+                       widget="badge"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Search View - إضافة Filters للدفعة المخططة (جديد) -->
+    <record id="view_shipment_order_cod_search" model="ir.ui.view">
+        <field name="name">shipment.order.cod.search</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="has_planned_advance" 
+                        string="Has Planned Advance" 
+                        domain="[('planned_advance_status', '=', 'planned')]"/>
+                <filter name="advance_confirmed" 
+                        string="Advance Confirmed" 
+                        domain="[('planned_advance_status', '=', 'confirmed')]"/>
+                <filter name="advance_skipped" 
+                        string="Advance Skipped" 
+                        domain="[('planned_advance_status', '=', 'skipped')]"/>
+                <separator/>
+                <filter name="has_advance_payment" 
+                        string="Has Advance Payment" 
+                        domain="[('total_advance_paid', '>', 0)]"/>
+                <filter name="cod_orders"
+                        string="COD Orders"
+                        domain="[('payment_method', '=', 'cod')]"/>
+                <filter name="cod_pending"
+                        string="COD Pending Collection"
+                        domain="[('cod_status', '=', 'collected_at_courier')]"/>
+                <filter name="cod_overdue"
+                        string="COD Overdue (>7 days)"
+                        domain="[('cod_status', '=', 'collected_at_courier'), ('days_since_collection', '>', 7)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_planned_status" 
+                            string="Planned Advance Status" 
+                            context="{'group_by': 'planned_advance_status'}"/>
+                    <filter name="group_cod_status"
+                            string="COD Status"
+                            context="{'group_by': 'cod_status'}"/>
+                    <filter name="group_advance_status"
+                            string="Advance Payment Status"
+                            context="{'group_by': 'advance_payment_status'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Wizard Form View - Set Planned Advance (جديد) -->
+    <record id="view_shipment_planned_advance_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.planned.advance.wizard.form</field>
+        <field name="model">shipment.planned.advance.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Set Planned Advance">
+                <sheet>
+                    <div class="alert alert-info" role="alert" style="margin-bottom:20px;">
+                        <i class="fa fa-info-circle"/> 
+                        <strong>Information Only:</strong>
+                        This records the customer's intention to pay in advance. 
+                        The actual payment will be confirmed when the shipment is picked up.
+                    </div>
+
+                    <group>
+                        <group string="Shipment Information">
+                            <field name="shipment_id" readonly="1"/>
+                            <field name="shipment_total" widget="monetary"/>
+                        </group>
+                        <group string="Planned Advance">
+                            <field name="amount" widget="monetary"/>
+                            <field name="notes" placeholder="Any notes about this planned payment..."/>
+                        </group>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_confirm" 
+                            string="✓ Set Planned Advance" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button name="action_clear" 
+                            string="Clear Advance" 
+                            type="object" 
+                            class="btn-secondary"
+                            invisible="amount == 0"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Form View - Pickup Advance Confirmation (جديد) -->
+    <record id="view_shipment_pickup_advance_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.pickup.advance.wizard.form</field>
+        <field name="model">shipment.pickup.advance.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Advance Payment">
+                <sheet>
+                    <div class="alert alert-warning" role="alert" style="margin-bottom:20px;">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-money"/> Planned Advance Payment Found!
+                        </h4>
+                        <p>
+                            This customer has a planned advance payment of 
+                            <strong><field name="planned_amount" readonly="1" class="oe_inline"/> EGP</strong>
+                        </p>
+                        <hr/>
+                        <p class="mb-0">
+                            Please confirm the actual payment amount or skip if the customer did not pay.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group string="Payment Details">
+                            <field name="shipment_id" invisible="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="customer_invoice_id" readonly="1"/>
+                            <field name="invoice_amount" widget="monetary"/>
+                            <field name="shipment_total" widget="monetary"/>
+                        </group>
+                        <group string="Amount">
+                            <field name="planned_amount" readonly="1" widget="monetary"/>
+                            <field name="amount" widget="monetary"/>
+                            <field name="difference" readonly="1" widget="monetary"
+                                   decoration-danger="difference &lt; 0"
+                                   decoration-success="difference &gt; 0"
+                                   decoration-muted="difference == 0"/>
+                        </group>
+                    </group>
+
+                    <group string="Payment Information" col="2">
+                        <field name="journal_id"/>
+                        <field name="payment_date"/>
+                        <field name="reference" placeholder="Receipt number or reference..."/>
+                    </group>
+
+                    <separator string="Skip Payment (if customer did not pay)"/>
+                    <group col="2">
+                        <field name="skip_reason"/>
+                        <field name="skip_notes" placeholder="Additional notes..." 
+                               invisible="not skip_reason"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_confirm_payment" 
+                            string="✓ Confirm Payment" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button name="action_skip" 
+                            string="✗ Skip Payment" 
+                            type="object" 
+                            class="btn-warning"
+                            confirm="Are you sure you want to skip this advance payment?"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Form View - Register Advance Payment -->
+    <record id="view_shipment_advance_payment_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.advance.payment.wizard.form</field>
+        <field name="model">shipment.advance.payment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Register Advance Payment">
+                <group>
+                    <group string="Shipment Info">
+                        <field name="shipment_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="shipment_total" widget="monetary"/>
+                        <field name="already_paid" widget="monetary"/>
+                        <field name="remaining" widget="monetary"
+                               style="font-weight: bold; color: red;"/>
+                    </group>
+                    <group string="Payment Details">
+                        <field name="amount" widget="monetary" required="1"/>
+                        <field name="journal_id" required="1"/>
+                        <field name="payment_date" required="1"/>
+                        <field name="reference" placeholder="Receipt number..."/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm Payment" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_cod_orders" model="ir.actions.act_window">
+        <field name="name">COD Orders</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[('payment_method', '=', 'cod')]</field>
+        <field name="context">{'search_default_cod_orders': 1}</field>
+    </record>
+
+    <record id="action_cod_pending" model="ir.actions.act_window">
+        <field name="name">Pending Collection</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cod_status', '=', 'collected_at_courier')]</field>
+    </record>
+
+    <record id="action_cod_overdue" model="ir.actions.act_window">
+        <field name="name">Overdue COD</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cod_status', '=', 'collected_at_courier'), ('days_since_collection', '>', 7)]</field>
+    </record>
+
+    <!-- Action للشحنات مع دفعات مقدمة -->
+    <record id="action_shipments_with_advance" model="ir.actions.act_window">
+        <field name="name">Shipments with Advance Payments</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('advance_payment_status', '!=', 'no_payment')]</field>
+    </record>
+
+    <!-- Action للشحنات مع دفعات مخططة (جديد) -->
+    <record id="action_shipments_planned_advance" model="ir.actions.act_window">
+        <field name="name">Planned Advance Payments</field>
+        <field name="res_model">shipment.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('planned_advance_status', '=', 'planned')]</field>
+    </record>
+
+    <!-- Menu مستقل للـ COD -->
+    <menuitem id="menu_cod_root"
+              name="COD Management"
+              sequence="100"
+              web_icon="cod_management,static/description/dollar_5551007.png"/>
+
+    <menuitem id="menu_cod_orders"
+              name="All COD Orders"
+              parent="menu_cod_root"
+              action="action_cod_orders"
+              sequence="10"/>
+
+    <menuitem id="menu_cod_pending"
+              name="Pending Collection"
+              parent="menu_cod_root"
+              action="action_cod_pending"
+              sequence="20"/>
+
+    <menuitem id="menu_cod_overdue"
+              name="Overdue (>7 days)"
+              parent="menu_cod_root"
+              action="action_cod_overdue"
+              sequence="30"/>
+
+    <!-- Menu للدفعات المقدمة -->
+    <menuitem id="menu_advance_payments"
+              name="Advance Payments"
+              parent="menu_cod_root"
+              action="action_shipments_with_advance"
+              sequence="35"/>
+
+    <!-- Menu للدفعات المخططة (جديد) -->
+    <menuitem id="menu_planned_advance"
+              name="Planned Advances"
+              parent="menu_cod_root"
+              action="action_shipments_planned_advance"
+              sequence="36"/>
+</odoo>

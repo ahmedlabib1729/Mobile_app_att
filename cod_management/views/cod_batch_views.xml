@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View للدفعة -->
+    <record id="view_cod_batch_form" model="ir.ui.view">
+        <field name="name">cod.batch.form</field>
+        <field name="model">cod.batch</field>
+        <field name="arch" type="xml">
+            <form string="COD Collection Batch">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_mark_collected" string="Mark as Collected" type="object"
+                            class="btn-success"
+                            invisible="state != 'confirmed'"/>
+
+                    <button name="action_settle_with_shipping"
+                            string="Settle Vendor Bills"
+                            type="object"
+                            class="btn-warning"
+                            invisible="state != 'collected'"/>
+
+                    <button name="action_prepare_all_customer_payments"
+                            string="Prepare Customer Payments"
+                            type="object"
+                            class="btn-info"
+                            invisible="state != 'vendor_settled' or customer_payment_ids"/>
+
+                    <button name="action_settle_all_customers"
+                            string="Settle All Customers"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'vendor_settled' or not customer_payment_ids"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,collected,vendor_settled,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="shipping_company_id"/>
+                            <field name="collection_date"/>
+                            <field name="shipment_count"/>
+                        </group>
+
+                        <group>
+                                <group string="COD Collection">
+
+                                    <field name="total_cod_amount" widget="monetary" invisible="1"/>
+                                    <field name="total_shipping_charges" widget="monetary" string="(-) Shipping Company Charges"/>
+
+                                </group>
+                                <group string="Customer Payments">
+                                    <field name="total_cod_amount" widget="monetary" invisible="1"/>
+                                    <field name="total_company_charges" widget="monetary" string="(-) Our Charges"/>
+
+                                </group>
+                            <group>
+
+                            </group>
+                            </group>
+                            <group string="Summary">
+                                <group>
+
+                                    <field name="amount_for_customers" widget="monetary" style="font-weight: bold; color: red;"/>
+                                </group>
+
+                                <group>
+                                    <field name="amount_from_shipping" widget="monetary" style="font-weight: bold; color: blue;"/>
+                                </group>
+                            </group>
+
+                        <group string="total cod amount">
+                            <group>
+                                <field name="total_cod_amount" widget="monetary"/>
+                            </group>
+
+                            <group>
+                                <field name="total_cod_amount_products_only" readonly="1" widget="monetary"/>
+                            </group>
+
+                        </group>
+
+                            <group invisible="state in ['draft']" string="actual amount received">
+                                <group>
+                                    <field name="actual_amount_received" widget="monetary"
+                                           readonly="state != 'confirmed'"
+                                           required="state == 'confirmed'"/>
+                                </group>
+                                <group>
+                                    <field name="our_profit" widget="monetary" style="font-weight: bold; color: green;"/>
+                                    <field name="difference_amount" widget="monetary"
+                                           decoration-danger="difference_amount &lt; 0"
+                                           decoration-success="difference_amount &gt; 0"/>
+                                </group>
+                            </group>
+                    </group>
+                    <notebook>
+                        <page string="Shipments">
+                            <field name="shipment_ids">
+                                <list>
+                                    <field name="order_number"/>
+                                    <field name="cod_amount"/>
+                                    <field name="cod_status"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Customer Payments" invisible="state in ['draft', 'confirmed']">
+                            <button name="action_prepare_all_customer_payments"
+                                    string="Prepare Customer Payments"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="customer_payment_ids"/>
+
+                            <button name="action_settle_all_customers"
+                                    string="Settle All Customer Invoices"
+                                    type="object"
+                                    class="btn-success"
+                                    invisible="not customer_payment_ids or state == 'completed'"
+                                    confirm="This will settle all customer invoices. Continue?"/>
+
+                            <field name="customer_payment_ids" readonly="1">
+                                <list editable="bottom">
+                                    <field name="customer_id"/>
+                                    <field name="shipment_count"/>
+                                    <field name="total_cod" sum="Total COD"/>
+                                    <field name="shipping_charges" sum="Total" optional="show"/>
+                                    <field name="amount_from_shipping" sum="Total" widget="monetary"
+                                           style="font-weight: bold; color: blue;"
+                                           string="From Shipping"/>
+                                    <field name="total_deductions" sum="Total"/>
+                                    <field name="net_amount" sum="Total" widget="monetary"
+                                           style="font-weight: bold; color: green;"
+                                           string="To Customer"/>
+                                    <field name="state" widget="badge"/>
+                                    <button name="action_mark_paid"
+                                            string="Pay"
+                                            type="object"
+                                            class="btn-sm btn-success"
+                                            invisible="state != 'confirmed'"/>
+                                </list>
+                            </field>
+
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="customer_count"/>
+                                <field name="amount_for_customers" widget="monetary" style="font-size: 120%;"/>
+                            </group>
+                        </page>
+
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_cod_batch_list" model="ir.ui.view">
+        <field name="name">cod.batch.list</field>
+        <field name="model">cod.batch</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="shipping_company_id"/>
+                <field name="collection_date"/>
+                <field name="shipment_count"/>
+                <field name="total_cod_amount"/>
+                <field name="expected_net_amount"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_shipping_company_cod_form" model="ir.ui.view">
+        <field name="name">shipping.company.cod.form</field>
+        <field name="model">shipping.company</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipping_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="COD Collection Settings">
+                    <group>
+                        <group string="Collection Days">
+                            <field name="collection_sunday"/>
+                            <field name="collection_monday"/>
+                            <field name="collection_tuesday"/>
+                            <field name="collection_wednesday"/>
+                            <field name="collection_thursday"/>
+                            <field name="collection_friday"/>
+                            <field name="collection_saturday"/>
+                        </group>
+                        <group string="Automation">
+                            <field name="auto_create_batch"/>
+                            <field name="batch_cutoff_hour" widget="float_time"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_cod_customer_payment_form" model="ir.ui.view">
+    <field name="name">cod.customer.payment.form</field>
+    <field name="model">cod.customer.payment</field>
+    <field name="arch" type="xml">
+        <form string="COD Customer Payment">
+            <header>
+                <button name="action_confirm" string="Confirm" type="object"
+                        class="btn-primary" invisible="state != 'draft'"/>
+                <button name="action_mark_paid" string="Mark as Paid" type="object"
+                        class="btn-success" invisible="state != 'confirmed'"
+                        confirm="This will settle the invoices and mark shipments as paid. Continue?"/>
+                <field name="state" widget="statusbar"/>
+            </header>
+            <sheet>
+                <group>
+                    <group>
+                        <field name="batch_id" readonly="1"/>
+                        <field name="customer_id" readonly="1"/>
+                        <field name="shipment_count"/>
+                        <field name="payment_method"/>
+                        <field name="payment_reference"/>
+                    </group>
+                    <group>
+                        <field name="total_cod" widget="monetary"/>
+                        <field name="shipping_charges" widget="monetary" string="(-) Shipping Charges"/>
+                        <field name="amount_from_shipping" widget="monetary"
+                               style="font-weight: bold; color: blue;"/>
+                        <separator/>
+                        <field name="total_deductions" widget="monetary" string="(-) Our Charges"/>
+                        <field name="net_amount" widget="monetary"
+                               style="font-weight: bold; color: green;"/>
+                        <separator/>
+                        <field name="total_invoice_amount" widget="monetary"/>
+                        <field name="remaining_credit" widget="monetary"
+                               decoration-success="remaining_credit &gt; 0"
+                               decoration-danger="remaining_credit &lt; 0"/>
+                    </group>
+                </group>
+
+                <notebook>
+                    <page string="Shipments">
+                        <field name="shipment_ids" readonly="1">
+                            <list>
+                                <field name="order_number"/>
+                                <field name="cod_amount"/>
+                                <field name="cod_net_for_customer"/>
+                                <field name="invoice_status"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Invoices to Settle">
+                        <field name="invoice_ids">
+                            <list>
+                                <field name="name"/>
+                                <field name="invoice_date"/>
+                                <field name="amount_total" widget="monetary"/>
+                                <field name="amount_residual" widget="monetary"/>
+                                <field name="payment_state" widget="badge"/>
+                            </list>
+                        </field>
+                        <group class="oe_subtotal_footer">
+                            <field name="total_invoice_amount" widget="monetary"/>
+                            <field name="net_amount" widget="monetary"/>
+                            <div class="oe_subtotal_footer_separator"/>
+                            <field name="remaining_credit" widget="monetary"
+                                   style="font-weight: bold; color: green;"
+                                   invisible="remaining_credit &lt;= 0"/>
+                        </group>
+                    </page>
+                    <page string="Notes">
+                        <field name="notes"/>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+    
+
+    <!-- Action -->
+    <record id="action_cod_batch" model="ir.actions.act_window">
+        <field name="name">COD Batches</field>
+        <field name="res_model">cod.batch</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+<!-- Window Actions للوظائف -->
+<record id="action_create_todays_batches" model="ir.actions.server">
+    <field name="name">Create Today's Batches</field>
+    <field name="model_id" ref="model_cod_batch"/>
+    <field name="state">code</field>
+    <field name="code">
+model.auto_create_batches_for_all_companies()
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Today\'s COD Batches',
+    'res_model': 'cod.batch',
+    'view_mode': 'list,form',
+    'domain': [('auto_created', '=', True)],
+    'context': {'search_default_today': 1}
+}
+    </field>
+</record>
+
+<record id="action_create_overdue_batches" model="ir.actions.server">
+    <field name="name">Create Overdue Batches</field>
+    <field name="model_id" ref="model_cod_batch"/>
+    <field name="state">code</field>
+    <field name="code">
+model.check_and_create_overdue_batches(days_threshold=7)
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Overdue COD Batches',
+    'res_model': 'cod.batch',
+    'view_mode': 'list,form',
+    'domain': [('auto_created', '=', True)],
+}
+    </field>
+</record>
+
+<!-- Menu Items -->
+<menuitem id="menu_cod_auto_batch"
+          name="Auto Create"
+          parent="menu_cod_root"
+          sequence="50"/>
+
+<menuitem id="menu_create_todays_batches"
+          name="Create Today's Batches"
+          parent="menu_cod_auto_batch"
+          action="action_create_todays_batches"
+          sequence="10"/>
+
+<menuitem id="menu_create_overdue_batches"
+          name="Create Overdue Batches"
+          parent="menu_cod_auto_batch"
+          action="action_create_overdue_batches"
+          sequence="20"/>
+
+    <!-- Menu -->
+    <menuitem id="menu_cod_batches" name="Collection Batches" parent="menu_cod_root" action="action_cod_batch" sequence="40"/>
+</odoo>
