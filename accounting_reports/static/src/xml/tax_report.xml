@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_reports.TaxReport">
+        <div class="o_action">
+            <div class="ar-report">
+                <div t-if="state.isLoading" class="ar-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div t-else="" class="ar-report-container">
+                    <!-- Header -->
+                    <div class="ar-header" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+                        <h2 class="ar-header-title">
+                            <i class="fa fa-percent me-2"/>
+                            Tax Report
+                        </h2>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="ar-filters">
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">
+                                <i class="fa fa-calendar"/>
+                                Date From
+                            </span>
+                            <input type="date" 
+                                   class="ar-date-input"
+                                   t-att-value="state.dateFrom"
+                                   t-on-change="onChangeDateFrom"/>
+                            
+                            <span class="ar-filter-label">To</span>
+                            <input type="date" 
+                                   class="ar-date-input"
+                                   t-att-value="state.dateTo"
+                                   t-on-change="onChangeDateTo"/>
+
+                            <label class="ar-checkbox">
+                                <input type="checkbox"
+                                       t-att-checked="state.postedOnly"
+                                       t-on-change="onChangePostedOnly"/>
+                                <span>Posted Only</span>
+                            </label>
+                        </div>
+
+                        <!-- Quick Period Buttons -->
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">Quick:</span>
+                            <button class="ar-btn ar-btn-outline" t-on-click="() => this.setPeriod('this_month')">
+                                This Month
+                            </button>
+                            <button class="ar-btn ar-btn-outline" t-on-click="() => this.setPeriod('last_month')">
+                                Last Month
+                            </button>
+                            <button class="ar-btn ar-btn-outline" t-on-click="() => this.setPeriod('this_quarter')">
+                                This Quarter
+                            </button>
+                            <button class="ar-btn ar-btn-outline" t-on-click="() => this.setPeriod('this_year')">
+                                This Year
+                            </button>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="ar-filter-row">
+                            <button class="ar-btn ar-btn-primary" t-on-click="onRefresh" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+                                <i class="fa fa-refresh"/> Refresh
+                            </button>
+                            <button class="ar-btn ar-btn-success" t-on-click="onExportExcel">
+                                <i class="fa fa-file-excel-o"/> Export
+                            </button>
+                            <button class="ar-btn ar-btn-secondary" t-on-click="onPrint">
+                                <i class="fa fa-print"/> Print
+                            </button>
+                            <button class="ar-btn ar-btn-secondary" t-on-click="collapseAll">
+                                <i class="fa fa-compress"/> Collapse All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="tax-summary">
+                        <div class="tax-summary-card sales">
+                            <div class="tax-summary-icon">
+                                <i class="fa fa-arrow-up"/>
+                            </div>
+                            <div class="tax-summary-content">
+                                <span class="tax-summary-label">Output VAT (Sales)</span>
+                                <span class="tax-summary-value" t-esc="formatNumber(state.reportData.totals.sales_tax || 0)"/>
+                                <span class="tax-summary-base">Base: <t t-esc="formatNumber(state.reportData.totals.sales_base || 0)"/></span>
+                            </div>
+                        </div>
+                        <div class="tax-summary-card purchases">
+                            <div class="tax-summary-icon">
+                                <i class="fa fa-arrow-down"/>
+                            </div>
+                            <div class="tax-summary-content">
+                                <span class="tax-summary-label">Input VAT (Purchases)</span>
+                                <span class="tax-summary-value" t-esc="formatNumber(state.reportData.totals.purchase_tax || 0)"/>
+                                <span class="tax-summary-base">Base: <t t-esc="formatNumber(state.reportData.totals.purchase_base || 0)"/></span>
+                            </div>
+                        </div>
+                        <div t-att-class="'tax-summary-card net ' + getNetTaxClass()">
+                            <div class="tax-summary-icon">
+                                <i class="fa fa-balance-scale"/>
+                            </div>
+                            <div class="tax-summary-content">
+                                <span class="tax-summary-label">Net VAT Due</span>
+                                <span class="tax-summary-value" t-esc="formatNumber(state.reportData.totals.net_tax || 0)"/>
+                                <span class="tax-summary-base" t-if="(state.reportData.totals.net_tax || 0) > 0">Amount to pay</span>
+                                <span class="tax-summary-base" t-elif="(state.reportData.totals.net_tax || 0) &lt; 0">Refund due</span>
+                                <span class="tax-summary-base" t-else="">Balanced</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Taxes Section -->
+                    <div class="tax-section">
+                        <div class="tax-section-header sales">
+                            <h3>
+                                <i class="fa fa-arrow-circle-up me-2"/>
+                                Sales Taxes (Output VAT)
+                            </h3>
+                            <button class="ar-btn ar-btn-sm" t-on-click="expandAllSales">
+                                <i class="fa fa-expand"/> Expand All
+                            </button>
+                        </div>
+                        
+                        <div class="tax-table-container">
+                            <table class="tax-table">
+                                <thead>
+                                    <tr>
+                                        <th class="tax-col-name">Tax</th>
+                                        <th class="tax-col-rate">Rate</th>
+                                        <th class="tax-col-amount">Base Amount</th>
+                                        <th class="tax-col-amount">Tax Amount</th>
+                                        <th class="tax-col-count">Invoices</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-if="!state.reportData.sales_taxes || !state.reportData.sales_taxes.length">
+                                        <td colspan="5" class="tax-empty">
+                                            <i class="fa fa-info-circle"/> No sales tax data for this period
+                                        </td>
+                                    </tr>
+
+                                    <t t-foreach="state.reportData.sales_taxes || []" t-as="tax" t-key="tax.tax_id">
+                                        <tr class="tax-row" t-on-click="() => this.toggleSalesTax(tax.tax_id)">
+                                            <td class="tax-col-name">
+                                                <span class="tax-toggle">
+                                                    <i t-att-class="'fa ' + (isSalesTaxExpanded(tax.tax_id) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                                </span>
+                                                <span t-esc="tax.tax_name"/>
+                                            </td>
+                                            <td class="tax-col-rate">
+                                                <span class="tax-rate-badge" t-esc="formatPercent(tax.tax_percent)"/>
+                                            </td>
+                                            <td class="tax-col-amount" t-esc="formatNumber(tax.base_amount)"/>
+                                            <td class="tax-col-amount tax-amount" t-esc="formatNumber(tax.tax_total)"/>
+                                            <td class="tax-col-count">
+                                                <a class="tax-invoice-link" t-on-click.stop="() => this.openTaxMoves(tax, 'sale')">
+                                                    <t t-esc="tax.invoice_count"/> <i class="fa fa-external-link"/>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Tax Details -->
+                                        <t t-if="isSalesTaxExpanded(tax.tax_id)">
+                                            <tr t-if="isLoadingDetails(tax.tax_id, 'sale')" class="tax-detail-loading">
+                                                <td colspan="5">
+                                                    <i class="fa fa-spinner fa-spin"/> Loading details...
+                                                </td>
+                                            </tr>
+                                            <t t-else="">
+                                                <t t-foreach="getTaxDetails(tax.tax_id, 'sale')" t-as="detail" t-key="detail.move_id">
+                                                    <tr class="tax-detail-row">
+                                                        <td class="tax-col-name">
+                                                            <span class="tax-indent"/>
+                                                            <a class="tax-move-link" t-on-click.stop="() => this.openMove(detail.move_id)">
+                                                                <t t-esc="detail.move_name"/>
+                                                            </a>
+                                                            <span class="tax-detail-date">(<t t-esc="detail.date"/>)</span>
+                                                            <span class="tax-detail-type" t-esc="getMoveTypeLabel(detail.move_type)"/>
+                                                        </td>
+                                                        <td class="tax-col-rate"/>
+                                                        <td class="tax-col-amount" t-esc="formatNumber(detail.base_amount)"/>
+                                                        <td class="tax-col-amount" t-esc="formatNumber(detail.tax_amount)"/>
+                                                        <td class="tax-col-count">
+                                                            <span class="tax-detail-partner" t-esc="detail.partner_name"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </t>
+                                </tbody>
+                                <tfoot t-if="state.reportData.sales_taxes and state.reportData.sales_taxes.length">
+                                    <tr class="tax-row-total sales">
+                                        <td colspan="2"><strong>Total Output VAT</strong></td>
+                                        <td class="tax-col-amount" t-esc="formatNumber(state.reportData.totals.sales_base || 0)"/>
+                                        <td class="tax-col-amount" t-esc="formatNumber(state.reportData.totals.sales_tax || 0)"/>
+                                        <td/>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Taxes Section -->
+                    <div class="tax-section">
+                        <div class="tax-section-header purchases">
+                            <h3>
+                                <i class="fa fa-arrow-circle-down me-2"/>
+                                Purchase Taxes (Input VAT)
+                            </h3>
+                            <button class="ar-btn ar-btn-sm" t-on-click="expandAllPurchases">
+                                <i class="fa fa-expand"/> Expand All
+                            </button>
+                        </div>
+                        
+                        <div class="tax-table-container">
+                            <table class="tax-table">
+                                <thead>
+                                    <tr>
+                                        <th class="tax-col-name">Tax</th>
+                                        <th class="tax-col-rate">Rate</th>
+                                        <th class="tax-col-amount">Base Amount</th>
+                                        <th class="tax-col-amount">Tax Amount</th>
+                                        <th class="tax-col-count">Bills</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-if="!state.reportData.purchase_taxes || !state.reportData.purchase_taxes.length">
+                                        <td colspan="5" class="tax-empty">
+                                            <i class="fa fa-info-circle"/> No purchase tax data for this period
+                                        </td>
+                                    </tr>
+
+                                    <t t-foreach="state.reportData.purchase_taxes || []" t-as="tax" t-key="tax.tax_id">
+                                        <tr class="tax-row" t-on-click="() => this.togglePurchaseTax(tax.tax_id)">
+                                            <td class="tax-col-name">
+                                                <span class="tax-toggle">
+                                                    <i t-att-class="'fa ' + (isPurchaseTaxExpanded(tax.tax_id) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                                </span>
+                                                <span t-esc="tax.tax_name"/>
+                                            </td>
+                                            <td class="tax-col-rate">
+                                                <span class="tax-rate-badge purchase" t-esc="formatPercent(tax.tax_percent)"/>
+                                            </td>
+                                            <td class="tax-col-amount" t-esc="formatNumber(tax.base_amount)"/>
+                                            <td class="tax-col-amount tax-amount" t-esc="formatNumber(tax.tax_total)"/>
+                                            <td class="tax-col-count">
+                                                <a class="tax-invoice-link" t-on-click.stop="() => this.openTaxMoves(tax, 'purchase')">
+                                                    <t t-esc="tax.invoice_count"/> <i class="fa fa-external-link"/>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Tax Details -->
+                                        <t t-if="isPurchaseTaxExpanded(tax.tax_id)">
+                                            <tr t-if="isLoadingDetails(tax.tax_id, 'purchase')" class="tax-detail-loading">
+                                                <td colspan="5">
+                                                    <i class="fa fa-spinner fa-spin"/> Loading details...
+                                                </td>
+                                            </tr>
+                                            <t t-else="">
+                                                <t t-foreach="getTaxDetails(tax.tax_id, 'purchase')" t-as="detail" t-key="detail.move_id">
+                                                    <tr class="tax-detail-row">
+                                                        <td class="tax-col-name">
+                                                            <span class="tax-indent"/>
+                                                            <a class="tax-move-link" t-on-click.stop="() => this.openMove(detail.move_id)">
+                                                                <t t-esc="detail.move_name"/>
+                                                            </a>
+                                                            <span class="tax-detail-date">(<t t-esc="detail.date"/>)</span>
+                                                            <span class="tax-detail-type" t-esc="getMoveTypeLabel(detail.move_type)"/>
+                                                        </td>
+                                                        <td class="tax-col-rate"/>
+                                                        <td class="tax-col-amount" t-esc="formatNumber(detail.base_amount)"/>
+                                                        <td class="tax-col-amount" t-esc="formatNumber(detail.tax_amount)"/>
+                                                        <td class="tax-col-count">
+                                                            <span class="tax-detail-partner" t-esc="detail.partner_name"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </t>
+                                </tbody>
+                                <tfoot t-if="state.reportData.purchase_taxes and state.reportData.purchase_taxes.length">
+                                    <tr class="tax-row-total purchases">
+                                        <td colspan="2"><strong>Total Input VAT</strong></td>
+                                        <td class="tax-col-amount" t-esc="formatNumber(state.reportData.totals.purchase_base || 0)"/>
+                                        <td class="tax-col-amount" t-esc="formatNumber(state.reportData.totals.purchase_tax || 0)"/>
+                                        <td/>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Net Tax Summary -->
+                    <div class="tax-net-summary">
+                        <div class="tax-net-row">
+                            <span class="tax-net-label">Output VAT (Sales)</span>
+                            <span class="tax-net-value sales" t-esc="formatNumber(state.reportData.totals.sales_tax || 0)"/>
+                        </div>
+                        <div class="tax-net-row">
+                            <span class="tax-net-label">Input VAT (Purchases)</span>
+                            <span class="tax-net-value purchases">(<t t-esc="formatNumber(state.reportData.totals.purchase_tax || 0)"/>)</span>
+                        </div>
+                        <div class="tax-net-divider"/>
+                        <div t-att-class="'tax-net-row total ' + getNetTaxClass()">
+                            <span class="tax-net-label">
+                                <strong>
+                                    <t t-if="(state.reportData.totals.net_tax || 0) >= 0">NET VAT DUE</t>
+                                    <t t-else="">NET VAT REFUND</t>
+                                </strong>
+                            </span>
+                            <span class="tax-net-value" t-esc="formatNumber(Math.abs(state.reportData.totals.net_tax || 0))"/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

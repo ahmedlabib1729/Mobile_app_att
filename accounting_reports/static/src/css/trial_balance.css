@@ -1,0 +1,428 @@
+/* TRIAL BALANCE - STYLES */
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCOUNT TYPE SEARCH COMPONENT
+   ═══════════════════════════════════════════════════════════════ */
+
+.type-search-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 500px;
+}
+
+.selected-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.type-tag {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    animation: tagFadeIn 0.2s ease;
+}
+
+@keyframes tagFadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.type-tag i {
+    cursor: pointer;
+    opacity: 0.8;
+    font-size: 11px;
+    transition: opacity 0.2s;
+}
+
+.type-tag i:hover {
+    opacity: 1;
+}
+
+.clear-all-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.clear-all-btn:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.type-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.type-search-input {
+    width: 100%;
+    border: 2px solid var(--ar-border);
+    border-radius: 10px;
+    padding: 10px 14px 10px 38px;
+    font-size: 14px;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.type-search-input:focus {
+    border-color: #7c3aed;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.type-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.type-search-wrapper .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.type-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--ar-border);
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 4px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.type-dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.type-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.type-dropdown-item:hover {
+    background: #f3e8ff;
+}
+
+.type-dropdown-item .type-name {
+    font-weight: 600;
+    color: var(--ar-dark);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KPI SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.tb-kpi-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.tb-kpi-group {
+    background: #fff;
+    border: 1px solid var(--ar-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.tb-kpi-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ar-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed var(--ar-border);
+}
+
+.tb-kpi-cards {
+    display: flex;
+    gap: 12px;
+}
+
+.tb-kpi-card {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.tb-kpi-card.debit {
+    background: #dcfce7;
+    border-left: 4px solid var(--ar-success);
+}
+
+.tb-kpi-card.credit {
+    background: #fee2e2;
+    border-left: 4px solid var(--ar-danger);
+}
+
+.tb-kpi-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ar-gray);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.tb-kpi-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--ar-dark);
+    font-family: 'Consolas', monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE
+   ═══════════════════════════════════════════════════════════════ */
+
+.tb-table-container {
+    background: #fff;
+    border: 1px solid var(--ar-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tb-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Header */
+.tb-table thead tr:first-child {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: #fff;
+}
+
+.tb-table thead tr:nth-child(2) {
+    background: #6d28d9;
+    color: #fff;
+}
+
+.tb-table thead th {
+    padding: 12px 14px;
+    font-weight: 600;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.tb-table thead th.tb-col-group {
+    text-align: center;
+    border-left: 1px solid rgba(255,255,255,0.2);
+}
+
+.tb-table thead th.tb-col-amount {
+    text-align: right;
+}
+
+/* Column Widths */
+.tb-col-code { width: 10%; }
+.tb-col-name { width: 25%; }
+.tb-col-type { width: 13%; }
+.tb-col-amount { 
+    width: 10%; 
+    text-align: right !important;
+    font-family: 'Consolas', monospace;
+}
+
+/* Body */
+.tb-table tbody tr {
+    border-bottom: 1px solid var(--ar-border);
+    transition: background 0.15s;
+    cursor: pointer;
+}
+
+.tb-table tbody tr:hover {
+    background: #faf5ff;
+}
+
+.tb-table tbody td {
+    padding: 12px 14px;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+/* Account Code */
+.tb-account-code {
+    font-family: 'Consolas', monospace;
+    font-weight: 700;
+    color: #7c3aed;
+    background: #f3e8ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* Account Name */
+.tb-account-name {
+    font-weight: 600;
+    color: var(--ar-dark);
+}
+
+/* Type Badge */
+.tb-type-badge {
+    background: #e5e7eb;
+    color: #374151;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Amounts */
+.tb-amount-debit {
+    color: var(--ar-success);
+    font-weight: 600;
+}
+
+.tb-amount-credit {
+    color: var(--ar-danger);
+    font-weight: 600;
+}
+
+.tb-closing {
+    font-weight: 800;
+}
+
+/* Total Row */
+.tb-row-total {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    color: #fff;
+}
+
+.tb-row-total td {
+    padding: 14px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* Empty State */
+.tb-empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    color: var(--ar-gray);
+}
+
+.tb-empty-state i {
+    font-size: 48px;
+    opacity: 0.3;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.tb-empty-state h4 {
+    font-weight: 700;
+    color: var(--ar-dark);
+    margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1200px) {
+    .tb-kpi-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .tb-col-type {
+        display: none;
+    }
+    
+    .type-search-container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .tb-table thead th,
+    .tb-table tbody td {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+    
+    .tb-kpi-value {
+        font-size: 1rem;
+    }
+    
+    .type-search-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .type-search-wrapper {
+        min-width: 100%;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT
+   ═══════════════════════════════════════════════════════════════ */
+
+@media print {
+    .tb-table-container {
+        border: 1px solid #ddd;
+    }
+    
+    .tb-table thead tr {
+        background: #7c3aed !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .tb-row-total {
+        background: #1f2937 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
