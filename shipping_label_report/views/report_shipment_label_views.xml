@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Add Print Button to Shipment Form -->
+    <record id="view_shipment_order_form_print_button" model="ir.ui.view">
+        <field name="name">shipment.order.form.print.button</field>
+        <field name="model">shipment.order</field>
+        <field name="inherit_id" ref="shipping_management_system.view_shipment_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Print Button in Header -->
+            <xpath expr="//header/button[@name='action_confirm']" position="before">
+                <button name="%(shipping_label_report.action_report_shipment_label)d" 
+                        string="🖨️ Print Label" 
+                        type="action"
+                        class="btn-secondary"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_shipment_label_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="barcode_value" t-value="doc.tracking_number or doc.order_number or 'NOCODE'"/>
+                <t t-set="barcode_img" t-value="barcodes.get(doc.id)"/>
+                
+                <style>
+                    @page {
+                        margin: 5mm;
+                        size: A4 portrait;
+                    }
+                    body {
+                        font-family: DejaVu Sans, Arial, sans-serif;
+                        font-size: 11px;
+                    }
+                    .label-container {
+                        border: 2px solid #000;
+                        width: 100%;
+                        margin: 0 auto;
+                    }
+                    .header-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    .delivery-badge {
+                        background-color: #ff0000;
+                        color: white;
+                        padding: 8px 15px;
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+                    .cod-badge {
+                        background-color: #333;
+                        color: white;
+                        padding: 8px 15px;
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+                    .order-number {
+                        border-top: 2px solid #000;
+                        border-bottom: 2px solid #000;
+                        text-align: center;
+                        padding: 10px;
+                        font-size: 28px;
+                        font-weight: bold;
+                        letter-spacing: 3px;
+                    }
+                    .barcode-section {
+                        border-bottom: 2px solid #000;
+                        text-align: center;
+                        padding: 10px;
+                    }
+                    .receiver-box {
+                        background-color: #4CAF50;
+                        color: white;
+                        text-align: center;
+                        vertical-align: middle;
+                        padding: 10px;
+                    }
+                    .section-border {
+                        border: 1px solid #000;
+                        padding: 8px;
+                    }
+                    .products-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    .products-table th, .products-table td {
+                        border: 1px solid #000;
+                        padding: 8px;
+                        text-align: center;
+                    }
+                    .products-table th {
+                        background-color: #f0f0f0;
+                    }
+                    .remark {
+                        color: red;
+                        font-weight: bold;
+                    }
+                </style>
+                
+                <div class="label-container">
+                    
+                    <!-- Header Section -->
+                    <table class="header-table">
+                        <tr>
+
+                            <td style="width: 50%; text-align: center; vertical-align: middle;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td class="delivery-badge">
+                                            <t t-if="doc.delivery_type == 'Deliver'">Delivery</t>
+                                            <t t-elif="doc.delivery_type == 'Self_Pick-up'">Self Pick-up</t>
+                                            <t t-else="">Delivery</t>
+                                        </td>
+                                        <td class="cod-badge">
+                                            <t t-if="doc.payment_method == 'cod'">
+                                                COD:<t t-esc="'{:,.0f}'.format(doc.cod_amount_sheet_excel or 0)"/>
+                                            </t>
+                                            <t t-else="">PREPAID</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="width: 35%; text-align: right; padding: 5px; font-size: 20px; direction: rtl;">
+                                <div>الرقم الضريبي:  775542644</div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <!-- Order Number Section -->
+                    <div class="order-number">
+                        <t t-esc="doc.order_number"/>
+                    </div>
+                    
+                    <!-- Barcode Section -->
+                    <div class="barcode-section">
+                        <t t-if="barcode_img">
+                            <img t-att-src="'data:image/png;base64,%s' % barcode_img" style="height: 50px; max-width: 100%;"/>
+                        </t>
+                        <t t-else="">
+                            <div style="padding: 15px; border: 1px dashed #999; display: inline-block;">
+                                <strong><t t-esc="barcode_value"/></strong>
+                            </div>
+                        </t>
+                        <div style="font-size: 12px; margin-top: 5px;">
+                            <t t-esc="barcode_value"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Receiver Section -->
+                    <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000;">
+                        <tr>
+                            <td style="width: 70%; padding: 8px; vertical-align: top;" class="section-border">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="font-weight: bold; font-size: 14px;">Receiver</td>
+                                        <td style="font-size: 14px; text-align: right;">
+                                            <t t-esc="doc.recipient_phone or doc.recipient_mobile or ''"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style="font-weight: bold; font-size: 13px; margin: 5px 0;">
+                                    <t t-esc="doc.recipient_name or ''"/>
+                                </div>
+                                <div style="font-size: 11px; line-height: 1.5; direction: rtl; text-align: left;">
+                                    <t t-esc="doc.recipient_address or ''"/>
+                                    <br/>
+                                    <t t-if="doc.recipient_city_district_id">
+                                        <t t-esc="doc.recipient_city_district_id.name"/>,
+                                    </t>
+                                    <t t-if="doc.recipient_area_id">
+                                        <t t-esc="doc.recipient_area_id.name"/>,
+                                    </t>
+                                    <t t-if="doc.recipient_governorate_new_id">
+                                        <t t-esc="doc.recipient_governorate_new_id.name"/>
+                                    </t>
+                                </div>
+                            </td>
+                            <td style="width: 30%;" class="receiver-box">
+
+                                <div style="font-size: 14px; margin-top: 5px;">
+                                    <t t-esc="doc.recipient_country_id.name or 'Egypt'"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <!-- Allow to Open Package -->
+                    <div style="border-bottom: 2px solid #000; padding: 5px 20px; text-align: center; direction: rtl;">
+
+                        <span style="font-weight: bold;">
+                            <t t-if="doc.allow_the_package_to_be_opened">نعم</t>
+                            <t t-else="">لا</t>
+                        </span>
+                        : يسمح بفتح الشحنة
+                    </div>
+                    
+                    <!-- Sender Section -->
+                    <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000;">
+                        <tr>
+                            <td style="width: 50%;" class="section-border">
+                                <div style="font-weight: bold; margin-bottom: 5px;">Sender</div>
+                                <div style="font-size: 11px; margin-bottom: 3px;">
+                                    <t t-esc="doc.sender_id.name or ''"/>
+                                </div>
+                                <div style="font-size: 14px; margin-bottom: 3px;">
+                                    <t t-esc="doc.sender_phone or doc.sender_mobile or ''"/>
+                                </div>
+
+                                <div style="font-size: 10px; direction: rtl; text-align: left;">
+                                    <t t-esc="doc.sender_address or ''"/>
+                                    <br/>
+                                    <t t-if="doc.sender_city_district_id">
+                                        <t t-esc="doc.sender_city_district_id.name"/>,
+                                    </t>
+                                    <t t-if="doc.sender_area_id">
+                                        <t t-esc="doc.sender_area_id.name"/>,
+                                    </t>
+                                    <t t-if="doc.sender_governorate_new_id">
+                                        <t t-esc="doc.sender_governorate_new_id.name"/>
+                                    </t>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+                    
+                    <!-- Signature Section -->
+                    <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000;">
+                        <tr>
+                            <td style="width: 50%; font-size: 20px; vertical-align: top;" class="section-border">
+                                <div>Once signed, shipment will be</div>
+                                <div>treated as delivered successfully</div>
+                            </td>
+                            <td style="width: 50%;" class="section-border">
+                                <div style="margin-bottom: 20px;">Signature:</div>
+                                <div style="border-bottom: 1px solid #ccc; height: 30px;"></div>
+                                <div style="margin-top: 10px;">Date:</div>
+                                <div style="border-bottom: 1px solid #ccc; height: 20px;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <!-- Products Table -->
+                    <table class="products-table" style="border-bottom: 2px solid #000;">
+                        <thead>
+                            <tr>
+                                <th>Goods</th>
+                                <th style="width: 80px;">Value</th>
+                                <th style="width: 50px;">QTY</th>
+                                <th style="width: 60px;">Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.shipment_line_ids" t-as="line">
+                                <tr>
+                                    <td style="text-align: center; direction: rtl;">
+                                        <t t-esc="line.product_name"/>
+                                    </td>
+                                    <td><t t-esc="'{:,.2f}'.format(line.product_value or 0)"/></td>
+                                    <td><t t-esc="line.quantity or 0"/></td>
+                                    <td><t t-esc="'{:,.3f}'.format(line.weight or 0)"/></td>
+                                </tr>
+                            </t>
+                            <t t-if="not doc.shipment_line_ids">
+                                <tr>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Remark Section -->
+                    <div style="border-bottom: 2px solid #000; padding: 8px;">
+                        <span class="remark">Remark:</span>
+                        <span style="margin-left: 10px; color: red;">
+                            <span style="font-weight: bold;">
+                            <t t-if="doc.allow_the_package_to_be_opened">يسمح بفتح الشحنه </t>
+                            <t t-else="">لا يسمح بفتح الشحنه</t>
+                        </span>
+                        </span>
+                    </div>
+
+                    <div style="border-bottom: 2px solid #000; padding: 8px;">
+                        <span class="remark">Notes:</span>
+                        <span style="margin-left: 10px; color: red;">
+                        *<t t-esc="doc.notes"/>*
+                        </span>
+
+                    </div>
+                    
+                    <!-- Footer Section -->
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 35%; padding: 8px; vertical-align: middle;">
+                                <!-- Small Barcode -->
+                                <t t-if="barcode_img">
+                                    <img t-att-src="'data:image/png;base64,%s' % barcode_img" style="height: 35px; max-width: 100%;"/>
+                                </t>
+                                <div style="font-size: 9px; margin-top: 3px;">
+                                    <t t-esc="barcode_value"/>
+                                </div>
+                            </td>
+
+                            <td style="width: 35%; text-align: right; padding: 8px; font-size: 9px;">
+                                <div>R.E</div>
+                                <div><t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"/></div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </div>
+                
+                <p style="page-break-after: always;"/>
+            </t>
+        </t>
+    </template>
+
+
+    <record id="paperformat_shipment_label" model="report.paperformat">
+        <field name="name">Shipment Label Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+    
+    <!-- Report Action -->
+    <record id="action_report_shipment_label" model="ir.actions.report">
+        <field name="name">Shipping Label</field>
+        <field name="model">shipment.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">shipping_label_report.report_shipment_label_document</field>
+        <field name="report_file">shipping_label_report.report_shipment_label_document</field>
+        <field name="print_report_name">'Shipment_Label_%s' % (object.order_number or 'Draft')</field>
+        <field name="binding_model_id" ref="shipping_management_system.model_shipment_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_shipment_label"/>
+    </record>
+    
+    <!-- Paper Format -->
+
+
+</odoo>
