@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_sync_child_wizard,mrp.sync.child.wizard,model_mrp_sync_child_wizard,mrp.group_mrp_user,1,1,1,1
+access_mrp_sync_child_wizard_line,mrp.sync.child.wizard.line,model_mrp_sync_child_wizard_line,mrp.group_mrp_user,1,1,1,1
+access_mrp_sync_cancel_wizard,mrp.sync.cancel.wizard,model_mrp_sync_cancel_wizard,mrp.group_mrp_user,1,1,1,1

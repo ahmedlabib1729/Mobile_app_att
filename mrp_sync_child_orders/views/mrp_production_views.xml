@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================================== -->
+    <!-- MANUFACTURING ORDER FORM - ADD SMART BUTTONS -->
+    <!-- ===================================================================== -->
+    
+    <record id="mrp_production_form_view_inherit_sync" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.sync</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add Smart Button for Child MOs -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_child_mos"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-sitemap"
+                        invisible="child_mo_count == 0">
+                    <field name="child_mo_count" widget="statinfo" string="Child MOs"/>
+                </button>
+                
+                <button name="action_view_parent_mo"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-arrow-up"
+                        invisible="not is_child_mo">
+                    <span class="o_stat_text">Parent MO</span>
+                </button>
+            </xpath>
+            
+            <!-- Add hidden fields -->
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="has_child_mos" invisible="1"/>
+                <field name="is_child_mo" invisible="1"/>
+                <field name="parent_mo_id" invisible="1"/>
+            </xpath>
+            
+            <!-- Add new tab for child MOs (optional) -->
+            <xpath expr="//page[@name='miscellaneous']" position="after">
+                <page string="Related Orders" 
+                      name="related_orders"
+                      invisible="child_mo_count == 0 and not is_child_mo">
+                    
+                    <!-- Parent MO Info -->
+                    <group string="Parent Manufacturing Order" 
+                           invisible="not is_child_mo">
+                        <group>
+                            <field name="parent_mo_id" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Child MOs List -->
+                    <group string="Child Manufacturing Orders" 
+                           invisible="child_mo_count == 0">
+                        <field name="child_mo_ids" nolabel="1" colspan="2" readonly="1">
+                            <list>
+                                <field name="name"/>
+                                <field name="product_id"/>
+                                <field name="product_qty"/>
+                                <field name="qty_producing"/>
+                                <field name="state" widget="badge"
+                                       decoration-info="state == 'confirmed'"
+                                       decoration-warning="state == 'progress'"
+                                       decoration-success="state in ('done', 'to_close')"
+                                       decoration-danger="state == 'cancel'"/>
+                            </list>
+                        </field>
+                    </group>
+                    
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
+
+    <!-- ===================================================================== -->
+    <!-- MANUFACTURING ORDER list - ADD INDICATOR -->
+    <!-- ===================================================================== -->
+    
+
+</odoo>
