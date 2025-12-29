@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_reports.AgedReceivable">
+        <div class="o_action">
+            <div class="ar-report">
+                <div t-if="state.isLoading" class="ar-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div t-else="" class="ar-report-container">
+                    <!-- Header -->
+                    <div class="ar-header" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                        <h2 class="ar-header-title">
+                            <i class="fa fa-clock-o me-2"/>
+                            Aged Receivable
+                        </h2>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="ar-filters">
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">
+                                <i class="fa fa-calendar"/>
+                                As of Date
+                            </span>
+                            <input type="date" 
+                                   class="ar-date-input"
+                                   t-att-value="state.asOfDate"
+                                   t-on-change="onChangeAsOfDate"/>
+
+                            <span class="ar-filter-label">
+                                <i class="fa fa-calendar-o"/>
+                                Period (Days)
+                            </span>
+                            <select class="ar-select" t-on-change="onChangePeriodLength" style="min-width: 100px;">
+                                <option value="30" t-att-selected="state.periodLength === 30">30</option>
+                                <option value="60" t-att-selected="state.periodLength === 60">60</option>
+                                <option value="90" t-att-selected="state.periodLength === 90">90</option>
+                            </select>
+                        </div>
+
+                        <!-- Partner Search -->
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">
+                                <i class="fa fa-user"/>
+                                Customers
+                            </span>
+                            <div class="aged-search-container">
+                                <div class="selected-items" t-if="state.selectedPartners.length">
+                                    <t t-foreach="state.selectedPartners" t-as="partner" t-key="partner.id">
+                                        <span class="aged-tag receivable">
+                                            <t t-esc="partner.name"/>
+                                            <i class="fa fa-times" t-on-click="() => this.removePartner(partner.id)"/>
+                                        </span>
+                                    </t>
+                                    <button class="clear-all-btn" t-on-click="clearAllPartners">
+                                        <i class="fa fa-times-circle"/>
+                                    </button>
+                                </div>
+                                <div class="aged-search-wrapper">
+                                    <input type="text" 
+                                           class="aged-search-input"
+                                           placeholder="Search customers..."
+                                           t-att-value="state.partnerSearch"
+                                           t-on-input="onPartnerSearchInput"
+                                           t-on-focus="onPartnerSearchFocus"
+                                           t-on-blur="onPartnerSearchBlur"/>
+                                    <i class="fa fa-search search-icon"/>
+                                    <div class="aged-dropdown" t-if="state.showPartnerDropdown">
+                                        <t t-foreach="state.filteredPartners" t-as="partner" t-key="partner.id">
+                                            <div class="aged-dropdown-item" t-on-click="() => this.selectPartner(partner)">
+                                                <span t-esc="partner.name"/>
+                                                <span t-if="partner.ref" class="ref">[<t t-esc="partner.ref"/>]</span>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="ar-filter-row">
+                            <button class="ar-btn ar-btn-primary" t-on-click="onRefresh" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                                <i class="fa fa-refresh"/> Refresh
+                            </button>
+                            <button class="ar-btn ar-btn-success" t-on-click="onExportExcel">
+                                <i class="fa fa-file-excel-o"/> Export
+                            </button>
+                            <button class="ar-btn ar-btn-secondary" t-on-click="onPrint">
+                                <i class="fa fa-print"/> Print
+                            </button>
+                            <button class="ar-btn ar-btn-info" t-on-click="expandAll">
+                                <i class="fa fa-expand"/> Expand All
+                            </button>
+                            <button class="ar-btn ar-btn-secondary" t-on-click="collapseAll">
+                                <i class="fa fa-compress"/> Collapse
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="aged-summary">
+                        <div class="aged-card not-due">
+                            <span class="aged-card-label">Not Due</span>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.not_due || 0)"/>
+                        </div>
+                        <div class="aged-card period-1">
+                            <span class="aged-card-label" t-esc="state.reportData.period_labels[1] || '0-30'"/>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.period1 || 0)"/>
+                        </div>
+                        <div class="aged-card period-2">
+                            <span class="aged-card-label" t-esc="state.reportData.period_labels[2] || '31-60'"/>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.period2 || 0)"/>
+                        </div>
+                        <div class="aged-card period-3">
+                            <span class="aged-card-label" t-esc="state.reportData.period_labels[3] || '61-90'"/>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.period3 || 0)"/>
+                        </div>
+                        <div class="aged-card period-4">
+                            <span class="aged-card-label" t-esc="state.reportData.period_labels[4] || '91-120'"/>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.period4 || 0)"/>
+                        </div>
+                        <div class="aged-card period-older">
+                            <span class="aged-card-label" t-esc="state.reportData.period_labels[5] || '120+'"/>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.older || 0)"/>
+                        </div>
+                        <div class="aged-card total">
+                            <span class="aged-card-label">Total</span>
+                            <span class="aged-card-value" t-esc="formatNumber(state.reportData.totals.total || 0)"/>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="aged-table-container">
+                        <table class="aged-table">
+                            <thead>
+                                <tr>
+                                    <th class="aged-col-partner">Customer</th>
+                                    <th class="aged-col-amount">Not Due</th>
+                                    <th class="aged-col-amount" t-esc="state.reportData.period_labels[1] || '0-30'"/>
+                                    <th class="aged-col-amount" t-esc="state.reportData.period_labels[2] || '31-60'"/>
+                                    <th class="aged-col-amount" t-esc="state.reportData.period_labels[3] || '61-90'"/>
+                                    <th class="aged-col-amount" t-esc="state.reportData.period_labels[4] || '91-120'"/>
+                                    <th class="aged-col-amount" t-esc="state.reportData.period_labels[5] || '120+'"/>
+                                    <th class="aged-col-amount">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-if="!state.reportData.partners || !state.reportData.partners.length">
+                                    <td colspan="8">
+                                        <div class="aged-empty-state">
+                                            <i class="fa fa-check-circle"/>
+                                            <h4>No Outstanding Receivables</h4>
+                                            <p>All customer balances are settled.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <t t-foreach="state.reportData.partners || []" t-as="partner" t-key="partner.id">
+                                    <tr class="aged-row-partner" t-on-click="() => this.togglePartner(partner.id)">
+                                        <td class="aged-col-partner">
+                                            <span class="aged-toggle-icon">
+                                                <i t-att-class="'fa ' + (isPartnerExpanded(partner.id) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                            </span>
+                                            <span class="aged-partner-name" t-esc="partner.name"/>
+                                            <span t-if="partner.ref" class="aged-partner-ref">[<t t-esc="partner.ref"/>]</span>
+                                        </td>
+                                        <td class="aged-col-amount"><span t-if="partner.not_due" t-esc="formatNumber(partner.not_due)"/><t t-else="">-</t></td>
+                                        <td class="aged-col-amount"><span t-if="partner.period1" class="period-1" t-esc="formatNumber(partner.period1)"/><t t-else="">-</t></td>
+                                        <td class="aged-col-amount"><span t-if="partner.period2" class="period-2" t-esc="formatNumber(partner.period2)"/><t t-else="">-</t></td>
+                                        <td class="aged-col-amount"><span t-if="partner.period3" class="period-3" t-esc="formatNumber(partner.period3)"/><t t-else="">-</t></td>
+                                        <td class="aged-col-amount"><span t-if="partner.period4" class="period-4" t-esc="formatNumber(partner.period4)"/><t t-else="">-</t></td>
+                                        <td class="aged-col-amount"><span t-if="partner.older" class="period-older" t-esc="formatNumber(partner.older)"/><t t-else="">-</t></td>
+                                        <td class="aged-col-amount aged-total" t-esc="formatNumber(partner.total)"/>
+                                    </tr>
+
+                                    <t t-if="isPartnerExpanded(partner.id)">
+                                        <t t-foreach="partner.lines || []" t-as="line" t-key="line.id">
+                                            <tr class="aged-row-line">
+                                                <td class="aged-col-partner">
+                                                    <span class="aged-indent"/>
+                                                    <a class="aged-move-link" t-on-click.stop="() => this.openMove(line.move_id)">
+                                                        <t t-esc="line.move_name"/>
+                                                    </a>
+                                                    <span class="aged-line-date">(<t t-esc="line.date"/>)</span>
+                                                    <span t-if="line.days >= 0" class="aged-days-badge" t-att-class="getPeriodClass(line.period)">
+                                                        <t t-esc="line.days"/> days
+                                                    </span>
+                                                </td>
+                                                <td class="aged-col-amount"><span t-if="line.period === 'not_due'" t-esc="formatNumber(line.amount)"/></td>
+                                                <td class="aged-col-amount"><span t-if="line.period === 'period1'" t-esc="formatNumber(line.amount)"/></td>
+                                                <td class="aged-col-amount"><span t-if="line.period === 'period2'" t-esc="formatNumber(line.amount)"/></td>
+                                                <td class="aged-col-amount"><span t-if="line.period === 'period3'" t-esc="formatNumber(line.amount)"/></td>
+                                                <td class="aged-col-amount"><span t-if="line.period === 'period4'" t-esc="formatNumber(line.amount)"/></td>
+                                                <td class="aged-col-amount"><span t-if="line.period === 'older'" t-esc="formatNumber(line.amount)"/></td>
+                                                <td class="aged-col-amount"/>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </t>
+                            </tbody>
+
+                            <tfoot t-if="state.reportData.partners and state.reportData.partners.length">
+                                <tr class="aged-row-total">
+                                    <td><strong>📊 TOTAL</strong></td>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.not_due || 0)"/>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.period1 || 0)"/>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.period2 || 0)"/>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.period3 || 0)"/>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.period4 || 0)"/>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.older || 0)"/>
+                                    <td class="aged-col-amount" t-esc="formatNumber(state.reportData.totals.total || 0)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

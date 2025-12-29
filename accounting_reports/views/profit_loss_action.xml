@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Profit & Loss Report Client Action -->
+    <record id="action_profit_loss_report" model="ir.actions.client">
+        <field name="name">Profit &amp; Loss</field>
+        <field name="tag">profit_loss_report</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>

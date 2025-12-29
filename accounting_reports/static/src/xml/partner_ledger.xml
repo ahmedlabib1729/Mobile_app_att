@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="accounting_reports.PartnerLedger">
+        <div class="o_action">
+            <div class="ar-report">
+                <!-- Loading -->
+                <div t-if="state.isLoading" class="ar-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div t-else="" class="ar-report-container">
+                    <!-- Header -->
+                    <div class="ar-header" style="background: #0891b2;">
+                        <h2 class="ar-header-title">
+                            <i class="fa fa-users me-2"/>
+                            Partner Ledger
+                        </h2>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="ar-filters">
+                        <!-- Row 1: Date Range -->
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">
+                                <i class="fa fa-calendar"/>
+                                Date From
+                            </span>
+                            <input type="date" 
+                                   class="ar-date-input"
+                                   t-att-value="state.dateFrom"
+                                   t-on-change="onChangeDateFrom"/>
+                            
+                            <span class="ar-filter-label">To</span>
+                            <input type="date" 
+                                   class="ar-date-input"
+                                   t-att-value="state.dateTo"
+                                   t-on-change="onChangeDateTo"/>
+
+                            <label class="ar-checkbox">
+                                <input type="checkbox"
+                                       t-att-checked="state.postedOnly"
+                                       t-on-change="onChangePostedOnly"/>
+                                <span>Posted Only</span>
+                            </label>
+
+                            <span class="ar-filter-label" style="margin-left: 20px;">
+                                <i class="fa fa-filter"/>
+                                Type
+                            </span>
+                            <select class="ar-select" 
+                                    t-on-change="onChangeAccountType" 
+                                    t-att-value="state.accountType"
+                                    style="min-width: 180px;">
+                                <option value="">All (Receivable &amp; Payable)</option>
+                                <option value="asset_receivable">Receivable Only</option>
+                                <option value="liability_payable">Payable Only</option>
+                            </select>
+                        </div>
+
+                        <!-- Row 2: Partner Search -->
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">
+                                <i class="fa fa-user"/>
+                                Partners
+                            </span>
+                            <div class="partner-search-container">
+                                <!-- Selected Partners Tags -->
+                                <div class="selected-partners" t-if="state.selectedPartners.length">
+                                    <t t-foreach="state.selectedPartners" t-as="partner" t-key="partner.id">
+                                        <span class="partner-tag">
+                                            <t t-esc="partner.name"/>
+                                            <i class="fa fa-times" t-on-click="() => this.removePartner(partner.id)"/>
+                                        </span>
+                                    </t>
+                                    <button class="clear-all-btn" t-on-click="clearAllPartners" title="Clear All">
+                                        <i class="fa fa-times-circle"/>
+                                    </button>
+                                </div>
+                                
+                                <!-- Search Input -->
+                                <div class="partner-search-wrapper">
+                                    <input type="text" 
+                                           class="partner-search-input"
+                                           placeholder="Search partners..."
+                                           t-att-value="state.partnerSearch"
+                                           t-on-input="onPartnerSearchInput"
+                                           t-on-focus="onPartnerSearchFocus"
+                                           t-on-blur="onPartnerSearchBlur"/>
+                                    <i class="fa fa-search search-icon"/>
+                                    
+                                    <!-- Dropdown Results -->
+                                    <div class="partner-dropdown" t-if="state.showPartnerDropdown">
+                                        <t t-foreach="state.filteredPartners" t-as="partner" t-key="partner.id">
+                                            <div class="partner-dropdown-item" t-on-click="() => this.selectPartner(partner)">
+                                                <span class="partner-name" t-esc="partner.name"/>
+                                                <span t-if="partner.ref" class="partner-ref">[<t t-esc="partner.ref"/>]</span>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Tag Search Filter -->
+                        <div class="ar-filter-row">
+                            <span class="ar-filter-label">
+                                <i class="fa fa-tags"/>
+                                Partner Tags
+                            </span>
+                            <div class="tag-search-container">
+                                <!-- Selected Tags -->
+                                <div class="selected-tags" t-if="state.selectedTags.length">
+                                    <t t-foreach="state.selectedTags" t-as="tag" t-key="tag.id">
+                                        <span class="tag-badge" t-att-style="'background-color:' + this.getTagColor(tag.color)">
+                                            <i class="fa fa-tag me-1"/>
+                                            <t t-esc="tag.name"/>
+                                            <i class="fa fa-times ms-1" t-on-click.stop="() => this.removeTag(tag.id)"/>
+                                        </span>
+                                    </t>
+                                    <button class="clear-all-btn" t-on-click="clearAllTags" title="Clear All Tags">
+                                        <i class="fa fa-times-circle"/>
+                                    </button>
+                                </div>
+
+                                <!-- Tag Search Input -->
+                                <div class="tag-search-wrapper">
+                                    <input type="text"
+                                           class="tag-search-input"
+                                           placeholder="Search tags..."
+                                           t-att-value="state.tagSearch"
+                                           t-on-input="onTagSearchInput"
+                                           t-on-focus="onTagSearchFocus"
+                                           t-on-blur="onTagSearchBlur"/>
+                                    <i class="fa fa-search search-icon"/>
+
+                                    <!-- Tag Dropdown Results -->
+                                    <div class="tag-dropdown" t-if="state.showTagDropdown">
+                                        <t t-foreach="state.filteredTags" t-as="tag" t-key="tag.id">
+                                            <div class="tag-dropdown-item" t-on-click.stop="() => this.selectTag(tag)">
+                                                <span class="tag-color-dot" t-att-style="'background-color:' + this.getTagColor(tag.color)"/>
+                                                <span class="tag-name" t-esc="tag.name"/>
+                                                <span t-if="tag.parent_name" class="tag-parent">(<t t-esc="tag.parent_name"/>)</span>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="ar-filter-row">
+                            <button class="ar-btn ar-btn-primary" t-on-click="onRefresh" style="background: #0891b2;">
+                                <i class="fa fa-refresh"/> Refresh
+                            </button>
+                            <div class="export-dropdown">
+                                <button class="ar-btn ar-btn-success" t-on-click="toggleExportMenu">
+                                    <i class="fa fa-file-excel-o"/> Export <i class="fa fa-caret-down ms-1"/>
+                                </button>
+                                <div class="export-dropdown-menu" t-if="state.showExportMenu">
+                                    <div class="export-dropdown-item" t-on-click="() => this.onExportExcel(true)">
+                                        <i class="fa fa-list-alt"/>
+                                        <span>Export with Details</span>
+                                    </div>
+                                    <div class="export-dropdown-item" t-on-click="() => this.onExportExcel(false)">
+                                        <i class="fa fa-table"/>
+                                        <span>Export Summary Only</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="ar-btn ar-btn-secondary" t-on-click="onPrint">
+                                <i class="fa fa-print"/> Print
+                            </button>
+                            <button class="ar-btn ar-btn-info" t-on-click="expandAll">
+                                <i class="fa fa-expand"/> Expand All
+                            </button>
+                            <button class="ar-btn ar-btn-secondary" t-on-click="collapseAll">
+                                <i class="fa fa-compress"/> Collapse
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="ar-kpi-row">
+                        <div class="ar-kpi-card">
+                            <div class="ar-kpi-icon">📊</div>
+                            <div class="ar-kpi-content">
+                                <div class="ar-kpi-value" t-esc="formatNumber(state.totalOpening)"/>
+                                <div class="ar-kpi-label">Opening Balance</div>
+                            </div>
+                        </div>
+                        <div class="ar-kpi-card kpi-debit">
+                            <div class="ar-kpi-icon">📈</div>
+                            <div class="ar-kpi-content">
+                                <div class="ar-kpi-value" t-esc="formatNumber(state.totalDebit)"/>
+                                <div class="ar-kpi-label">Total Debit</div>
+                            </div>
+                        </div>
+                        <div class="ar-kpi-card kpi-credit">
+                            <div class="ar-kpi-icon">📉</div>
+                            <div class="ar-kpi-content">
+                                <div class="ar-kpi-value" t-esc="formatNumber(state.totalCredit)"/>
+                                <div class="ar-kpi-label">Total Credit</div>
+                            </div>
+                        </div>
+                        <div class="ar-kpi-card kpi-balance">
+                            <div class="ar-kpi-icon">⚖️</div>
+                            <div class="ar-kpi-content">
+                                <div class="ar-kpi-value" t-esc="formatNumber(state.totalBalance)"/>
+                                <div class="ar-kpi-label">Closing Balance</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="pl-table-container">
+                        <table class="pl-table">
+                            <thead>
+                                <tr>
+                                    <th class="pl-col-partner">Partner</th>
+                                    <th class="pl-col-tags">Tags</th>
+                                    <th class="pl-col-date">Date</th>
+                                    <th class="pl-col-ref">Reference</th>
+                                    <th class="pl-col-account">Account</th>
+                                    <th class="pl-col-label">Label</th>
+                                    <th class="pl-col-amount">Debit</th>
+                                    <th class="pl-col-amount">Credit</th>
+                                    <th class="pl-col-amount">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Empty State -->
+                                <tr t-if="!state.reportData.partners || !state.reportData.partners.length">
+                                    <td colspan="9">
+                                        <div class="pl-empty-state">
+                                            <i class="fa fa-inbox"/>
+                                            <h4>No Data Found</h4>
+                                            <p>No partner transactions found for the selected filters.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Partner Rows -->
+                                <t t-foreach="state.reportData.partners || []" t-as="partner" t-key="partner.id">
+                                    <!-- Partner Header -->
+                                    <tr class="pl-row-partner" t-on-click="() => this.togglePartner(partner.id)">
+                                        <td class="pl-col-partner">
+                                            <span class="pl-toggle-icon">
+                                                <i t-att-class="'fa ' + (isPartnerExpanded(partner.id) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                            </span>
+                                            <span class="pl-partner-icon">👤</span>
+                                            <span class="pl-partner-name" t-esc="partner.name"/>
+                                            <span t-if="partner.ref" class="pl-partner-ref">
+                                                [<t t-esc="partner.ref"/>]
+                                            </span>
+                                        </td>
+                                        <td class="pl-col-tags">
+                                            <t t-if="partner.tags and partner.tags.length">
+                                                <t t-foreach="partner.tags" t-as="tag" t-key="tag.id">
+                                                    <span class="pl-partner-tag-badge" t-att-style="'background-color:' + this.getTagColor(tag.color)">
+                                                        <t t-esc="tag.name"/>
+                                                    </span>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="pl-no-tags">-</span>
+                                            </t>
+                                        </td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                        <td class="pl-col-amount pl-amount-debit" t-esc="formatNumber(partner.debit)"/>
+                                        <td class="pl-col-amount pl-amount-credit" t-esc="formatNumber(partner.credit)"/>
+                                        <td class="pl-col-amount pl-amount-balance" t-att-class="partner.balance >= 0 ? 'pl-amount-positive' : 'pl-amount-negative'" t-esc="formatNumber(partner.balance)"/>
+                                    </tr>
+
+                                    <!-- Expanded Content -->
+                                    <t t-if="isPartnerExpanded(partner.id)">
+                                        <!-- Opening Balance -->
+                                        <tr class="pl-row-opening">
+                                            <td class="pl-opening-label" colspan="6">
+                                                <span class="pl-indent"/>
+                                                📂 Opening Balance
+                                            </td>
+                                            <td class="pl-col-amount">-</td>
+                                            <td class="pl-col-amount">-</td>
+                                            <td class="pl-col-amount pl-amount-balance" t-att-class="partner.opening >= 0 ? 'pl-amount-positive' : 'pl-amount-negative'" t-esc="formatNumber(partner.opening)"/>
+                                        </tr>
+
+                                        <!-- Move Lines -->
+                                        <t t-foreach="partner.moves || []" t-as="move" t-key="move.id">
+                                            <tr class="pl-row-move">
+                                                <td>
+                                                    <span class="pl-indent"/>
+                                                    <span class="pl-journal-badge" t-esc="move.journal_code"/>
+                                                </td>
+                                                <td/>
+                                                <td class="pl-col-date" t-esc="move.date"/>
+                                                <td class="pl-col-ref">
+                                                    <a class="pl-move-ref" t-on-click.stop="() => this.openMove(move.move_id)">
+                                                        <t t-esc="move.move_name"/>
+                                                    </a>
+                                                </td>
+                                                <td class="pl-col-account">
+                                                    <span class="pl-account-badge" t-att-class="move.account_type === 'asset_receivable' ? 'receivable' : 'payable'">
+                                                        <t t-esc="move.account_code"/>
+                                                    </span>
+                                                </td>
+                                                <td class="pl-col-label">
+                                                    <span class="pl-label" t-esc="move.label || move.ref || '-'"/>
+                                                </td>
+                                                <td class="pl-col-amount">
+                                                    <t t-if="move.debit">
+                                                        <span class="pl-amount-debit" t-esc="formatNumber(move.debit)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td class="pl-col-amount">
+                                                    <t t-if="move.credit">
+                                                        <span class="pl-amount-credit" t-esc="formatNumber(move.credit)"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td class="pl-col-amount pl-amount-balance" t-att-class="move.balance >= 0 ? 'pl-amount-positive' : 'pl-amount-negative'" t-esc="formatNumber(move.balance)"/>
+                                            </tr>
+                                        </t>
+
+                                        <!-- Closing Balance -->
+                                        <tr class="pl-row-closing">
+                                            <td class="pl-closing-label" colspan="6">
+                                                <span class="pl-indent"/>
+                                                📁 Closing Balance
+                                            </td>
+                                            <td class="pl-col-amount pl-amount-debit" t-esc="formatNumber(partner.debit)"/>
+                                            <td class="pl-col-amount pl-amount-credit" t-esc="formatNumber(partner.credit)"/>
+                                            <td class="pl-col-amount pl-amount-balance" t-att-class="partner.balance >= 0 ? 'pl-amount-positive' : 'pl-amount-negative'" t-esc="formatNumber(partner.balance)"/>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+
+                            <!-- Grand Total -->
+                            <tfoot t-if="state.reportData.partners and state.reportData.partners.length">
+                                <tr class="pl-row-total">
+                                    <td colspan="6">
+                                        <span class="pl-total-icon">📊</span>
+                                        <strong>GRAND TOTAL</strong>
+                                    </td>
+                                    <td class="pl-col-amount" t-esc="formatNumber(state.reportData.totals.debit || 0)"/>
+                                    <td class="pl-col-amount" t-esc="formatNumber(state.reportData.totals.credit || 0)"/>
+                                    <td class="pl-col-amount" t-esc="formatNumber(state.reportData.totals.balance || 0)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
